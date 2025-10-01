@@ -109,7 +109,7 @@
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
         <!-- VERSIÓN -->
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v1.2</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v1.3</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -232,6 +232,50 @@
         <p class="text-white text-lg mt-4">Iniciando cámara...</p>
     </div>
 
+    <!-- CORRECCIÓN: Componente AR en su propio script para evitar conflictos de Three.js -->
+    <script>
+        AFRAME.registerComponent('ar-rotator', {
+            schema: { rotationFactor: { type: 'number', default: 0.5 } },
+            init: function () {
+                this.isVisible = false;
+                this.isDragging = false;
+                this.previousDrag = { x: 0, y: 0 };
+                const canvas = this.el.sceneEl.canvas;
+
+                const startDrag = (x, y) => {
+                    if (this.isVisible) {
+                        this.isDragging = true;
+                        this.previousDrag = { x, y };
+                    }
+                };
+
+                const drag = (x, y) => {
+                    if (this.isDragging && this.isVisible) {
+                        const deltaX = x - this.previousDrag.x;
+                        const deltaY = y - this.previousDrag.y;
+                        this.el.object3D.rotation.y += THREE.MathUtils.degToRad(deltaX * this.data.rotationFactor);
+                        this.el.object3D.rotation.x += THREE.MathUtils.degToRad(deltaY * this.data.rotationFactor);
+                        this.previousDrag = { x, y };
+                    }
+                };
+
+                const endDrag = () => { this.isDragging = false; };
+
+                canvas.addEventListener('touchstart', (e) => { if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY); });
+                canvas.addEventListener('touchmove', (e) => { if (e.touches.length === 1) drag(e.touches[0].clientX, e.touches[0].clientY); });
+                canvas.addEventListener('touchend', endDrag);
+
+                canvas.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
+                canvas.addEventListener('mousemove', (e) => drag(e.clientX, e.clientY));
+                canvas.addEventListener('mouseup', endDrag);
+                canvas.addEventListener('mouseleave', endDrag);
+
+                this.el.parentEl.addEventListener('targetFound', () => { this.isVisible = true; });
+                this.el.parentEl.addEventListener('targetLost', () => { this.isVisible = false; });
+            },
+        });
+    </script>
+    
     <script type="module">
         // Importaciones de Three.js para el editor
         import * as THREE from 'three';
@@ -296,6 +340,7 @@
                 progressBar.classList.remove('bg-red-600');
                 const totalAssets = ASSET_NAMES.length;
                 let loadedCount = 0;
+                console.log('[Asset Loader] Iniciando descarga de recursos...');
                 const promises = ASSET_NAMES.map(async (name, index) => {
                     const urls = {
                         marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
@@ -313,6 +358,13 @@
                     const [markerBlob, modelBlob, imageBlob] = await Promise.all([
                         markerRes.blob(), modelRes.blob(), imageRes.blob()
                     ]);
+                    
+                    // Log detallado de la carga de cada recurso
+                    console.log(`[Asset Loader] Cargado ${name}:`);
+                    console.log(`  -> Marker: ${urls.marker} (tamaño: ${markerBlob.size} bytes)`);
+                    console.log(`  -> Model: ${urls.model} (tamaño: ${modelBlob.size} bytes)`);
+                    console.log(`  -> Image: ${urls.image} (tamaño: ${imageBlob.size} bytes)`);
+
                     loadedCount++;
                     progressBar.style.width = `${(loadedCount / totalAssets) * 100}%`;
                     loadingText.textContent = `Cargando ${name}... (${loadedCount}/${totalAssets})`;
@@ -477,7 +529,14 @@
                 arSceneContainer.innerHTML = '';
                 const sceneEl = document.createElement('a-scene');
                 sceneEl.setAttribute('embedded', '');
-                const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
+                
+                // Log detallado de los marcadores que se pasan a MindAR
+                console.log("[AR Setup] Compilando URLs de marcadores para MindAR...");
+                const markerUrlList = state.assets.map(a => a.markerDataUrl);
+                console.log("[AR Setup] URLs que se pasarán a MindAR:", markerUrlList);
+                
+                const mindARSettings = `imageTargetSrc: ${markerUrlList.join(';')}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
+                
                 sceneEl.setAttribute('mindar-image', mindARSettings);
                 sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
                 sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
@@ -680,10 +739,6 @@
     </script>
 </body>
 </html>
-
-
-
-
 
 
 
