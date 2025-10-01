@@ -8,15 +8,10 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-    <!-- Se mantiene el importmap para el funcionamiento del editor 3D. -->
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/"
-            }
-        }
-    </script>
+    <!-- CORRECCIÓN: Se eliminó el importmap. Se usarán scripts globales de Three.js para evitar conflictos. -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/DragControls.js"></script>
 
     <style>
         /* Estilos generales y para el modo AR */
@@ -109,7 +104,7 @@
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
         <!-- VERSIÓN -->
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v1.3</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v1.4</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -231,9 +226,9 @@
         <div class="loader"></div>
         <p class="text-white text-lg mt-4">Iniciando cámara...</p>
     </div>
-
-    <!-- CORRECCIÓN: Componente AR en su propio script para evitar conflictos de Three.js -->
+    
     <script>
+        // Componente de A-Frame para rotación
         AFRAME.registerComponent('ar-rotator', {
             schema: { rotationFactor: { type: 'number', default: 0.5 } },
             init: function () {
@@ -253,6 +248,7 @@
                     if (this.isDragging && this.isVisible) {
                         const deltaX = x - this.previousDrag.x;
                         const deltaY = y - this.previousDrag.y;
+                        // Usar el THREE global proveído por A-Frame
                         this.el.object3D.rotation.y += THREE.MathUtils.degToRad(deltaX * this.data.rotationFactor);
                         this.el.object3D.rotation.x += THREE.MathUtils.degToRad(deltaY * this.data.rotationFactor);
                         this.previousDrag = { x, y };
@@ -274,15 +270,8 @@
                 this.el.parentEl.addEventListener('targetLost', () => { this.isVisible = false; });
             },
         });
-    </script>
-    
-    <script type="module">
-        // Importaciones de Three.js para el editor
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-        import { DragControls } from 'three/addons/controls/DragControls.js';
 
+        // Lógica principal de la aplicación en un script estándar
         document.addEventListener('DOMContentLoaded', () => {
             // Estado global de la aplicación
             const state = {
@@ -294,7 +283,7 @@
             // Objeto para manejar la escena del editor 3D
             let editor = {
                 scene: null, camera: null, renderer: null, controls: null, dragControls: null,
-                loader: new GLTFLoader(),
+                loader: new THREE.GLTFLoader(),
                 textureLoader: new THREE.TextureLoader(),
                 currentTarget: null,
                 currentPlane: null,
@@ -359,7 +348,6 @@
                         markerRes.blob(), modelRes.blob(), imageRes.blob()
                     ]);
                     
-                    // Log detallado de la carga de cada recurso
                     console.log(`[Asset Loader] Cargado ${name}:`);
                     console.log(`  -> Marker: ${urls.marker} (tamaño: ${markerBlob.size} bytes)`);
                     console.log(`  -> Model: ${urls.model} (tamaño: ${modelBlob.size} bytes)`);
@@ -408,7 +396,7 @@
                 editor.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
                 editor.renderer.setSize(container.clientWidth, container.clientHeight);
                 editor.renderer.setPixelRatio(window.devicePixelRatio);
-                editor.controls = new OrbitControls(editor.camera, editor.renderer.domElement);
+                editor.controls = new THREE.OrbitControls(editor.camera, editor.renderer.domElement);
                 editor.controls.enableDamping = true;
                 const animate = () => { requestAnimationFrame(animate); editor.controls.update(); editor.renderer.render(editor.scene, editor.camera); };
                 animate();
@@ -460,7 +448,7 @@
                     editor.scene.add(editor.currentTarget);
                     updateModelTransformFromState(asset.transform);
                     updateTransformInputs(asset.transform);
-                    editor.dragControls = new DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
+                    editor.dragControls = new THREE.DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
                     editor.dragControls.addEventListener('dragstart', () => editor.controls.enabled = false);
                     editor.dragControls.addEventListener('dragend', (event) => {
                         editor.controls.enabled = true;
@@ -530,7 +518,6 @@
                 const sceneEl = document.createElement('a-scene');
                 sceneEl.setAttribute('embedded', '');
                 
-                // Log detallado de los marcadores que se pasan a MindAR
                 console.log("[AR Setup] Compilando URLs de marcadores para MindAR...");
                 const markerUrlList = state.assets.map(a => a.markerDataUrl);
                 console.log("[AR Setup] URLs que se pasarán a MindAR:", markerUrlList);
@@ -579,8 +566,14 @@
                         }
                     }, 100);
                 });
-                sceneEl.addEventListener('targetFound', () => scanningUI.classList.add('hidden'));
-                sceneEl.addEventListener('targetLost', () => scanningUI.classList.remove('hidden'));
+                sceneEl.addEventListener('targetFound', (e) => {
+                    console.log(`[AR Event] Marcador encontrado: targetIndex ${e.detail.targetIndex}`);
+                    scanningUI.classList.add('hidden');
+                });
+                sceneEl.addEventListener('targetLost', (e) => {
+                    console.log(`[AR Event] Marcador perdido: targetIndex ${e.detail.targetIndex}`);
+                    scanningUI.classList.remove('hidden');
+                });
                 arSceneContainer.appendChild(sceneEl);
                 const appContainer = document.getElementById('app');
                 document.documentElement.classList.add('ar-active');
@@ -739,7 +732,6 @@
     </script>
 </body>
 </html>
-
 
 
 
