@@ -189,13 +189,13 @@
         const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
         let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        const CACHE_NAME = 'salud-ar-assets-cache-v4'; // Versión de caché actualizada para forzar recarga
+        const CACHE_NAME = 'salud-ar-assets-cache-v5'; // Versión de caché actualizada para forzar recarga
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSETS_CONFIG = [
             { name: 'cabeza1', imageExt: 'png' },
             { name: 'corazon', imageExt: 'JPG' },
             { name: 'dedo-mano', imageExt: 'JPG' },
-            { name: 'dedo', imageExt: 'JPG' }, // CORREGIDO: 'dedou' revertido a 'dedo' para que coincida con el archivo en GitHub
+            { name: 'dedo', imageExt: 'JPG' },
             { name: 'hueso-columna', imageExt: 'JPG' },
             { name: 'huesosmano', imageExt: 'png' },
             { name: 'mano-iz-protesis', imageExt: 'JPG' },
@@ -259,7 +259,7 @@
                 const { name, imageExt } = assetConfig;
                 const urls = {
                     marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                    model: `${GITHUB_BASE_URL}models/${name}.glb`,
+                    model: `${GITHUB_BASE_URL}modelss/${name}.glb`, // CORREGIDO: 'models' a 'modelss'
                     image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
                 };
                 
@@ -542,7 +542,7 @@
                     const { name, imageExt } = assetConfig;
                     const urls = {
                         marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                        model: `${GITHUB_BASE_URL}models/${name}.glb`,
+                        model: `${GITHUB_BASE_URL}modelss/${name}.glb`, // CORREGIDO: 'models' a 'modelss'
                         image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
                     };
                     const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
@@ -620,5 +620,4 @@
     </script>
 </body>
 </html>
-
 
