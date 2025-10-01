@@ -192,7 +192,7 @@
         const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
         let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        const CACHE_NAME = 'salud-ar-assets-cache-v5'; // Versión de caché actualizada para forzar recarga
+        const CACHE_NAME = 'salud-ar-assets-cache-v6'; // Incremented cache version
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSETS_CONFIG = [
             { name: 'cabeza1', imageExt: 'png' },
@@ -228,8 +228,15 @@
             const cache = await caches.open(CACHE_NAME);
             const cachedResponse = await cache.match(url);
             if (cachedResponse) return cachedResponse;
+            
             const networkResponse = await fetch(url);
-            if (networkResponse.ok) await cache.put(url, networkResponse.clone());
+            if (networkResponse.ok) {
+                try {
+                    await cache.put(url, networkResponse.clone());
+                } catch (e) {
+                    console.warn(`Could not cache resource: ${url}`, e);
+                }
+            }
             return networkResponse;
         }
         
@@ -252,7 +259,6 @@
             const loadingText = document.getElementById('loading-text');
             const progressBar = document.getElementById('loading-progress-bar');
             
-            // Asegurarse de que la barra de progreso esté visible
             progressBar.parentElement.classList.remove('hidden');
             loadingStatusDiv.classList.remove('hidden');
             document.getElementById('load-from-github-btn').disabled = true;
@@ -270,7 +276,7 @@
                 };
                 
                 const [markerRes, modelRes, imageRes] = await Promise.all([ fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image) ]);
-                if (!markerRes.ok || !modelRes.ok || !imageRes.ok) throw new Error(`Falló la carga de recursos para ${name}`);
+                if (!markerRes.ok || !modelRes.ok || !imageRes.ok) throw new Error(`Failed to fetch assets for ${name}`);
                 const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
 
                 loadedCount++;
@@ -296,7 +302,7 @@
             } catch (error) {
                 loadingText.textContent = 'Error al cargar los recursos. Revisa la consola.';
                 progressBar.classList.add('bg-red-600');
-                console.error("Fallo en la carga de recursos:", error);
+                console.error("Asset loading failed:", error);
             } finally {
                 document.getElementById('load-from-github-btn').disabled = false;
             }
@@ -307,7 +313,6 @@
             const loadingText = document.getElementById('loading-text');
             const progressBar = document.getElementById('loading-progress-bar');
 
-            // Ocultar la barra de progreso y mostrar el cargador
             progressBar.parentElement.classList.add('hidden');
             loadingStatusDiv.classList.remove('hidden');
             loadingText.textContent = 'Limpiando la caché de la aplicación...';
@@ -438,7 +443,11 @@
                 document.getElementById('start-ar-pc-btn').disabled = false;
                 document.getElementById('start-ar-mobile-btn').disabled = false;
             });
-            assetsEl.addEventListener('timeout', (e) => { arStatusText.textContent = 'Error: La carga de modelos tardó mucho.'; arLoader.classList.add('hidden'); });
+            assetsEl.addEventListener('timeout', (e) => { 
+                arStatusText.textContent = 'Error: La carga de modelos tardó mucho.'; 
+                arLoader.classList.add('hidden');
+                console.error("Asset loading timed out:", e.detail.src);
+            });
             tempScene.appendChild(assetsEl);
             arPreloadContainer.appendChild(tempScene);
         }
@@ -483,14 +492,17 @@
             });
 
             sceneEl.addEventListener('loaded', () => {
-                sceneEl.systems['mindar-image-system'].start();
+                const mindarSystem = sceneEl.systems['mindar-image-system'];
+                mindarSystem.start();
             });
 
             const scanningUI = document.getElementById('scanning-ui');
             sceneEl.addEventListener('arReady', () => {
                 scanningUI.classList.remove('hidden');
                 document.getElementById('ar-preloader').classList.add('hidden');
-                setTimeout(() => { if (sceneEl.renderer) sceneEl.renderer.setSize(window.innerWidth, window.innerHeight); }, 100); 
+                setTimeout(() => { 
+                    if (sceneEl.renderer) sceneEl.renderer.setSize(window.innerWidth, window.innerHeight); 
+                }, 100); 
             });
             sceneEl.addEventListener('targetFound', () => scanningUI.classList.add('hidden'));
             sceneEl.addEventListener('targetLost', () => scanningUI.classList.remove('hidden'));
@@ -507,17 +519,19 @@
             
             if (shouldEnterFullscreen) { 
                 document.documentElement.requestFullscreen().catch(err => {
-                    console.warn("No se pudo entrar en pantalla completa automáticamente.", err);
+                    console.warn("Could not enter fullscreen automatically.", err);
                 });
             }
         }
 
         function stopAR() {
-            const sceneEl = document.querySelector('#ar-scene-container a-scene');
+            const arSceneContainer = document.getElementById('ar-scene-container');
+            const sceneEl = arSceneContainer.querySelector('a-scene');
             if (sceneEl && sceneEl.hasLoaded) {
                 if(sceneEl.systems['mindar-image-system']) sceneEl.systems['mindar-image-system'].stop();
                 if (sceneEl.parentNode) sceneEl.parentNode.removeChild(sceneEl);
             }
+            arSceneContainer.innerHTML = '';
             document.getElementById('ar-preload-container').innerHTML = '';
             state.areAssetsPreloaded = false;
 
@@ -529,7 +543,7 @@
             document.getElementById('scanning-ui').classList.add('hidden');
             
             if (document.fullscreenElement) {
-                document.exitFullscreen().catch(err => console.error("Error al salir de pantalla completa:", err));
+                document.exitFullscreen().catch(err => console.error("Error exiting fullscreen:", err));
             }
 
             state.isArActive = false;
@@ -537,7 +551,7 @@
         
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => console.error(`Error: ${err.message}`));
+                document.documentElement.requestFullscreen().catch(err => console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`));
             } else {
                 document.exitFullscreen();
             }
@@ -574,7 +588,7 @@
                         image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
                     };
                     const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
-                    if (!markerRes || !modelRes || !imageRes) throw new Error(`Recurso ${name} no encontrado en caché.`);
+                    if (!markerRes || !modelRes || !imageRes) throw new Error(`Asset ${name} not found in cache.`);
                     const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
                     return {
                         id: index, name,
@@ -588,7 +602,7 @@
                 state.assets = assets;
                 return true;
             } catch (error) {
-                console.warn("No se pudieron cargar los recursos desde la caché:", error.message);
+                console.warn("Could not load assets from cache on startup:", error.message);
                 return false;
             }
         }
