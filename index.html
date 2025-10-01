@@ -495,13 +495,21 @@
             
             const markerUrlList = state.assets.map(a => a.markerDataUrl).join(';');
             
-            const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrack: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
+            // =================================================================
+            // SOLUCIÓN DEFINITIVA:
+            // 1. Se revierte a `maxTrackables: 1`. Esta es la propiedad correcta que usa
+            //    el ejemplo de referencia que funciona, a pesar de la advertencia de la consola.
+            // 2. Se añaden `filterMinCF` y `filterBeta` para suavizar el seguimiento del
+            //    marcador y eliminar el "movimiento constante" o vibración del modelo.
+            // =================================================================
+            const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no; filterMinCF: 0.1; filterBeta: 10;`;
 
             sceneEl.setAttribute('mindar-image', mindARSettings);
             sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
             sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
             sceneEl.setAttribute('color-space', 'sRGB');
-            sceneEl.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights');
+            // Se mantiene la corrección del renderer para eliminar advertencias.
+            sceneEl.setAttribute('renderer', 'colorManagement: true');
 
             const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
             if(preloadedAssets) sceneEl.appendChild(preloadedAssets.cloneNode(true)); 
@@ -717,6 +725,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
