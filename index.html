@@ -4,32 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Propuesta Modelo AR en Salud</title>
-    <!-- Dependencias -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-    <!-- Favicon del repositorio -->
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
 
-    <!-- Versión de Three.js alineada con la del archivo de referencia funcional -->
     <script type="importmap">
         {
             "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/"
+                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
             }
         }
     </script>
     
     <style>
-        /* Estilos para una experiencia fluida en modo AR */
         html.ar-active, body.ar-active { overflow: hidden; width: 100%; height: 100%; margin: 0; padding: 0; }
         .app-container.ar-fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; max-height: none; padding: 0; margin: 0 !important; border-radius: 0; overflow: hidden; }
         .page { display: none; }
         .page.active { display: block; }
         #editor-canvas { width: 100%; height: 400px; border: 1px solid #ccc; background: #f0f0f0; cursor: move; touch-action: none; border-radius: 8px; }
-        
         #ar-scene-container.ar-active { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9990; }
         #ar-scene-container.ar-active a-scene { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         #ar-scene-container.ar-active video, 
@@ -44,7 +39,6 @@
         #ar-active-controls { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 9999; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         #scanning-ui {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9991; display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -65,7 +59,6 @@
              </div>
         </div>
 
-        <!-- PÁGINA 1: Carga de Recursos -->
         <div id="page-upload" class="page active bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 1: Cargar Recursos</h2>
             <div id="welcome-box" class="bg-indigo-50 border-l-4 border-indigo-500 text-indigo-700 p-4 mb-6" role="alert">
@@ -95,7 +88,6 @@
             </div>
         </div>
 
-        <!-- PÁGINA 2: Editor 3D -->
         <div id="page-editor" class="page bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 2: Ajustar Modelos 3D</h2>
             <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-6 text-sm" role="alert">
@@ -136,7 +128,6 @@
             </div>
         </div>
 
-        <!-- PÁGINA 3: Vista AR -->
         <div id="page-ar" class="page">
             <div class="relative">
                 <div id="ar-ui-container" class="relative z-10">
@@ -192,17 +183,13 @@
         const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
         let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        const CACHE_NAME = 'salud-ar-assets-cache-v12'; 
+        const CACHE_NAME = 'salud-ar-assets-cache-v13'; 
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSETS_CONFIG = [
-            { name: 'cabeza1', imageExt: 'png' },
-            { name: 'corazon', imageExt: 'JPG' },
-            { name: 'dedo-mano', imageExt: 'JPG' },
-            { name: 'dedo', imageExt: 'JPG' },
-            { name: 'hueso-columna', imageExt: 'JPG' },
-            { name: 'huesosmano', imageExt: 'png' },
-            { name: 'mano-iz-protesis', imageExt: 'JPG' },
-            { name: 'protesis-mano-brazo', imageExt: 'JPG' }
+            { name: 'cabeza1', imageExt: 'png' }, { name: 'corazon', imageExt: 'JPG' },
+            { name: 'dedo-mano', imageExt: 'JPG' }, { name: 'dedo', imageExt: 'JPG' },
+            { name: 'hueso-columna', imageExt: 'JPG' }, { name: 'huesosmano', imageExt: 'png' },
+            { name: 'mano-iz-protesis', imageExt: 'JPG' }, { name: 'protesis-mano-brazo', imageExt: 'JPG' }
         ];
 
         AFRAME.registerComponent('ar-rotator', {
@@ -242,11 +229,8 @@
             const cache = await caches.open(CACHE_NAME);
             const cachedResponse = await cache.match(url);
             if (cachedResponse) return cachedResponse;
-
             const networkResponse = await fetchWithRetry(url);
-            if (networkResponse && networkResponse.ok) {
-                await cache.put(url, networkResponse.clone());
-            }
+            if (networkResponse && networkResponse.ok) await cache.put(url, networkResponse.clone());
             return networkResponse;
         }
         
@@ -332,7 +316,7 @@
                 document.getElementById('goto-editor-btn').disabled = false;
                 setTimeout(() => { loadingStatusDiv.classList.add('hidden'); }, 1000);
             } catch (error) {
-                loadingText.textContent = 'Error al cargar los recursos. Revisa la consola.';
+                loadingText.textContent = 'Error al cargar los recursos. Revisa la consola y tu conexión de red.';
                 progressBar.classList.add('bg-red-600');
                 console.error("Fallo en la carga de recursos:", error);
             } finally {
@@ -484,9 +468,11 @@
         
         function setupAndStartAR(shouldEnterFullscreen) {
             if (!state.areAssetsPreloaded) return;
+            
             document.getElementById('ar-preloader').classList.remove('hidden');
             const arSceneContainer = document.getElementById('ar-scene-container');
             arSceneContainer.innerHTML = '';
+            
             const sceneEl = document.createElement('a-scene');
             sceneEl.setAttribute('embedded', '');
             
@@ -496,7 +482,7 @@
             sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
             sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
             sceneEl.setAttribute('color-space', 'sRGB');
-            sceneEl.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights');
+            sceneEl.setAttribute('renderer', 'colorManagement: true; physicallyCorrectLights: true; useLegacyLights: false;');
 
             const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
             if(preloadedAssets) sceneEl.appendChild(preloadedAssets.cloneNode(true)); 
@@ -530,6 +516,7 @@
             sceneEl.addEventListener('arReady', () => {
                 scanningUI.classList.remove('hidden');
                 document.getElementById('ar-preloader').classList.add('hidden');
+                
                 setTimeout(() => { 
                     if (sceneEl.renderer) sceneEl.renderer.setSize(window.innerWidth, window.innerHeight); 
                 }, 100); 
@@ -653,7 +640,7 @@
             }
         }
 
-        // Asignación de todos los event listeners
+        // --- Asignación de Event Listeners ---
         document.getElementById('load-from-github-btn').addEventListener('click', loadAssetsFromGitHub);
         document.getElementById('clear-cache-btn').addEventListener('click', clearCache);
         document.getElementById('goto-editor-btn').addEventListener('click', () => navigateTo('page-editor'));
@@ -696,3 +683,4 @@
     </script>
 </body>
 </html>
+
