@@ -192,9 +192,7 @@
         const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
         let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        // CORREGIDO: Se aumenta la versión del caché para forzar una recarga de los recursos con las rutas correctas.
-        const CACHE_NAME = 'salud-ar-assets-cache-v8'; 
-        // CORREGIDO: Se restaura la ruta base correcta a la carpeta 'asetss' del repositorio.
+        const CACHE_NAME = 'salud-ar-assets-cache-v9'; 
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSETS_CONFIG = [
             { name: 'cabeza1', imageExt: 'png' },
@@ -227,6 +225,8 @@
         });
 
         async function fetchWithCache(url) {
+            // AÑADIDO: Log de depuración para ver la URL exacta que se está solicitando.
+            console.log("Solicitando URL:", url);
             const cache = await caches.open(CACHE_NAME);
             let cachedResponse;
             try {
@@ -277,7 +277,6 @@
             
             const promises = ASSETS_CONFIG.map(async (assetConfig, index) => {
                 const { name, imageExt } = assetConfig;
-                // CORREGIDO: Se restauran los nombres de las carpetas a 'modelss' y 'imagenes' para que coincidan con el repositorio.
                 const urls = {
                     marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
                     model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
@@ -675,6 +674,7 @@
     </script>
 </body>
 </html>
+
 
 
 
