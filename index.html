@@ -2,22 +2,18 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- CORREGIDO: Se añade user-scalable=no para evitar el zoom accidental en móviles que puede interferir con la UI. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Anatomía AR</title>
+    <title>PROPUESTA en SALUD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <!-- Versión de Three.js alineada con la de A-Frame para evitar conflictos. -->
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/"
-            }
-        }
-    </script>
-        <style>
+    <!-- CORRECCIÓN: Se eliminó el importmap para usar la versión de Three.js de A-Frame y evitar conflictos. -->
+    <!-- Se añaden los addons de Three.js necesarios a través de scripts globales. -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/DragControls.js"></script>
+
+    <style>
         /* Estilos generales y para el modo AR */
         html.ar-active, body.ar-active {
              overflow: hidden;
@@ -41,10 +37,9 @@
         .page { display: none; }
         .page.active { display: block; }
         #editor-canvas { width: 100%; height: 400px; border: 1px solid #ccc; background: #f0f0f0; cursor: move; touch-action: none; border-radius: 8px; }
-                #ar-scene-container.ar-active {
+        #ar-scene-container.ar-active {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9990;
         }
-        /* CORREGIDO: Se posiciona la escena de forma absoluta para garantizar que ocupe todo el contenedor. */
         #ar-scene-container.ar-active a-scene {
             position: absolute;
             top: 0;
@@ -52,7 +47,6 @@
             width: 100%;
             height: 100%;
         }
-        /* CORREGIDO Y REFORZADO: Estilos para centrar y escalar el video/canvas, asegurando que cubra toda la pantalla. */
         #ar-scene-container.ar-active video,
          #ar-scene-container.ar-active canvas {
             position: absolute !important;
@@ -85,7 +79,7 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-                #scanning-ui {
+        #scanning-ui {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9991;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -108,12 +102,12 @@
     </style>
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
-        <div id="app" class="app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
+    <div id="app" class="app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
              <div>
-                 <h1 class="text-4xl font-bold text-center" style="color: #1e3a8a;">Anatomía AR</h1>
-                 <p class="text-center text-gray-500">Aprendizaje sobre anatomía con Realidad Aumentada.</p>
+                 <h1 class="text-4xl font-bold text-center" style="color: #1e3a8a;">PROPUESTA en SALUD</h1>
+                 <p class="text-center text-gray-500">Visualización de modelos anatómicos con Realidad Aumentada.</p>
              </div>
         </div>
         <!-- PÁGINA 1: Carga de Recursos -->
@@ -229,12 +223,9 @@
         <div class="loader"></div>
         <p class="text-white text-lg mt-4">Iniciando cámara...</p>
     </div>
-    <script type="module">
-    // Importaciones de Three.js
-    import * as THREE from 'three';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { DragControls } from 'three/addons/controls/DragControls.js';
+
+    <!-- CORRECCIÓN: Se cambia a un script normal para usar los globales de Three.js cargados desde el CDN. -->
+    <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Estado global de la aplicación
         const state = {
@@ -246,13 +237,14 @@
         // Objeto para manejar la escena del editor 3D
         let editor = {
             scene: null, camera: null, renderer: null, controls: null, dragControls: null,
-            loader: new GLTFLoader(),
+            // CORRECCIÓN: Se instancian los loaders desde el objeto global THREE.
+            loader: new THREE.GLTFLoader(),
             textureLoader: new THREE.TextureLoader(),
             currentTarget: null,
             currentPlane: null,
         };
         // Constantes
-        const CACHE_NAME = 'anatomia-ar-cache-v1'; // Cambiado para evitar conflictos con la versión anterior
+        const CACHE_NAME = 'anatomia-ar-cache-v1';
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSET_NAMES = [
             'cabeza1', 'corazon', 'dedo-mano', 'dedo', 'hueso-columna',
@@ -260,7 +252,8 @@
         ];
         // Componente de A-Frame para rotación con TACTIL y MOUSE
         AFRAME.registerComponent('ar-rotator', {
-            schema: { rotationFactor: { type: 'number', default: 1 } },
+            // CORRECCIÓN: Se reduce el factor de rotación para un control más suave.
+            schema: { rotationFactor: { type: 'number', default: 0.5 } },
             init: function () {
                 this.isVisible = false;
                 this.isDragging = false;
@@ -332,7 +325,6 @@
                 const urls = {
                     marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
                     model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
-                    // Las imágenes de marcadores son PNG en el nuevo repo
                     image: `${GITHUB_BASE_URL}imagenes/${name}.png`
                 };
                 const [markerRes, modelRes, imageRes] = await Promise.all([
@@ -389,7 +381,8 @@
             editor.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
             editor.renderer.setSize(container.clientWidth, container.clientHeight);
             editor.renderer.setPixelRatio(window.devicePixelRatio);
-            editor.controls = new OrbitControls(editor.camera, editor.renderer.domElement);
+            // CORRECCIÓN: Se instancia desde el objeto global THREE.
+            editor.controls = new THREE.OrbitControls(editor.camera, editor.renderer.domElement);
             editor.controls.enableDamping = true;
             const animate = () => { requestAnimationFrame(animate); editor.controls.update(); editor.renderer.render(editor.scene, editor.camera); };
             animate();
@@ -441,7 +434,8 @@
                 editor.scene.add(editor.currentTarget);
                 updateModelTransformFromState(asset.transform);
                 updateTransformInputs(asset.transform);
-                editor.dragControls = new DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
+                // CORRECCIÓN: Se instancia desde el objeto global THREE.
+                editor.dragControls = new THREE.DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
                 editor.dragControls.addEventListener('dragstart', () => editor.controls.enabled = false);
                 editor.dragControls.addEventListener('dragend', (event) => {
                     editor.controls.enabled = true;
@@ -541,12 +535,12 @@
             });
             sceneEl.addEventListener('loaded', () => {
                 const mindarSystem = sceneEl.systems['mindar-image-system'];
-                mindarSystem.start(); // Inicia la cámara y el reconocimiento.
+                mindarSystem.start();
             });
             const scanningUI = document.getElementById('scanning-ui');
             sceneEl.addEventListener('arReady', () => {
                 scanningUI.classList.remove('hidden');
-                arPreloader.classList.add('hidden'); // Ocultar preloader cuando la cámara está lista
+                arPreloader.classList.add('hidden');
                 setTimeout(() => {
                     if (sceneEl.renderer) {
                         sceneEl.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -560,7 +554,7 @@
             document.documentElement.classList.add('ar-active');
             document.body.classList.add('ar-active');
             appContainer.classList.add('ar-fullscreen');
-            appContainer.style.maxHeight = ''; // Limpiar el estilo en línea para permitir pantalla completa
+            appContainer.style.maxHeight = '';
             arSceneContainer.classList.add('ar-active');
             document.getElementById('ar-ui-container').classList.add('hidden');
             document.getElementById('ar-active-controls').classList.remove('hidden');
@@ -584,12 +578,12 @@
             }
             arSceneContainer.innerHTML = '';
             document.getElementById('ar-preload-container').innerHTML = '';
-            state.areAssetsPreloaded = false; // Forzar precarga la próxima vez
+            state.areAssetsPreloaded = false;
             const appContainer = document.getElementById('app');
             document.documentElement.classList.remove('ar-active');
             document.body.classList.remove('ar-active');
             appContainer.classList.remove('ar-fullscreen');
-            appContainer.style.maxHeight = '85vh'; // Restaurar el estilo en línea
+            appContainer.style.maxHeight = '85vh';
             document.getElementById('ar-ui-container').classList.remove('hidden');
             document.getElementById('ar-active-controls').classList.add('hidden');
             document.getElementById('scanning-ui').classList.add('hidden');
@@ -713,6 +707,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
