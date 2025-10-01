@@ -40,7 +40,7 @@
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.0</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.1</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -171,31 +171,36 @@
             const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false, };
             let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null, };
             
-            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.0';
+            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.1';
             const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
-            const ASSET_NAMES = [ 'cabeza1', 'corazon', 'dedo-mano', 'dedo', 'hueso-columna', 'huesosmano', 'mano-iz-protesis', 'protesis-mano-brazo' ];
+            
+            // CORRECCIÓN: Se usa una configuración de objetos para especificar la extensión de cada imagen.
+            const ASSETS_CONFIG = [
+                { name: 'cabeza1', imageExt: 'png' },
+                { name: 'corazon', imageExt: 'JPG' },
+                { name: 'dedo-mano', imageExt: 'JPG' },
+                { name: 'dedo', imageExt: 'JPG' },
+                { name: 'hueso-columna', imageExt: 'JPG' },
+                { name: 'huesosmano', imageExt: 'png' },
+                { name: 'mano-iz-protesis', imageExt: 'JPG' },
+                { name: 'protesis-mano-brazo', imageExt: 'JPG' }
+            ];
 
-            // ESTRUCTURA: El componente de rotación ahora vive dentro del script principal, igual que en el ejemplo funcional.
             AFRAME.registerComponent('ar-rotator', {
-                schema: { rotationFactor: { type: 'number', default: 0.5 } }, // Reducido para un control menos sensible
+                schema: { rotationFactor: { type: 'number', default: 0.5 } },
                 init: function () {
-                    this.isVisible = false;
-                    this.isDragging = false;
-                    this.previousDrag = { x: 0, y: 0 };
+                    this.isVisible = false; this.isDragging = false; this.previousDrag = { x: 0, y: 0 };
                     const canvas = this.el.sceneEl.canvas;
-
                     const startDrag = (x, y) => { if (this.isVisible) { this.isDragging = true; this.previousDrag = { x, y }; } };
                     const drag = (x, y) => {
                         if (this.isDragging && this.isVisible) {
-                            const deltaX = x - this.previousDrag.x;
-                            const deltaY = y - this.previousDrag.y;
+                            const deltaX = x - this.previousDrag.x; const deltaY = y - this.previousDrag.y;
                             this.el.object3D.rotation.y += THREE.MathUtils.degToRad(deltaX * this.data.rotationFactor);
                             this.el.object3D.rotation.x += THREE.MathUtils.degToRad(deltaY * this.data.rotationFactor);
                             this.previousDrag = { x, y };
                         }
                     };
                     const endDrag = () => { this.isDragging = false; };
-
                     canvas.addEventListener('touchstart', (e) => { if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY); });
                     canvas.addEventListener('touchmove', (e) => { if (e.touches.length === 1) drag(e.touches[0].clientX, e.touches[0].clientY); });
                     canvas.addEventListener('touchend', endDrag);
@@ -203,7 +208,6 @@
                     canvas.addEventListener('mousemove', (e) => drag(e.clientX, e.clientY));
                     canvas.addEventListener('mouseup', endDrag);
                     canvas.addEventListener('mouseleave', endDrag);
-                    
                     this.el.parentEl.addEventListener('targetFound', () => { this.isVisible = true; });
                     this.el.parentEl.addEventListener('targetLost', () => { this.isVisible = false; });
                 },
@@ -242,14 +246,15 @@
                 githubBtn.disabled = true;
                 progressBar.style.width = `0%`;
                 progressBar.classList.remove('bg-red-600');
-                const totalAssets = ASSET_NAMES.length;
+                const totalAssets = ASSETS_CONFIG.length;
                 let loadedCount = 0;
                 
-                const promises = ASSET_NAMES.map(async (name, index) => {
+                const promises = ASSETS_CONFIG.map(async (assetConfig, index) => {
+                    const { name, imageExt } = assetConfig; // Desestructurar el objeto
                     const urls = {
                         marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
                         model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
-                        image: `${GITHUB_BASE_URL}imagenes/${name}.png`
+                        image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}` // Usar la extensión correcta
                     };
                     const [markerRes, modelRes, imageRes] = await Promise.all([ fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image) ]);
                     if (!markerRes.ok || !modelRes.ok || !imageRes.ok) throw new Error(`Falló la descarga de recursos para ${name}`);
@@ -260,7 +265,7 @@
                     loadingText.textContent = `Cargando ${name}... (${loadedCount}/${totalAssets})`;
 
                     return {
-                        id: index, name: name,
+                        id: index, name: name, imageExt: imageExt,
                         markerDataUrl: URL.createObjectURL(markerBlob),
                         modelDataUrl: URL.createObjectURL(modelBlob),
                         imageDataUrl: URL.createObjectURL(imageBlob),
@@ -273,6 +278,7 @@
                     loadingText.textContent = '¡Todos los recursos cargados y guardados en caché!';
                     displayLoadedImages(state.assets);
                     document.getElementById('goto-editor-btn').disabled = false;
+                    document.getElementById('clear-cache-btn').classList.remove('hidden');
                     setTimeout(() => { loadingStatusDiv.classList.add('hidden'); }, 1000);
                 } catch (error) {
                     loadingText.textContent = 'Error al cargar los recursos. Revisa la consola.';
@@ -419,31 +425,24 @@
 
             function setupAndStartAR(shouldEnterFullscreen) {
                 if (!state.areAssetsPreloaded) return;
-                
                 document.getElementById('ar-preloader').classList.remove('hidden');
                 const arSceneContainer = document.getElementById('ar-scene-container');
                 arSceneContainer.innerHTML = '';
-                
                 const sceneEl = document.createElement('a-scene');
                 sceneEl.setAttribute('embedded', '');
-                
                 const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
-                
                 sceneEl.setAttribute('mindar-image', mindARSettings);
                 sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
                 sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
                 sceneEl.setAttribute('color-space', 'sRGB');
                 sceneEl.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights');
-
                 const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
                 if(preloadedAssets) sceneEl.appendChild(preloadedAssets.cloneNode(true));
-                
                 const cameraEl = document.createElement('a-camera');
                 cameraEl.setAttribute('position', '0 0 0');
                 cameraEl.setAttribute('look-controls', 'enabled: false');
                 cameraEl.setAttribute('fov', '75');
                 sceneEl.appendChild(cameraEl);
-
                 state.assets.forEach((asset, index) => {
                     const targetEl = document.createElement('a-entity');
                     targetEl.setAttribute('mindar-image-target', `targetIndex: ${index}`);
@@ -458,30 +457,18 @@
                     targetEl.appendChild(modelEntity);
                     sceneEl.appendChild(targetEl);
                 });
-
                 sceneEl.addEventListener('loaded', () => {
                     sceneEl.systems['mindar-image-system'].start();
                 });
-
-                // CORRECCIÓN CLAVE: Se adoptan los listeners simples del ejemplo funcional.
-                // Estos no intentan acceder a 'e.detail', evitando el error que bloqueaba la detección.
                 const scanningUI = document.getElementById('scanning-ui');
                 sceneEl.addEventListener('arReady', () => {
                     scanningUI.classList.remove('hidden');
                     document.getElementById('ar-preloader').classList.add('hidden');
                     setTimeout(() => { if (sceneEl.renderer) sceneEl.renderer.setSize(window.innerWidth, window.innerHeight); }, 100);
                 });
-
-                sceneEl.addEventListener('targetFound', () => {
-                    scanningUI.classList.add('hidden');
-                });
-                
-                sceneEl.addEventListener('targetLost', () => {
-                    scanningUI.classList.remove('hidden');
-                });
-                
+                sceneEl.addEventListener('targetFound', () => { scanningUI.classList.add('hidden'); });
+                sceneEl.addEventListener('targetLost', () => { scanningUI.classList.remove('hidden'); });
                 arSceneContainer.appendChild(sceneEl);
-
                 const appContainer = document.getElementById('app');
                 document.documentElement.classList.add('ar-active');
                 document.body.classList.add('ar-active');
@@ -505,7 +492,7 @@
                 }
                 arSceneContainer.innerHTML = '';
                 document.getElementById('ar-preload-container').innerHTML = '';
-                state.areAssetsPreloaded = false; // Forzar precarga la próxima vez
+                state.areAssetsPreloaded = false;
                 const appContainer = document.getElementById('app');
                 document.documentElement.classList.remove('ar-active');
                 document.body.classList.remove('ar-active');
@@ -547,14 +534,15 @@
                 try {
                     const cache = await caches.open(CACHE_NAME);
                     const keys = await cache.keys();
-                    if (keys.length < ASSET_NAMES.length * 3) throw new Error("Cache incompleto.");
-                    state.assets = await Promise.all(ASSET_NAMES.map(async (name, index) => {
-                        const urls = { marker: `${GITHUB_BASE_URL}markers/${name}.mind`, model: `${GITHUB_BASE_URL}modelss/${name}.glb`, image: `${GITHUB_BASE_URL}imagenes/${name}.png` };
+                    if (keys.length < ASSETS_CONFIG.length * 3) throw new Error("Cache incompleto.");
+                    state.assets = await Promise.all(ASSETS_CONFIG.map(async (assetConfig, index) => {
+                        const { name, imageExt } = assetConfig;
+                        const urls = { marker: `${GITHUB_BASE_URL}markers/${name}.mind`, model: `${GITHUB_BASE_URL}modelss/${name}.glb`, image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}` };
                         const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
                         if (!markerRes || !modelRes || !imageRes) throw new Error(`Asset ${name} no encontrado en caché.`);
                         const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
                         return {
-                            id: index, name: name,
+                            id: index, name: name, imageExt: imageExt,
                             markerDataUrl: URL.createObjectURL(markerBlob), modelDataUrl: URL.createObjectURL(modelBlob), imageDataUrl: URL.createObjectURL(imageBlob),
                             transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
                             hasBeenNormalized: false, normalizationFactor: 1,
