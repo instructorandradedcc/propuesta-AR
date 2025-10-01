@@ -73,9 +73,12 @@
                 <p>Presiona el botón para descargar los modelos 3D y marcadores. Los archivos se guardarán en la caché de tu navegador para acelerar futuras cargas.</p>
             </div>
             
-            <div class="mt-6 text-center">
+            <div class="mt-6 text-center flex justify-center items-center gap-4">
                 <button id="load-from-github-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 text-lg shadow-md">
                     Cargar Recursos
+                </button>
+                <button id="clear-cache-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition duration-300 text-sm shadow-md hidden">
+                    Limpiar Caché
                 </button>
             </div>
 
@@ -248,6 +251,9 @@
             const loadingStatusDiv = document.getElementById('loading-status');
             const loadingText = document.getElementById('loading-text');
             const progressBar = document.getElementById('loading-progress-bar');
+            
+            // Asegurarse de que la barra de progreso esté visible
+            progressBar.parentElement.classList.remove('hidden');
             loadingStatusDiv.classList.remove('hidden');
             document.getElementById('load-from-github-btn').disabled = true;
             progressBar.style.width = `0%`;
@@ -259,7 +265,7 @@
                 const { name, imageExt } = assetConfig;
                 const urls = {
                     marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                    model: `${GITHUB_BASE_URL}modelss/${name}.glb`, // CORREGIDO: 'models' a 'modelss'
+                    model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
                     image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
                 };
                 
@@ -293,6 +299,28 @@
                 console.error("Fallo en la carga de recursos:", error);
             } finally {
                 document.getElementById('load-from-github-btn').disabled = false;
+            }
+        }
+        
+        async function clearCache() {
+            const loadingStatusDiv = document.getElementById('loading-status');
+            const loadingText = document.getElementById('loading-text');
+            const progressBar = document.getElementById('loading-progress-bar');
+
+            // Ocultar la barra de progreso y mostrar el cargador
+            progressBar.parentElement.classList.add('hidden');
+            loadingStatusDiv.classList.remove('hidden');
+            loadingText.textContent = 'Limpiando la caché de la aplicación...';
+
+            try {
+                await caches.delete(CACHE_NAME);
+                loadingText.textContent = 'Caché limpiada con éxito. La página se recargará.';
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            } catch (error) {
+                loadingText.textContent = 'No se pudo limpiar la caché. Revisa la consola.';
+                console.error('Failed to clear cache:', error);
             }
         }
         
@@ -542,7 +570,7 @@
                     const { name, imageExt } = assetConfig;
                     const urls = {
                         marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                        model: `${GITHUB_BASE_URL}modelss/${name}.glb`, // CORREGIDO: 'models' a 'modelss'
+                        model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
                         image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
                     };
                     const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
@@ -567,19 +595,23 @@
         
         async function initializeApp() {
             const successfullyLoadedFromCache = await loadAssetsFromCacheOnStartup();
+            const clearCacheBtn = document.getElementById('clear-cache-btn');
 
             if (successfullyLoadedFromCache) {
                 document.getElementById('load-from-github-btn').textContent = 'Recargar Recursos';
                 document.getElementById('goto-editor-btn').disabled = false;
                 displayLoadedImages(state.assets);
                 document.querySelector('#welcome-box p:last-child').textContent = '¡Recursos cargados desde la caché! Ya puedes continuar o recargarlos si lo deseas.';
+                clearCacheBtn.classList.remove('hidden');
             } else {
                 document.querySelector('#welcome-box p:last-child').textContent = 'Presiona el botón para descargar los recursos por primera vez. Se guardarán en la caché para futuras visitas.';
+                clearCacheBtn.classList.add('hidden');
             }
         }
 
         // Asignación de todos los event listeners
         document.getElementById('load-from-github-btn').addEventListener('click', loadAssetsFromGitHub);
+        document.getElementById('clear-cache-btn').addEventListener('click', clearCache);
         document.getElementById('goto-editor-btn').addEventListener('click', () => navigateTo('page-editor'));
         document.getElementById('goto-ar-btn').addEventListener('click', () => navigateTo('page-ar'));
         document.getElementById('back-to-upload-btn').addEventListener('click', () => navigateTo('page-upload'));
