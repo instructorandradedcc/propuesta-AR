@@ -1,954 +1,238 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creador de Experiencias AR</title>
-    <!-- Tailwind CSS para el diseño -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- A-Frame (incluye Three.js r158) -->
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Propuesta Modelo AR en Salud</title>
+    <!-- Bibliotecas de A-Frame y MindAR -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    
-    <!-- MindAR para A-Frame -->
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <!-- JSZip para generar el archivo .zip -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-    <!-- Three.js via Import Maps para el editor 3D -->
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
-            }
-        }
-    </script>
-    
+    <!-- Favicon del repositorio -->
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
+
     <style>
-        .page { display: none; }
-        .page.active { display: block; }
-        #editor-canvas { width: 100%; height: 400px; border: 1px solid #ccc; background: #f0f0f0; cursor: move; }
-        #ar-scene-container.ar-active {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9990;
-        }
-        #ar-active-controls {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 9999;
-        }
-        #apk-preview {
-            border: 10px solid #1f2937; /* Borde de teléfono más oscuro */
-            border-radius: 40px; /* Bordes más redondeados */
-            width: 300px;
-            height: 600px; /* Un poco más alto, como un teléfono moderno */
-            background-color: white;
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-            overflow: hidden;
-            position: relative;
-        }
-        #phone-screen-container {
-            height: 100%;
-            overflow-y: auto;
-            scrollbar-width: none; /* Ocultar scrollbar en Firefox */
-        }
-        #phone-screen-container::-webkit-scrollbar {
-            display: none; /* Ocultar scrollbar en Chrome/Safari */
-        }
-        /* Notch del teléfono */
-        #apk-preview::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 20px;
-            background-color: #1f2937;
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
-            z-index: 10;
-        }
-        /* Estilos para la previsualización editable */
-        .editable-preview-element {
-            outline: 2px dashed transparent;
-            transition: outline-color 0.3s;
-        }
-        .editable-preview-element:hover {
-            outline-color: #f43f5e; /* Un color que resalte */
-            cursor: text;
-        }
-        /* Loader styles */
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+      /* Estilos para la interfaz y la pantalla de carga */
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      #loader {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        transition: opacity 0.5s;
+      }
+      .loader-spinner {
+        border: 8px solid #f3f3f3;
+        border-top: 8px solid #3498db;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1.5s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      #loader.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .logo-container {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+      }
+      .logo {
+        width: 150px;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
     </style>
-</head>
-<body class="bg-gray-200 text-gray-800 font-sans">
-
-    <div id="app" class="container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <!-- ENCABEZADO CON LOGO -->
-        <div class="flex justify-center items-center mb-6">
-             <img src="logofundacion.jpg" alt="Logo Fundación" class="h-20 mr-4" onerror="this.onerror=null;this.src='https://placehold.co/80x80/e2e8f0/94a3b8?text=Logo';">
-            <div>
-                <h1 class="text-3xl font-bold text-center text-indigo-600">Creador de Experiencias AR</h1>
-                <p class="text-center text-gray-500">Un nuevo flujo de trabajo para usar tus propias imágenes coloridas.</p>
-            </div>
-        </div>
-
-
-        <!-- PÁGINA 1: Compilar Marcadores -->
-        <div id="page-upload" class="page active bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 1: Preparar tus Recursos</h2>
-            <div class="bg-indigo-50 border-l-4 border-indigo-500 text-indigo-700 p-4 mb-6" role="alert">
-                <p class="font-bold">¡Importante! Lee esto primero.</p>
-                <p>Para que la cámara reconozca tus imágenes personalizadas, primero debes "compilarlas" usando una herramienta externa. Este proceso crea un archivo especial (`.mind`) que nuestra app puede leer.</p>
-            </div>
-            
-            <ol class="list-decimal list-inside space-y-4">
-                <li>
-                    <p class="font-medium">Abre el compilador de MindAR:</p>
-                    <a href="https://hiukim.github.io/mind-ar-js-doc/tools/compile/" target="_blank" class="inline-block bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 my-2">
-                        Abrir Compilador de Imágenes
-                    </a>
-                    <p class="text-sm text-gray-600">Usa esta herramienta para convertir tus imágenes (`.jpg`, `.png`) en archivos de marcador (`.mind`).</p>
-                </li>
-                 <li>
-                    <p class="font-medium">Carga todos tus archivos aquí:</p>
-                    <p class="text-sm text-gray-600">Asegúrate de subir la misma cantidad de archivos en cada categoría.</p>
-                </li>
-            </ol>
-
-            <div class="mt-6 pt-4 border-t grid grid-cols-1 md:grid-cols-3 gap-6">
-                 <div>
-                    <label for="marker-upload" class="block mb-2 font-medium text-gray-700">A. Marcadores (`.mind`):</label>
-                    <input type="file" id="marker-upload" multiple accept=".mind" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
-                    <div id="marker-list-container" class="mt-4 text-sm"></div>
-                </div>
-                 <div>
-                    <label for="image-upload" class="block mb-2 font-medium text-gray-700">B. Imágenes Previsualización:</label>
-                    <input type="file" id="image-upload" multiple accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100"/>
-                    <div id="image-list-container" class="mt-4 text-sm"></div>
-                </div>
-                <div>
-                    <label for="model-upload" class="block mb-2 font-medium text-gray-700">C. Modelos 3D (.glb, .gltf):</label>
-                    <input type="file" id="model-upload" multiple accept=".glb, .gltf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"/>
-                    <div id="model-list-container" class="mt-4 text-sm"></div>
-                </div>
-            </div>
-             <div class="mt-6 text-center">
-                <p id="upload-status" class="text-sm text-gray-500 min-h-[20px]"></p>
-                <button id="goto-editor-btn" disabled class="bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-600 transition duration-300 disabled:bg-gray-300 mt-2">Siguiente: Editar Modelos 3D</button>
-            </div>
-        </div>
-
-        <!-- PÁGINA 2: Editor 3D -->
-        <div id="page-editor" class="page bg-white p-6 rounded-lg shadow-md">
-             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 2: Ajustar Modelos 3D</h2>
-            <div class="flex flex-col md:flex-row gap-6">
-                <div class="md:w-1/3">
-                    <label for="asset-selector" class="block mb-2 font-medium text-gray-700">Seleccionar Recurso:</label>
-                    <select id="asset-selector" class="w-full p-2 border rounded mb-4"></select>
-                    
-                    <h3 class="font-semibold mt-4">Posición (X, Y, Z)</h3>
-                    <div class="grid grid-cols-3 gap-2">
-                        <input type="number" id="pos-x" class="w-full p-1 border rounded" step="0.01" value="0">
-                        <input type="number" id="pos-y" class="w-full p-1 border rounded" step="0.01" value="0">
-                        <input type="number" id="pos-z" class="w-full p-1 border rounded" step="0.01" value="0">
-                    </div>
-
-                    <h3 class="font-semibold mt-4">Rotación (X, Y, Z)</h3>
-                     <div class="grid grid-cols-3 gap-2">
-                        <input type="number" id="rot-x" class="w-full p-1 border rounded" step="1" value="0">
-                        <input type="number" id="rot-y" class="w-full p-1 border rounded" step="1" value="0">
-                        <input type="number" id="rot-z" class="w-full p-1 border rounded" step="1" value="0">
-                    </div>
-
-                    <h3 class="font-semibold mt-4">Escala</h3>
-                    <input type="number" id="scale" class="w-full p-1 border rounded" step="0.1" value="1">
-                </div>
-                <div class="md:w-2/3">
-                    <div id="editor-container"><canvas id="editor-canvas"></canvas></div>
-                </div>
-            </div>
-            <div class="mt-6 flex justify-between">
-                <button id="back-to-upload-btn" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300">Atrás</button>
-                <button id="goto-ar-btn" class="bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-600 transition duration-300">Siguiente: Probar AR</button>
-            </div>
-        </div>
-
-        <!-- PÁGINA 3: Cámara AR -->
-        <div id="page-ar" class="page">
-             <div class="relative">
-                <div id="ar-ui-container" class="relative z-10">
-                    <h2 class="text-2xl font-semibold mb-4 text-center">Paso 3: Vista de Realidad Aumentada</h2>
-                    <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-                        <p class="text-center">Apunta tu cámara a una de las imágenes que compilaste.</p>
-                        <div id="ar-status" class="text-center font-mono p-2 bg-gray-100 rounded mt-2 flex justify-center items-center gap-2">
-                            <div class="loader hidden"></div>
-                            <span id="ar-status-text">Estado: Esperando cámara...</span>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-6 flex justify-between items-center">
-                        <button id="back-to-editor-btn-pre" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300">Atrás</button>
-                        <button id="start-ar-btn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Activar Cámara AR</button>
-                    </div>
-                </div>
-                <!-- Container for AR Scene and preloaded assets -->
-                <div id="ar-preload-container" class="hidden"></div>
-                <div id="ar-scene-container"></div>
-                <div id="ar-active-controls" class="hidden p-4 bg-black bg-opacity-50">
-                    <div class="flex justify-between items-center max-w-4xl mx-auto">
-                        <button id="stop-ar-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">Detener Cámara</button>
-                        <button id="goto-apk-btn-active" class="bg-teal-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-600 transition duration-300">Siguiente: Crear App</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- PÁGINA 4: Crear App -->
-        <div id="page-apk" class="page bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 4: Configurar y Generar tu App</h2>
-            <div class="flex flex-col md:flex-row gap-8 md:items-start">
-                <!-- Columna de Configuración -->
-                <div class="flex-1">
-                    <h3 class="text-lg font-semibold mb-4">Detalles de la Aplicación</h3>
-                    <div>
-                        <label for="apk-name" class="block mb-2 font-medium text-gray-700">Nombre de la App:</label>
-                        <input type="text" id="apk-name" placeholder="Ej: Mi Libro Mágico" class="w-full p-2 border rounded">
-                    </div>
-                    <div class="mt-4">
-                        <label for="apk-icon" class="block mb-2 font-medium text-gray-700">Ícono de la App (Portada del libro):</label>
-                        <input type="file" id="apk-icon" accept="image/png, image/jpeg" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
-                    </div>
-                    <!-- NUEVO: Campos de texto editables -->
-                    <div class="mt-4">
-                        <label for="apk-welcome-title" class="block mb-2 font-medium text-gray-700">Título de Bienvenida:</label>
-                        <input type="text" id="apk-welcome-title" value="¡Bienvenido a la Experiencia AR!" class="w-full p-2 border rounded">
-                    </div>
-                    <div class="mt-4">
-                        <label for="apk-welcome-subtitle" class="block mb-2 font-medium text-gray-700">Subtítulo/Descripción:</label>
-                        <textarea id="apk-welcome-subtitle" rows="3" class="w-full p-2 border rounded">Descubre el mundo de la Realidad Aumentada educativa. Presiona el botón para comenzar tu aventura.</textarea>
-                    </div>
-
-                     <div class="mt-8 text-center">
-                        <button id="generate-files-btn" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 text-lg transition-transform transform hover:scale-105 shadow-lg">
-                            Generar y Descargar Archivos
-                        </button>
-                        <p id="generation-status" class="text-sm text-gray-500 mt-2"></p>
-                    </div>
-                </div>
-                <!-- Columna de Previsualización -->
-                <div class="flex-1 flex flex-col items-center">
-                    <h3 class="text-lg font-semibold mb-4">Previsualización Interactiva</h3>
-                    <div id="apk-preview">
-                        <div id="phone-screen-container">
-                            <!-- Esta pantalla simula el welcome.html que generará el script de Python -->
-                            <div id="phone-screen-preview" class="w-full h-full flex flex-col justify-center items-center p-4 text-center bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-                                <img id="apk-icon-preview" src="https://placehold.co/150x150/ffffff/94a3b8?text=Icono" alt="Ícono App" class="w-36 h-36 object-cover rounded-3xl shadow-lg mb-6">
-                                <h1 id="apk-title-preview" class="text-2xl font-bold mb-2 editable-preview-element" contenteditable="true">¡Bienvenido a la Experiencia AR!</h1>
-                                <p id="apk-subtitle-preview" class="text-sm mb-8 px-4 editable-preview-element" contenteditable="true">Descubre el mundo de la Realidad Aumentada educativa. Presiona el botón para comenzar tu aventura.</p>
-                                <button class="w-4/5 bg-green-500 text-white font-bold py-3 px-8 rounded-full hover:bg-green-600 transition duration-300 shadow-md flex items-center justify-center">
-                                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                    Iniciar Experiencia AR
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-             <div class="mt-8 flex justify-center">
-                <button id="back-to-ar-btn" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300">Atrás</button>
-            </div>
-        </div>
-
-    </div>
-    
-    <script type="module">
-    import * as THREE from 'three';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { DragControls } from 'three/addons/controls/DragControls.js';
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- ESTADO Y VARIABLES GLOBALES ---
-        const state = {
-            assets: [],
-            currentPage: 'page-upload',
-            isArActive: false,
-            areAssetsPreloaded: false,
-        };
-
-        let editor = {
-            scene: null, camera: null, renderer: null, controls: null, dragControls: null,
-            loader: new GLTFLoader(),
-            textureLoader: new THREE.TextureLoader(),
-            currentTarget: null,
-            currentPlane: null,
-        };
-        
-        let isRotating = false; 
-        
-        // --- COMPONENTES A-FRAME PERSONALIZADOS ---
-        AFRAME.registerComponent('model-loader', {
-            schema: {
-                modelId: {type: 'string'},
-                loaderId: {type: 'string'}
-            },
-            init: function () {
-                const modelEl = document.querySelector(this.data.modelId);
-                const loaderEl = document.querySelector(this.data.loaderId);
-                
-                modelEl.addEventListener('model-loaded', () => {
-                    loaderEl.setAttribute('visible', 'false');
-                });
-            }
-        });
-
-        // --- FUNCIONES DE LA APLICACIÓN ---
-        
-        function initEditor() {
-            const canvas = document.getElementById('editor-canvas');
-            const container = document.getElementById('editor-container');
-            if (!canvas || !container || editor.renderer) return;
-
-            editor.scene = new THREE.Scene();
-            editor.scene.background = new THREE.Color(0xeeeeee);
-            editor.camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            editor.camera.position.set(0, 1, 15);
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 2);
-            editor.scene.add(ambientLight);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
-            directionalLight.position.set(2, 5, 3);
-            editor.scene.add(directionalLight);
-
-            editor.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-            editor.renderer.setSize(container.clientWidth, container.clientHeight);
-            editor.renderer.setPixelRatio(window.devicePixelRatio);
-
-            editor.controls = new OrbitControls(editor.camera, editor.renderer.domElement);
-            editor.controls.enableDamping = true;
-
-            function animate() { 
-                requestAnimationFrame(animate); 
-                editor.controls.update(); 
-                editor.renderer.render(editor.scene, editor.camera); 
-            }
-            animate();
-        }
-
-        function populateEditorSelector() {
-            const assetSelector = document.getElementById('asset-selector');
-            assetSelector.innerHTML = '';
-            state.assets.forEach(asset => {
-                const option = document.createElement('option');
-                option.value = asset.id;
-                option.textContent = `${asset.markerName} / ${asset.modelName}`;
-                assetSelector.appendChild(option);
-            });
-        }
-
-        function updateTransformInputs(transform) {
-            document.getElementById('pos-x').value = transform.position.x.toFixed(2);
-            document.getElementById('pos-y').value = transform.position.y.toFixed(2);
-            document.getElementById('pos-z').value = transform.position.z.toFixed(2);
-            document.getElementById('rot-x').value = Math.round(transform.rotation.x);
-            document.getElementById('rot-y').value = Math.round(transform.rotation.y);
-            document.getElementById('rot-z').value = Math.round(transform.rotation.z);
-            document.getElementById('scale').value = transform.scale.x.toFixed(2);
-        }
-
-        function displayAssetInEditor(assetId) {
-            const asset = state.assets.find(a => a.id === assetId);
-            if (!asset || !editor.scene) return;
-            if (editor.currentTarget) editor.scene.remove(editor.currentTarget);
-            if (editor.currentPlane) editor.scene.remove(editor.currentPlane);
-            if (editor.dragControls) editor.dragControls.dispose();
-            
-            editor.textureLoader.load(asset.imageDataUrl, (texture) => {
-                const aspect = texture.image.width / texture.image.height;
-                const planeWidth = 10;
-                const planeHeight = planeWidth / aspect;
-                const planeGeom = new THREE.PlaneGeometry(planeWidth, planeHeight);
-                const planeMat = new THREE.MeshBasicMaterial({ map: texture });
-                editor.currentPlane = new THREE.Mesh(planeGeom, planeMat);
-                editor.currentPlane.position.set(0, 0, -0.1);
-                editor.scene.add(editor.currentPlane);
-            });
-
-            editor.loader.load(asset.modelDataUrl, (gltf) => {
-                editor.currentTarget = gltf.scene;
-                
-                if (!asset.hasBeenNormalized) {
-                    const box = new THREE.Box3().setFromObject(editor.currentTarget);
-                    const size = box.getSize(new THREE.Vector3());
-                    const center = box.getCenter(new THREE.Vector3());
-                    const maxDim = Math.max(size.x, size.y, size.z);
-                    asset.normalizationFactor = 1.0 / maxDim;
-                    editor.currentTarget.position.sub(center);
-                    asset.transform.position = { x: 0, y: 0, z: 0 };
-                    asset.transform.rotation = { x: 0, y: 0, z: 0 };
-                    asset.transform.scale = { x: 5, y: 5, z: 5 };
-                    asset.hasBeenNormalized = true;
-                }
-                
-                editor.scene.add(editor.currentTarget);
-                updateModelTransformFromState(asset.transform);
-                updateTransformInputs(asset.transform);
-                setupDragControls(editor.currentTarget);
-            }, undefined, (error) => console.error("Error loading model:", error));
-        }
-            
-        function updateModelTransformFromState(transform) {
-            if (!editor.currentTarget) return;
-            const assetId = parseInt(document.getElementById('asset-selector').value);
-            const asset = state.assets.find(a => a.id === assetId);
-            if (!asset || !asset.normalizationFactor) return;
-
-            const finalScale = transform.scale.x * asset.normalizationFactor;
-            
-            editor.currentTarget.position.set(transform.position.x, transform.position.y, transform.position.z);
-            editor.currentTarget.rotation.set(
-                THREE.MathUtils.degToRad(transform.rotation.x),
-                THREE.MathUtils.degToRad(transform.rotation.y),
-                THREE.MathUtils.degToRad(transform.rotation.z)
-            );
-            editor.currentTarget.scale.set(finalScale, finalScale, finalScale);
-        }
-
-        function setupDragControls(object) {
-            const assetSelector = document.getElementById('asset-selector');
-            editor.dragControls = new DragControls([object], editor.camera, editor.renderer.domElement);
-            editor.dragControls.addEventListener('dragstart', () => { if (!isRotating) editor.controls.enabled = false; });
-            editor.dragControls.addEventListener('dragend', (event) => {
-                if (!isRotating) editor.controls.enabled = true;
-                const assetId = parseInt(assetSelector.value);
-                const asset = state.assets.find(a => a.id === assetId);
-                if (asset) {
-                    const newPos = event.object.position;
-                    asset.transform.position.x = newPos.x;
-                    asset.transform.position.y = newPos.y;
-                    asset.transform.position.z = newPos.z;
-                    updateTransformInputs(asset.transform);
-                }
-            });
-        }
-        
-        function preloadARAssets() {
-            if (state.areAssetsPreloaded || state.assets.length === 0) {
-                return;
-            }
-            console.log("Preloading AR assets...");
-            const arPreloadContainer = document.getElementById('ar-preload-container');
-            arPreloadContainer.innerHTML = ''; 
-
-            const tempScene = document.createElement('a-scene');
-            tempScene.setAttribute('embedded', '');
-            tempScene.style.position = 'fixed';
-            tempScene.style.height = '1px';
-            tempScene.style.width = '1px';
-            tempScene.style.top = '-9999px';
-            tempScene.style.left = '-9999px';
-            
-            const assetsEl = document.createElement('a-assets');
-            assetsEl.setAttribute('timeout', '30000');
-
-            state.assets.forEach(asset => {
-                const assetItem = document.createElement('a-asset-item');
-                assetItem.id = `model-${asset.id}`;
-                assetItem.setAttribute('src', asset.modelDataUrl);
-                assetItem.setAttribute('response-type', 'arraybuffer');
-                assetsEl.appendChild(assetItem);
-            });
-            
-            const arStatusText = document.getElementById('ar-status-text');
-            const arLoader = document.querySelector('#ar-status .loader');
-
-            arStatusText.textContent = 'Cargando modelos 3D...';
-            arLoader.classList.remove('hidden');
-
-            assetsEl.addEventListener('loaded', () => {
-                console.log('All assets preloaded successfully!');
-                state.areAssetsPreloaded = true;
-                arStatusText.textContent = '¡Recursos listos! Activa la cámara.';
-                arLoader.classList.add('hidden');
-            });
-             assetsEl.addEventListener('timeout', (e) => {
-                console.error('Asset loading timed out:', e.detail.src);
-                arStatusText.textContent = 'Error: La carga de modelos tardó mucho.';
-                 arLoader.classList.add('hidden');
-            });
-
-            tempScene.appendChild(assetsEl);
-            arPreloadContainer.appendChild(tempScene);
-        }
-
-        function startAR() {
-            if (!state.areAssetsPreloaded) {
-                alert("Los modelos 3D aún se están cargando. Por favor espera un momento y vuelve a intentarlo.");
-                return;
-            }
-
-            const arSceneContainer = document.getElementById('ar-scene-container');
-            arSceneContainer.innerHTML = '';
-            const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; autoStart: true; uiLoading: no; uiError: no; uiScanning: no;`;
-            
-            const sceneEl = document.createElement('a-scene');
-            sceneEl.setAttribute('mindar-image', mindARSettings);
-            sceneEl.setAttribute('color-space', 'sRGB');
-            sceneEl.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights');
-            sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
-            sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
-            
-            const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
-            if(preloadedAssets) {
-                sceneEl.appendChild(preloadedAssets); 
-            }
-            
-            const cameraEl = document.createElement('a-camera');
-            cameraEl.setAttribute('position', '0 0 0');
-            cameraEl.setAttribute('look-controls', 'enabled: false');
-            sceneEl.appendChild(cameraEl);
-
-            state.assets.forEach((asset, index) => {
-                const targetEl = document.createElement('a-entity');
-                targetEl.setAttribute('mindar-image-target', `targetIndex: ${index}`);
-                
-                const t = asset.transform;
-                const finalScale = asset.normalizationFactor * t.scale.x;
-
-                const loaderEntity = document.createElement('a-plane');
-                loaderEntity.id = `loader-${asset.id}`;
-                loaderEntity.setAttribute('position', '0 0.5 0');
-                loaderEntity.setAttribute('scale', '0.4 0.4 0.4');
-                loaderEntity.setAttribute('material', 'src: https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.1.0/assets/loading.png; transparent: true;');
-                loaderEntity.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear;');
-
-                const modelEntity = document.createElement('a-gltf-model');
-                modelEntity.id = `gltf-model-${asset.id}`;
-                modelEntity.setAttribute('src', `#model-${asset.id}`);
-                modelEntity.setAttribute('position', `${t.position.x} ${t.position.y} ${t.position.z}`);
-                modelEntity.setAttribute('rotation', `${t.rotation.x} ${t.rotation.y} ${t.rotation.z}`);
-                modelEntity.setAttribute('scale', `${finalScale} ${finalScale} ${finalScale}`);
-
-                targetEl.setAttribute('model-loader', `modelId: #gltf-model-${asset.id}; loaderId: #loader-${asset.id}`);
-                
-                targetEl.appendChild(loaderEntity);
-                targetEl.appendChild(modelEntity);
-                sceneEl.appendChild(targetEl);
-            });
-
-            arSceneContainer.appendChild(sceneEl);
-            arSceneContainer.classList.add('ar-active');
-            document.getElementById('ar-ui-container').classList.add('hidden');
-            document.getElementById('ar-active-controls').classList.remove('hidden');
-            state.isArActive = true;
-        }
-
-        function stopAR() {
-            const arSceneContainer = document.getElementById('ar-scene-container');
-            const sceneEl = arSceneContainer.querySelector('a-scene');
-            if (sceneEl && sceneEl.hasLoaded) {
-                 if (sceneEl.systems['mindar-image']) {
-                    sceneEl.systems['mindar-image'].stop();
-                }
-                sceneEl.parentNode.removeChild(sceneEl);
-            }
-            arSceneContainer.innerHTML = '';
-            
-            const arPreloadContainer = document.getElementById('ar-preload-container');
-            arPreloadContainer.innerHTML = '';
-            state.areAssetsPreloaded = false;
-
-            arSceneContainer.classList.remove('ar-active');
-            document.getElementById('ar-ui-container').classList.remove('hidden');
-            document.getElementById('ar-active-controls').classList.add('hidden');
-            state.isArActive = false;
-        }
-        
-        function navigateTo(pageId) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            state.currentPage = pageId;
-
-            if (pageId === 'page-editor' && !editor.renderer) initEditor();
-            
-            if (pageId === 'page-editor') {
-                populateEditorSelector();
-                if (state.assets.length > 0) {
-                     displayAssetInEditor(parseInt(document.getElementById('asset-selector').value) || state.assets[0].id);
-                }
-            }
-
-            if (pageId === 'page-ar') preloadARAssets();
-            
-            if (pageId !== 'page-ar' && state.isArActive) stopAR();
-        }
-
-        // --- INICIALIZACIÓN Y EVENT LISTENERS ---
-        
-        const markerUpload = document.getElementById('marker-upload');
-        const imageUpload = document.getElementById('image-upload');
-        const modelUpload = document.getElementById('model-upload');
-        const nextToEditorBtn = document.getElementById('goto-editor-btn');
-        const uploadStatus = document.getElementById('upload-status');
-        
-        let uploadedMarkers = [];
-        let uploadedImages = [];
-        let uploadedModels = [];
-
-        function updateFileList(containerId, files) {
-            const listContainer = document.getElementById(containerId);
-            listContainer.innerHTML = '';
-            const list = document.createElement('ul');
-            list.className = 'list-disc list-inside text-gray-700 space-y-1';
-            files.forEach(file => { 
-                const li = document.createElement('li'); 
-                li.textContent = file.name; 
-                list.appendChild(li); 
-            });
-            listContainer.appendChild(list);
-        }
-
-        function updateImagePreviews(containerId, files) {
-            const listContainer = document.getElementById(containerId);
-            listContainer.innerHTML = '';
-            const grid = document.createElement('div');
-            grid.className = 'grid grid-cols-2 sm:grid-cols-3 gap-2';
-
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const previewWrapper = document.createElement('div');
-                    previewWrapper.className = 'relative aspect-square';
-                    
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'w-full h-full object-cover rounded-md shadow-sm';
-                    
-                    const name = document.createElement('span');
-                    name.textContent = file.name;
-                    name.className = 'absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate';
-
-                    previewWrapper.appendChild(img);
-                    previewWrapper.appendChild(name);
-                    grid.appendChild(previewWrapper);
-                };
-                reader.readAsDataURL(file);
-            });
-            listContainer.appendChild(grid);
-        }
-        
-        function checkAndEnableNext() {
-            state.areAssetsPreloaded = false;
-            document.getElementById('ar-preload-container').innerHTML = '';
-
-            if (state.assets && state.assets.length > 0) {
-                state.assets.forEach(asset => {
-                    URL.revokeObjectURL(asset.markerDataUrl);
-                    URL.revokeObjectURL(asset.imageDataUrl);
-                    URL.revokeObjectURL(asset.modelDataUrl);
-                });
-            }
-            
-            const markerCount = uploadedMarkers.length;
-            const imageCount = uploadedImages.length;
-            const modelCount = uploadedModels.length;
-
-            if (markerCount === 0 && imageCount === 0 && modelCount === 0) {
-                uploadStatus.textContent = '';
-                nextToEditorBtn.disabled = true;
-                return;
-            }
-
-            if (markerCount > 0 && markerCount === imageCount && markerCount === modelCount) {
-                nextToEditorBtn.disabled = false;
-                uploadStatus.textContent = `¡Éxito! ${markerCount} set(s) de recursos listos.`;
-                uploadStatus.className = 'text-sm text-green-600 min-h-[20px]';
-
-                state.assets = uploadedMarkers.map((markerFile, index) => {
-                    const imageFile = uploadedImages[index];
-                    const modelFile = uploadedModels[index];
-                    return {
-                        id: index,
-                        markerFile: markerFile, markerDataUrl: URL.createObjectURL(markerFile), markerName: markerFile.name,
-                        imageFile: imageFile, imageDataUrl: URL.createObjectURL(imageFile), imageName: imageFile.name,
-                        modelFile: modelFile, modelDataUrl: URL.createObjectURL(modelFile), modelName: modelFile.name,
-                        transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
-                        hasBeenNormalized: false,
-                        normalizationFactor: 1,
-                    };
-                });
-            } else {
-                nextToEditorBtn.disabled = true;
-                state.assets = [];
-                uploadStatus.textContent = 'Error: Las 3 categorías deben tener la misma cantidad de archivos.';
-                uploadStatus.className = 'text-sm text-red-600 min-h-[20px]';
-            }
-        }
-
-        markerUpload.addEventListener('change', (e) => {
-            uploadedMarkers = Array.from(e.target.files);
-            updateFileList('marker-list-container', uploadedMarkers);
-            checkAndEnableNext();
-        });
-        imageUpload.addEventListener('change', (e) => {
-            uploadedImages = Array.from(e.target.files);
-            updateImagePreviews('image-list-container', uploadedImages);
-            checkAndEnableNext();
-        });
-        modelUpload.addEventListener('change', (e) => {
-            uploadedModels = Array.from(e.target.files);
-            updateFileList('model-list-container', uploadedModels);
-            checkAndEnableNext();
-        });
-
-        // Navigation
-        document.getElementById('goto-editor-btn').addEventListener('click', () => navigateTo('page-editor'));
-        document.getElementById('goto-ar-btn').addEventListener('click', () => navigateTo('page-ar'));
-        document.getElementById('back-to-upload-btn').addEventListener('click', () => navigateTo('page-upload'));
-        document.getElementById('back-to-editor-btn-pre').addEventListener('click', () => navigateTo('page-editor'));
-        document.getElementById('start-ar-btn').addEventListener('click', () => startAR());
-        document.getElementById('stop-ar-btn').addEventListener('click', () => stopAR());
-        document.getElementById('goto-apk-btn-active').addEventListener('click', () => navigateTo('page-apk'));
-        document.getElementById('back-to-ar-btn').addEventListener('click', () => navigateTo('page-ar'));
-
-        // Editor logic
-        const assetSelector = document.getElementById('asset-selector');
-        assetSelector.addEventListener('change', (e) => displayAssetInEditor(parseInt(e.target.value)));
-        
-        const transformInputs = ['pos-x', 'pos-y', 'pos-z', 'rot-x', 'rot-y', 'rot-z', 'scale'];
-        transformInputs.forEach(id => {
-            document.getElementById(id).addEventListener('input', () => {
-                const assetId = parseInt(assetSelector.value);
-                const asset = state.assets.find(a => a.id === assetId);
-                if (!asset || !editor.currentTarget) return;
-                
-                asset.transform.position = { x: parseFloat(document.getElementById('pos-x').value), y: parseFloat(document.getElementById('pos-y').value), z: parseFloat(document.getElementById('pos-z').value) };
-                asset.transform.rotation = { x: parseFloat(document.getElementById('rot-x').value), y: parseFloat(document.getElementById('rot-y').value), z: parseFloat(document.getElementById('rot-z').value) };
-                const scaleVal = parseFloat(document.getElementById('scale').value);
-                asset.transform.scale = { x: scaleVal, y: scaleVal, z: scaleVal };
-                
-                updateModelTransformFromState(asset.transform);
-            });
-        });
-
-        const canvas = document.getElementById('editor-canvas');
-        canvas.addEventListener('contextmenu', e => e.preventDefault());
-        
-        let previousMousePosition = { x: 0, y: 0 };
-        canvas.addEventListener('mousedown', e => {
-            if (e.button === 2) { // Right click
-                isRotating = true;
-                editor.controls.enabled = false;
-                if (editor.dragControls) editor.dragControls.enabled = false;
-                previousMousePosition.x = e.clientX;
-            }
-        });
-        
-        canvas.addEventListener('mousemove', e => {
-            if (isRotating && editor.currentTarget) {
-                const deltaX = e.clientX - previousMousePosition.x;
-                const assetId = parseInt(assetSelector.value);
-                const asset = state.assets.find(a => a.id === assetId);
-                if (!asset) return;
-
-                asset.transform.rotation.y += deltaX * 0.5; 
-                updateModelTransformFromState(asset.transform);
-                document.getElementById('rot-y').value = Math.round(asset.transform.rotation.y % 360);
-                
-                previousMousePosition.x = e.clientX;
-            }
-        });
-
-        window.addEventListener('mouseup', e => {
-            if (e.button === 2) {
-                isRotating = false;
-                editor.controls.enabled = true;
-                if (editor.dragControls) editor.dragControls.enabled = true;
-            }
-        });
-        
-        // --- APK GENERATION PAGE LOGIC ---
-        const apkNameInput = document.getElementById('apk-name');
-        const apkIconInput = document.getElementById('apk-icon');
-        const generateBtn = document.getElementById('generate-files-btn');
-        const generationStatus = document.getElementById('generation-status');
-        
-        const apkIconPreview = document.getElementById('apk-icon-preview');
-        const apkTitlePreview = document.getElementById('apk-title-preview');
-        const apkSubtitlePreview = document.getElementById('apk-subtitle-preview');
-
-        const apkWelcomeTitleInput = document.getElementById('apk-welcome-title');
-        const apkWelcomeSubtitleInput = document.getElementById('apk-welcome-subtitle');
-
-        apkNameInput.addEventListener('input', (e) => {
-            const name = e.target.value || 'Nombre App';
-        });
-
-        apkIconInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    apkIconPreview.src = event.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        apkWelcomeTitleInput.addEventListener('input', (e) => { apkTitlePreview.textContent = e.target.value; });
-        apkWelcomeSubtitleInput.addEventListener('input', (e) => { apkSubtitlePreview.textContent = e.target.value; });
-        apkTitlePreview.addEventListener('input', (e) => { apkWelcomeTitleInput.value = e.target.textContent; });
-        apkSubtitlePreview.addEventListener('input', (e) => { apkWelcomeSubtitleInput.value = e.target.textContent; });
-
-
-        generateBtn.addEventListener('click', async () => {
-            const appName = apkNameInput.value.trim();
-            const appIconFile = apkIconInput.files[0];
-            const welcomeTitle = apkWelcomeTitleInput.value.trim();
-            const welcomeSubtitle = apkWelcomeSubtitleInput.value.trim();
-
-            if (!appName || !appIconFile || !welcomeTitle) {
-                alert("Please fill out the App Name, Icon, and Welcome Title.");
-                return;
-            }
-            if (state.assets.length === 0) {
-                alert("No AR assets have been loaded in Step 1.");
-                return;
-            }
-
-            generationStatus.textContent = "Generating files, please wait...";
-            
-            try {
-                const zip = new JSZip();
-                const finalHtml = createFinalHtml(appName, welcomeTitle, welcomeSubtitle);
-                zip.file("index.html", finalHtml);
-                
-                const iconBlob = await appIconFile.slice(0, appIconFile.size, appIconFile.type);
-                zip.file("icon.png", iconBlob);
-
-                const markersFolder = zip.folder("markers");
-                const modelsFolder = zip.folder("models");
-                for (const asset of state.assets) {
-                    markersFolder.file(asset.markerFile.name, asset.markerFile);
-                    modelsFolder.file(asset.modelFile.name, asset.modelFile);
-                }
-
-                const content = await zip.generateAsync({ type: "blob" });
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(content);
-                link.download = `${appName.replace(/\s/g, '_')}_AR_Project.zip`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                generationStatus.textContent = "Files generated and downloaded successfully!";
-            } catch (error) {
-                console.error("Error generating ZIP:", error);
-                generationStatus.textContent = "An error occurred while generating files.";
-            }
-        });
-
-        function createFinalHtml(appName, welcomeTitle, welcomeSubtitle) {
-            const markerSrcs = state.assets.map(a => `./markers/${a.markerFile.name}`).join(';');
-            
-            const assetItems = state.assets.map(asset => 
-                `<a-asset-item id="model-${asset.id}" src="./models/${asset.modelFile.name}"></a-asset-item>`
-            ).join('');
-
-            const entities = state.assets.map((asset, index) => {
-                const t = asset.transform;
-                const finalScale = asset.normalizationFactor * t.scale.x;
-                return `
-            <a-entity mindar-image-target="targetIndex: ${index}">
-                <a-gltf-model 
-                    src="#model-${asset.id}"
-                    position="${t.position.x} ${t.position.y} ${t.position.z}"
-                    rotation="${t.rotation.x} ${t.rotation.y} ${t.rotation.z}"
-                    scale="${finalScale} ${finalScale} ${finalScale}">
-                </a-gltf-model>
-            </a-entity>`;
-            }).join('');
-
-            // --- CORRECCIÓN CRÍTICA ---
-            // El script ahora espera a que la escena de A-Frame esté completamente cargada ('loaded')
-            // antes de añadir el evento 'click' al botón. Esto previene el error 'cannot read property start of undefined'.
-            const correctedScript = `
-        document.addEventListener('DOMContentLoaded', () => {
-            const sceneEl = document.querySelector('a-scene');
-            const welcomeScreen = document.getElementById('welcome-screen');
-            const startButton = document.getElementById('start-ar-button');
-
-            // Espera a que la escena de A-Frame esté completamente cargada
-            sceneEl.addEventListener('loaded', () => {
-                const mindarSystem = sceneEl.systems['mindar-image'];
-                
-                // Ahora es seguro añadir el listener al botón
-                startButton.addEventListener('click', () => {
-                    // El sistema mindarSystem está garantizado que existe aquí
-                    mindarSystem.start();
-                    welcomeScreen.classList.add('hidden');
-                });
-            });
-        });`;
-
-            return `
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>${appName}</title>
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"><\/script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"><\/script>
-    <style>
-        body { margin: 0; font-family: sans-serif; }
-        #welcome-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; padding: 20px; box-sizing: border-box; transition: opacity 0.5s ease-out;
-        }
-        #welcome-screen.hidden { opacity: 0; pointer-events: none; }
-        #welcome-screen img { width: 150px; height: 150px; object-fit: cover; border-radius: 25px; margin-bottom: 24px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        #welcome-screen h1 { font-size: 1.8em; margin: 0 0 8px 0; }
-        #welcome-screen p { font-size: 1em; max-width: 300px; margin: 0 auto 32px auto; opacity: 0.9; }
-        #start-ar-button { background: #4CAF50; color: white; border: none; padding: 15px 40px; font-size: 1.2em; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: bold; }
-        a-scene { z-index: -1; } /* Modificado para asegurar que no bloquee la pantalla de bienvenida */
-        #welcome-screen.hidden + a-scene { z-index: auto; } /* Restaurar z-index cuando está activo */
-
-    </style>
-</head>
-<body>
-    <div id="welcome-screen">
-        <img src="./icon.png" alt="Ícono de la App">
-        <h1>${welcomeTitle}</h1>
-        <p>${welcomeSubtitle}</p>
-        <button id="start-ar-button">Iniciar Experiencia AR</button>
-    </div>
-    <a-scene mindar-image="imageTargetSrc: ${markerSrcs}; autoStart: false;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-        <a-assets>${assetItems}<\/a-assets>
+  </head>
+  <body>
+    <!-- Contenedor principal de la aplicación -->
+    <div class="container">
+      <!-- Pantalla de carga -->
+      <div id="loader">
+        <div class="loader-spinner"></div>
+        <p style="margin-top: 20px; font-size: 1.2em;">Cargando experiencia AR...</p>
+      </div>
+
+      <!-- Logo de la fundación -->
+      <div class="logo-container">
+        <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación" class="logo"/>
+      </div>
+
+      <!--
+        ==========================================================================================
+        NOTA IMPORTANTE PARA MANEJAR MÚLTIPLES MARCADORES:
+
+        MindAR funciona mejor cuando todos los marcadores (las imágenes que activan el 3D)
+        están compilados en UN SOLO archivo ".mind". Actualmente, tu repositorio tiene un archivo
+        ".mind" para cada modelo.
+
+        Para que todos los 8 modelos funcionen al mismo tiempo, sigue estos pasos:
+        1. Ve al compilador online de MindAR: https://hiukim.github.io/mind-ar-js-doc/tools/compile/
+        2. Sube allí TUS 8 IMÁGENES (.png, .jpg) que sirven como marcadores.
+           (Ej: cabeza1.png, corazon.JPG, etc.)
+        3. El compilador te dará UN SOLO archivo ".mind" para descargar. Guárdalo.
+        4. Sube ese nuevo archivo a tu carpeta "asetss/markers" en GitHub.
+        5. En la línea de abajo `imageTargetSrc`, reemplaza la URL actual por la URL de tu nuevo
+           archivo ".mind" compilado.
+        6. Finalmente, descomenta las otras 7 entidades <a-entity> que están más abajo en el código.
+           Asegúrate de que el `targetIndex` de cada una corresponda al orden en que subiste
+           las imágenes al compilador (el primero es 0, el segundo es 1, y así sucesivamente).
+
+        Por ahora, el código está configurado para detectar únicamente el primer marcador ("cabeza1").
+        ==========================================================================================
+      -->
+
+      <!-- Escena de Realidad Aumentada -->
+      <a-scene
+        mindar-image="imageTargetSrc: https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/markers/cabeza1.mind; maxTrack: 8;"
+        color-space="sRGB"
+        renderer="colorManagement: true, physicallyCorrectLights"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+        id="ar-scene"
+      >
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-        ${entities}
-    </a-scene>
-    <script>${correctedScript}<\/script>
-</body>
-</html>`;
-        }
-    });
+
+        <!-- Marcador 0: Cabeza -->
+        <a-entity mindar-image-target="targetIndex: 0">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0 0 0.1"
+            scale="0.3 0.3 0.3"
+            src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/models/cabeza1.glb"
+            animation-mixer
+          ></a-gltf-model>
+        </a-entity>
+
+        <!-- Marcador 1: Corazón (Descomentar después de compilar los marcadores)
+        <a-entity mindar-image-target="targetIndex: 1">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0 0 0.1"
+            scale="0.3 0.3 0.3"
+            src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/models/corazon.glb"
+            animation-mixer
+          ></a-gltf-model>
+        </a-entity>
+        -->
+
+        <!-- Marcador 2: Dedo y Mano (Descomentar después de compilar los marcadores)
+        <a-entity mindar-image-target="targetIndex: 2">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0 0 0.1"
+            scale="0.3 0.3 0.3"
+            src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/models/dedo-mano.glb"
+            animation-mixer
+          ></a-gltf-model>
+        </a-entity>
+        -->
+
+        <!-- Marcador 3: Dedo (Descomentar después de compilar los marcadores)
+        <a-entity mindar-image-target="targetIndex: 3">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0 0 0.1"
+            scale="0.3 0.3 0.3"
+            src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/models/dedo.glb"
+            animation-mixer
+          ></a-gltf-model>
+        </a-entity>
+        -->
+
+        <!-- Marcador 4: Hueso Columna (Descomentar después de compilar los marcadores)
+        <a-entity mindar-image-target="targetIndex: 4">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0 0 0.1"
+            scale="0.3 0.3 0.3"
+            src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/models/hueso-columna.glb"
+            animation-mixer
+          ></a-gltf-model>
+        </a-entity>
+        -->
+
+        <!-- Marcador 5: Huesos Mano (Descomentar después de compilar los marcadores)
+        <a-entity mindar-image-target="targetIndex: 5">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0 0 0.1"
+            scale="0.3 0.3 0.3"
+            src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/models/huesosmano.glb"
+            animation-mixer
+          ></a-gltf-model>
+        </a-entity>
+        -->
+
+        <!-- Marcador 6: Mano Izquierda Prótesis (Descomentar después de compilar los marcadores)
+        <a-entity mindar-image-target="targetIndex: 6">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0 0 0.1"
+            scale="0.3 0.3 0.3"
+            src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/models/mano-iz-protesis.glb"
+            animation-mixer
+          ></a-gltf-model>
+        </a-entity>
+        -->
+
+        <!-- Marcador 7: Prótesis Mano Brazo (Descomentar después de compilar los marcadores)
+        <a-entity mindar-image-target="targetIndex: 7">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0 0 0.1"
+            scale="0.3 0.3 0.3"
+            src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/models/protesis-mano-brazo.glb"
+            animation-mixer
+          ></a-gltf-model>
+        </a-entity>
+        -->
+
+      </a-scene>
+    </div>
+
+    <script>
+      // Script para ocultar la pantalla de carga cuando la escena AR esté lista
+      document.addEventListener('DOMContentLoaded', () => {
+        const sceneEl = document.querySelector('#ar-scene');
+        const loader = document.querySelector('#loader');
+        
+        sceneEl.addEventListener('arReady', () => {
+          loader.classList.add('hidden');
+        });
+        
+        // Un pequeño seguro en caso de que el evento no se dispare
+        setTimeout(() => {
+            if (!loader.classList.contains('hidden')) {
+                loader.classList.add('hidden');
+            }
+        }, 5000);
+      });
     </script>
-</body>
+  </body>
 </html>
