@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>PROPUESTA en SALUD (Modo Prueba)</title>
+    <title>PROPUESTA en SALUD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
@@ -37,7 +37,7 @@
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.4-test</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.5</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -49,13 +49,13 @@
         
         <div id="page-upload" class="page active bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 1: Cargar Recursos</h2>
-             <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6" role="alert">
-                <p class="font-bold">MODO DE PRUEBA ACTIVO</p>
-                <p>Esta versión solo cargará un marcador a la vez para depurar errores.</p>
+            <div id="welcome-box" class="bg-indigo-50 border-l-4 border-indigo-500 text-indigo-700 p-4 mb-6" role="alert">
+                <p class="font-bold">¡Bienvenido!</p>
+                <p>Presiona el botón para descargar los recursos por primera vez. Se guardarán en la caché para futuras visitas.</p>
             </div>
             <div class="mt-6 flex flex-col items-center gap-4">
                 <button id="load-from-github-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 text-lg shadow-md">
-                    Cargar Recurso de Prueba
+                    Cargar Recursos Anatómicos
                 </button>
                 <button id="clear-cache-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition duration-300 text-sm shadow-md hidden">
                     Limpiar Caché
@@ -70,12 +70,12 @@
             </div>
             <div id="image-preview-container" class="mt-6"></div>
              <div class="mt-8 text-center">
-                <button id="goto-editor-btn" disabled class="bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-600 transition duration-300 disabled:bg-gray-300 mt-2">Siguiente: Editar Modelo 3D</button>
+                <button id="goto-editor-btn" disabled class="bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-600 transition duration-300 disabled:bg-gray-300 mt-2">Siguiente: Editar Modelos 3D</button>
             </div>
         </div>
 
         <div id="page-editor" class="page bg-white p-6 rounded-lg shadow-md">
-             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 2: Ajustar Modelo 3D</h2>
+             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 2: Ajustar Modelos 3D</h2>
              <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-6 text-sm" role="alert">
                  <p class="font-bold">Controles:</p>
                  <ul class="list-disc list-inside mt-1">
@@ -169,16 +169,13 @@
             const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
             let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
             
-            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.4-test';
+            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.5';
             const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
             
-            // --- INICIO DE PRUEBA DE DEPURACIÓN ---
-            // Para probar un marcador diferente, comenta la línea actual y descomenta la que quieras probar.
-            
-            // const ASSET_NAMES = ['cabeza1']; // Prueba 1: El que sabemos que funciona.
-            const ASSET_NAMES = ['corazon']; // Prueba 2: Activado por defecto para probar 'corazon'.
-            // const ASSET_NAMES = ['dedo'];    // Prueba 3: Descomenta esta línea para probar 'dedo'.
-            // --- FIN DE PRUEBA DE DEPURACIÓN ---
+            const ASSET_NAMES = [
+                'cabeza1', 'corazon', 'dedo-mano', 'dedo', 'hueso-columna', 
+                'huesosmano', 'mano-iz-protesis', 'protesis-mano-brazo'
+            ];
 
             AFRAME.registerComponent('ar-rotator', {
                 schema: { rotationFactor: { type: 'number', default: 0.5 } },
@@ -370,6 +367,9 @@
                         Object.assign(asset.transform.position, event.object.position);
                         updateTransformInputs(asset.transform);
                     });
+                }, undefined, (error) => {
+                    console.error(`Error al cargar el modelo ${asset.name} en el editor:`, error);
+                    alert(`El archivo del modelo 3D "${asset.name}.glb" podría estar dañado o no ser compatible. Revisa la consola para más detalles.`);
                 });
             }
 
@@ -554,7 +554,7 @@
                 const successfullyLoadedFromCache = await loadAssetsFromCacheOnStartup();
                 const clearCacheBtn = document.getElementById('clear-cache-btn');
                 if (successfullyLoadedFromCache) {
-                    document.getElementById('load-from-github-btn').textContent = 'Recargar Recurso';
+                    document.getElementById('load-from-github-btn').textContent = 'Recargar Recursos';
                     document.getElementById('goto-editor-btn').disabled = false;
                     displayLoadedImages(state.assets);
                     document.querySelector('#welcome-box p:last-child').textContent = '¡Recursos cargados desde la caché! Ya puedes continuar o recargarlos si lo deseas.';
@@ -603,4 +603,3 @@
     </script>
 </body>
 </html>
-
