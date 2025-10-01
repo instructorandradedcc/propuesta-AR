@@ -40,7 +40,7 @@
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v1.8</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.0</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -118,11 +118,7 @@
                  <div id="ar-ui-container" class="relative z-10">
                      <h2 class="text-2xl font-semibold mb-4 text-center">Paso 3: Vista de Realidad Aumentada</h2>
                      <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-                        <div class="mb-4">
-                            <label for="ar-asset-selector" class="block mb-2 font-medium text-gray-700">Seleccionar Recurso para AR:</label>
-                            <select id="ar-asset-selector" class="w-full p-2 border rounded"></select>
-                        </div>
-                         <p class="text-center">Apunta tu cámara a la imagen del marcador correspondiente. <strong>Puedes girar el modelo 3D deslizando el dedo o con el mouse.</strong></p>
+                         <p class="text-center">Apunta tu cámara a una de las imágenes de los marcadores. <strong>Puedes girar el modelo 3D deslizando el dedo o con el mouse.</strong></p>
                          <div id="ar-status" class="text-center font-mono p-2 bg-gray-100 rounded mt-2 flex justify-center items-center gap-2">
                              <div class="loader hidden"></div>
                              <span id="ar-status-text">Estado: Esperando cámara...</span>
@@ -175,12 +171,13 @@
             const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false, };
             let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null, };
             
-            const CACHE_NAME = 'anatomia-ar-cache-v1.8';
+            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.0';
             const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
             const ASSET_NAMES = [ 'cabeza1', 'corazon', 'dedo-mano', 'dedo', 'hueso-columna', 'huesosmano', 'mano-iz-protesis', 'protesis-mano-brazo' ];
 
+            // ESTRUCTURA: El componente de rotación ahora vive dentro del script principal, igual que en el ejemplo funcional.
             AFRAME.registerComponent('ar-rotator', {
-                schema: { rotationFactor: { type: 'number', default: 0.5 } },
+                schema: { rotationFactor: { type: 'number', default: 0.5 } }, // Reducido para un control menos sensible
                 init: function () {
                     this.isVisible = false;
                     this.isDragging = false;
@@ -329,18 +326,6 @@
                 });
             }
 
-            function populateArSelector() {
-                const arAssetSelector = document.getElementById('ar-asset-selector');
-                arAssetSelector.innerHTML = '';
-                state.assets.forEach(asset => {
-                    const option = document.createElement('option');
-                    option.value = asset.id;
-                    option.textContent = asset.name;
-                    arAssetSelector.appendChild(option);
-                });
-                arAssetSelector.value = document.getElementById('asset-selector').value;
-            }
-
             function updateTransformInputs(transform) {
                 document.getElementById('pos-x').value = transform.position.x.toFixed(2);
                 document.getElementById('pos-y').value = transform.position.y.toFixed(2);
@@ -432,11 +417,8 @@
                 arPreloadContainer.appendChild(tempScene);
             }
 
-            function setupAndStartAR(asset, shouldEnterFullscreen) {
-                if (!asset || !state.areAssetsPreloaded) {
-                    alert("Por favor, selecciona un recurso para visualizar en AR.");
-                    return;
-                }
+            function setupAndStartAR(shouldEnterFullscreen) {
+                if (!state.areAssetsPreloaded) return;
                 
                 document.getElementById('ar-preloader').classList.remove('hidden');
                 const arSceneContainer = document.getElementById('ar-scene-container');
@@ -445,7 +427,7 @@
                 const sceneEl = document.createElement('a-scene');
                 sceneEl.setAttribute('embedded', '');
                 
-                const mindARSettings = `imageTargetSrc: ${asset.markerDataUrl}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no; filterMinCF: 0.001; filterBeta: 10;`;
+                const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
                 
                 sceneEl.setAttribute('mindar-image', mindARSettings);
                 sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
@@ -462,24 +444,27 @@
                 cameraEl.setAttribute('fov', '75');
                 sceneEl.appendChild(cameraEl);
 
-                const targetEl = document.createElement('a-entity');
-                targetEl.setAttribute('mindar-image-target', `targetIndex: 0`);
-                const t = asset.transform;
-                const finalScale = t.scale.x * asset.normalizationFactor;
-                const modelEntity = document.createElement('a-gltf-model');
-                modelEntity.setAttribute('src', `#model-${asset.id}`);
-                modelEntity.setAttribute('position', `${t.position.x} ${t.position.y} ${t.position.z}`);
-                modelEntity.setAttribute('rotation', `${t.rotation.x} ${t.rotation.y} ${t.rotation.z}`);
-                modelEntity.setAttribute('scale', `${finalScale} ${finalScale} ${finalScale}`);
-                modelEntity.setAttribute('ar-rotator', '');
-                targetEl.appendChild(modelEntity);
-                sceneEl.appendChild(targetEl);
-
+                state.assets.forEach((asset, index) => {
+                    const targetEl = document.createElement('a-entity');
+                    targetEl.setAttribute('mindar-image-target', `targetIndex: ${index}`);
+                    const t = asset.transform;
+                    const finalScale = t.scale.x * asset.normalizationFactor;
+                    const modelEntity = document.createElement('a-gltf-model');
+                    modelEntity.setAttribute('src', `#model-${asset.id}`);
+                    modelEntity.setAttribute('position', `${t.position.x} ${t.position.y} ${t.position.z}`);
+                    modelEntity.setAttribute('rotation', `${t.rotation.x} ${t.rotation.y} ${t.rotation.z}`);
+                    modelEntity.setAttribute('scale', `${finalScale} ${finalScale} ${finalScale}`);
+                    modelEntity.setAttribute('ar-rotator', '');
+                    targetEl.appendChild(modelEntity);
+                    sceneEl.appendChild(targetEl);
+                });
 
                 sceneEl.addEventListener('loaded', () => {
                     sceneEl.systems['mindar-image-system'].start();
                 });
 
+                // CAMBIO CLAVE: Se adoptan los listeners simples del ejemplo funcional.
+                // Estos no causan errores y permiten que MindAR maneje la visibilidad de los modelos.
                 const scanningUI = document.getElementById('scanning-ui');
                 sceneEl.addEventListener('arReady', () => {
                     scanningUI.classList.remove('hidden');
@@ -520,7 +505,7 @@
                 }
                 arSceneContainer.innerHTML = '';
                 document.getElementById('ar-preload-container').innerHTML = '';
-                state.areAssetsPreloaded = false;
+                state.areAssetsPreloaded = false; // Forzar precarga la próxima vez
                 const appContainer = document.getElementById('app');
                 document.documentElement.classList.remove('ar-active');
                 document.body.classList.remove('ar-active');
@@ -552,7 +537,6 @@
                     populateEditorSelector();
                     if (state.assets.length > 0) displayAssetInEditor(parseInt(document.getElementById('asset-selector').value) || 0);
                 } else if (pageId === 'page-ar') {
-                    populateArSelector();
                     document.getElementById('start-ar-pc-btn').disabled = true;
                     document.getElementById('start-ar-mobile-btn').disabled = true;
                     preloadARAssets();
@@ -605,28 +589,12 @@
             document.getElementById('goto-ar-btn').addEventListener('click', () => navigateTo('page-ar'));
             document.getElementById('back-to-upload-btn').addEventListener('click', () => navigateTo('page-upload'));
             document.getElementById('back-to-editor-btn-pre').addEventListener('click', () => navigateTo('page-editor'));
-            document.getElementById('start-ar-pc-btn').addEventListener('click', () => {
-                const selectedAssetId = parseInt(document.getElementById('ar-asset-selector').value);
-                const asset = state.assets.find(a => a.id === selectedAssetId);
-                setupAndStartAR(asset, false);
-            });
-            document.getElementById('start-ar-mobile-btn').addEventListener('click', () => {
-                const selectedAssetId = parseInt(document.getElementById('ar-asset-selector').value);
-                const asset = state.assets.find(a => a.id === selectedAssetId);
-                setupAndStartAR(asset, true);
-            });
+            document.getElementById('start-ar-pc-btn').addEventListener('click', () => setupAndStartAR(false));
+            document.getElementById('start-ar-mobile-btn').addEventListener('click', () => setupAndStartAR(true));
             document.getElementById('stop-ar-btn').addEventListener('click', stopAR);
             document.getElementById('fullscreen-ar-btn').addEventListener('click', toggleFullScreen);
             document.getElementById('back-to-editor-btn-post').addEventListener('click', () => navigateTo('page-editor'));
-            
-            const assetSelector = document.getElementById('asset-selector');
-            assetSelector.addEventListener('change', (e) => {
-                displayAssetInEditor(parseInt(e.target.value));
-                const arAssetSelector = document.getElementById('ar-asset-selector');
-                if (arAssetSelector) {
-                    arAssetSelector.value = e.target.value;
-                }
-            });
+            document.getElementById('asset-selector').addEventListener('change', (e) => displayAssetInEditor(parseInt(e.target.value)));
             
             ['pos-x', 'pos-y', 'pos-z', 'rot-x', 'rot-y', 'rot-z', 'scale'].forEach(id => {
                 document.getElementById(id).addEventListener('input', () => {
