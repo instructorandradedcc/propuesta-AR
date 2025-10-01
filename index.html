@@ -492,18 +492,24 @@
             const markerUrlList = state.assets.map(a => a.markerDataUrl).join(';');
             
             // =================================================================
-            // SOLUCIÓN: Se cambia `maxTrackables` a 1.
-            // Esto le dice a MindAR que cargue todos los marcadores, pero que solo
-            // rastree uno a la vez. Es más eficiente y soluciona el problema de
-            // que solo se detecte el primer marcador.
+            // CORRECCIÓN 1: Se cambia `maxTrackables` por `maxTrack`.
+            // La consola indicaba que 'maxTrackables' era una propiedad desconocida.
+            // El nombre correcto según la documentación de MindAR es 'maxTrack'.
             // =================================================================
-            const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
+            const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrack: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
 
             sceneEl.setAttribute('mindar-image', mindARSettings);
             sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
             sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
             sceneEl.setAttribute('color-space', 'sRGB');
-            sceneEl.setAttribute('renderer', 'colorManagement: true; physicallyCorrectLights: true;');
+
+            // =================================================================
+            // CORRECCIÓN 2: Se elimina `physicallyCorrectLights`.
+            // Esta propiedad está obsoleta en las versiones recientes de Three.js
+            // y causaba una advertencia en la consola. `colorManagement: true`
+            // es suficiente.
+            // =================================================================
+            sceneEl.setAttribute('renderer', 'colorManagement: true;');
 
             const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
             if(preloadedAssets) sceneEl.appendChild(preloadedAssets.cloneNode(true)); 
