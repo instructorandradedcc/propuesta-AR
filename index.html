@@ -12,12 +12,12 @@
     <!-- Favicon del repositorio -->
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
 
-    <!-- Importmap para Three.js (necesario para el editor 3D) -->
+    <!-- CORREGIDO: Se alinea la versión de Three.js con la que utiliza A-Frame 1.5.0 (r158) para evitar conflictos y la advertencia de "múltiples instancias". -->
     <script type="importmap">
         {
             "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/"
+                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
             }
         }
     </script>
@@ -192,8 +192,9 @@
         const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
         let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        const CACHE_NAME = 'salud-ar-assets-cache-v6'; // Incremented cache version
-        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
+        const CACHE_NAME = 'salud-ar-assets-cache-v7'; // Versión de caché incrementada para invalidar la anterior.
+        // CORREGIDO: Se ajustó el nombre de la carpeta base de 'asetss' a 'assets'.
+        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/assets/';
         const ASSETS_CONFIG = [
             { name: 'cabeza1', imageExt: 'png' },
             { name: 'corazon', imageExt: 'JPG' },
@@ -226,15 +227,22 @@
 
         async function fetchWithCache(url) {
             const cache = await caches.open(CACHE_NAME);
-            const cachedResponse = await cache.match(url);
+            let cachedResponse;
+            try {
+                 cachedResponse = await cache.match(url);
+            } catch (e) {
+                console.warn(`Error al acceder a la caché para ${url}`, e);
+            }
+
             if (cachedResponse) return cachedResponse;
             
-            const networkResponse = await fetch(url);
+            // Añadimos un timestamp para evitar ciertos problemas de caché del navegador (no de la Cache API)
+            const networkResponse = await fetch(url + `?v=${new Date().getTime()}`);
             if (networkResponse.ok) {
                 try {
                     await cache.put(url, networkResponse.clone());
                 } catch (e) {
-                    console.warn(`Could not cache resource: ${url}`, e);
+                    console.warn(`No se pudo guardar en caché el recurso: ${url}`, e);
                 }
             }
             return networkResponse;
@@ -269,14 +277,15 @@
             
             const promises = ASSETS_CONFIG.map(async (assetConfig, index) => {
                 const { name, imageExt } = assetConfig;
+                // CORREGIDO: Se ajustaron los nombres de las carpetas de 'modelss' a 'models' y de 'imagenes' a 'images'.
                 const urls = {
                     marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                    model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
-                    image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
+                    model: `${GITHUB_BASE_URL}models/${name}.glb`,
+                    image: `${GITHUB_BASE_URL}images/${name}.${imageExt}`
                 };
                 
                 const [markerRes, modelRes, imageRes] = await Promise.all([ fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image) ]);
-                if (!markerRes.ok || !modelRes.ok || !imageRes.ok) throw new Error(`Failed to fetch assets for ${name}`);
+                if (!markerRes.ok || !modelRes.ok || !imageRes.ok) throw new Error(`Falló la descarga de recursos para ${name}`);
                 const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
 
                 loadedCount++;
@@ -302,7 +311,7 @@
             } catch (error) {
                 loadingText.textContent = 'Error al cargar los recursos. Revisa la consola.';
                 progressBar.classList.add('bg-red-600');
-                console.error("Asset loading failed:", error);
+                console.error("Fallo en la carga de recursos:", error);
             } finally {
                 document.getElementById('load-from-github-btn').disabled = false;
             }
@@ -325,7 +334,7 @@
                 }, 2000);
             } catch (error) {
                 loadingText.textContent = 'No se pudo limpiar la caché. Revisa la consola.';
-                console.error('Failed to clear cache:', error);
+                console.error('Falló la limpieza de caché:', error);
             }
         }
         
@@ -446,7 +455,7 @@
             assetsEl.addEventListener('timeout', (e) => { 
                 arStatusText.textContent = 'Error: La carga de modelos tardó mucho.'; 
                 arLoader.classList.add('hidden');
-                console.error("Asset loading timed out:", e.detail.src);
+                console.error("La carga de recursos excedió el tiempo límite:", e.detail.src);
             });
             tempScene.appendChild(assetsEl);
             arPreloadContainer.appendChild(tempScene);
@@ -519,7 +528,7 @@
             
             if (shouldEnterFullscreen) { 
                 document.documentElement.requestFullscreen().catch(err => {
-                    console.warn("Could not enter fullscreen automatically.", err);
+                    console.warn("No se pudo entrar a pantalla completa automáticamente.", err);
                 });
             }
         }
@@ -543,7 +552,7 @@
             document.getElementById('scanning-ui').classList.add('hidden');
             
             if (document.fullscreenElement) {
-                document.exitFullscreen().catch(err => console.error("Error exiting fullscreen:", err));
+                document.exitFullscreen().catch(err => console.error("Error al salir de pantalla completa:", err));
             }
 
             state.isArActive = false;
@@ -551,7 +560,7 @@
         
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`));
+                document.documentElement.requestFullscreen().catch(err => console.error(`Error al intentar activar el modo de pantalla completa: ${err.message} (${err.name})`));
             } else {
                 document.exitFullscreen();
             }
@@ -584,11 +593,11 @@
                     const { name, imageExt } = assetConfig;
                     const urls = {
                         marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                        model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
-                        image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
+                        model: `${GITHUB_BASE_URL}models/${name}.glb`,
+                        image: `${GITHUB_BASE_URL}images/${name}.${imageExt}`
                     };
                     const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
-                    if (!markerRes || !modelRes || !imageRes) throw new Error(`Asset ${name} not found in cache.`);
+                    if (!markerRes || !modelRes || !imageRes) throw new Error(`Recurso ${name} no encontrado en caché.`);
                     const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
                     return {
                         id: index, name,
@@ -602,7 +611,7 @@
                 state.assets = assets;
                 return true;
             } catch (error) {
-                console.warn("Could not load assets from cache on startup:", error.message);
+                console.warn("No se pudieron cargar los recursos desde la caché al iniciar:", error.message);
                 return false;
             }
         }
