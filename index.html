@@ -12,7 +12,7 @@
     <!-- Favicon del repositorio -->
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
 
-    <!-- CORREGIDO: Se alinea la versión de Three.js con la que utiliza A-Frame 1.5.0 (r158) para evitar conflictos y la advertencia de "múltiples instancias". -->
+    <!-- Se alinea la versión de Three.js con la que utiliza A-Frame 1.5.0 (r158) para evitar conflictos y la advertencia de "múltiples instancias". -->
     <script type="importmap">
         {
             "imports": {
@@ -192,9 +192,10 @@
         const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
         let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        const CACHE_NAME = 'salud-ar-assets-cache-v7'; // Versión de caché incrementada para invalidar la anterior.
-        // CORREGIDO: Se ajustó el nombre de la carpeta base de 'asetss' a 'assets'.
-        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/assets/';
+        // CORREGIDO: Se aumenta la versión del caché para forzar una recarga de los recursos con las rutas correctas.
+        const CACHE_NAME = 'salud-ar-assets-cache-v8'; 
+        // CORREGIDO: Se restaura la ruta base correcta a la carpeta 'asetss' del repositorio.
+        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSETS_CONFIG = [
             { name: 'cabeza1', imageExt: 'png' },
             { name: 'corazon', imageExt: 'JPG' },
@@ -236,8 +237,7 @@
 
             if (cachedResponse) return cachedResponse;
             
-            // Añadimos un timestamp para evitar ciertos problemas de caché del navegador (no de la Cache API)
-            const networkResponse = await fetch(url + `?v=${new Date().getTime()}`);
+            const networkResponse = await fetch(url);
             if (networkResponse.ok) {
                 try {
                     await cache.put(url, networkResponse.clone());
@@ -277,11 +277,11 @@
             
             const promises = ASSETS_CONFIG.map(async (assetConfig, index) => {
                 const { name, imageExt } = assetConfig;
-                // CORREGIDO: Se ajustaron los nombres de las carpetas de 'modelss' a 'models' y de 'imagenes' a 'images'.
+                // CORREGIDO: Se restauran los nombres de las carpetas a 'modelss' y 'imagenes' para que coincidan con el repositorio.
                 const urls = {
                     marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                    model: `${GITHUB_BASE_URL}models/${name}.glb`,
-                    image: `${GITHUB_BASE_URL}images/${name}.${imageExt}`
+                    model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
+                    image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
                 };
                 
                 const [markerRes, modelRes, imageRes] = await Promise.all([ fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image) ]);
@@ -593,8 +593,8 @@
                     const { name, imageExt } = assetConfig;
                     const urls = {
                         marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                        model: `${GITHUB_BASE_URL}models/${name}.glb`,
-                        image: `${GITHUB_BASE_URL}images/${name}.${imageExt}`
+                        model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
+                        image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
                     };
                     const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
                     if (!markerRes || !modelRes || !imageRes) throw new Error(`Recurso ${name} no encontrado en caché.`);
@@ -675,4 +675,6 @@
     </script>
 </body>
 </html>
+
+
 
