@@ -495,7 +495,9 @@
             sceneEl.setAttribute('embedded', '');
             
             const markerUrlList = state.assets.map(a => a.markerDataUrl).join(';');
-            const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
+            // SOLUCIÓN: Cambiamos maxTrackables de '1' al número total de assets.
+            // Esto le dice a MindAR que esté listo para detectar CUALQUIERA de los marcadores cargados.
+            const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrackables: ${state.assets.length}; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
             
             sceneEl.setAttribute('mindar-image', mindARSettings);
             sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
@@ -717,6 +719,7 @@
     </script>
 </body>
 </html>
+
 
 
 
