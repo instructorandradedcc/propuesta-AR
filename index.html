@@ -10,7 +10,17 @@
 
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
     
-    <!-- SOLUCIÓN: Se elimina el importmap por completo. Es la fuente del conflicto "Multiple instances of Three.js" que rompe los componentes de MindAR. -->
+    <!-- SOLUCIÓN: Se reintroduce el importmap para cargar explícitamente Three.js y sus addons. -->
+    <!-- Esto soluciona el error "THREE.OrbitControls is not a constructor". -->
+    <!-- Se usa la versión 0.158.0 para que coincida con la de A-Frame 1.5.0 -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+            }
+        }
+    </script>
 
     <style>
         html.ar-active, body.ar-active { overflow: hidden; width: 100%; height: 100%; margin: 0; padding: 0; }
@@ -166,11 +176,14 @@
     </div>
 
     <script type="module">
-    // SOLUCIÓN: Se eliminan las importaciones de 'three' porque ahora usaremos el objeto global que provee A-Frame.
+    // SOLUCIÓN: Se reintroducen las importaciones explícitas de Three.js y sus addons.
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DragControls } from 'three/addons/controls/DragControls.js';
     
     document.addEventListener('DOMContentLoaded', () => {
-        // SOLUCIÓN: Se captura la instancia global de THREE que A-Frame ya ha cargado.
-        const THREE = window.THREE;
+        // Se elimina 'const THREE = window.THREE' porque ahora lo importamos directamente.
 
         const state = { 
             assets: [], 
@@ -178,9 +191,9 @@
             isArActive: false, 
             areAssetsPreloaded: false,
         };
-        let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: null, textureLoader: null, currentTarget: null, currentPlane: null };
+        let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        const CACHE_NAME = 'salud-ar-assets-cache-v17'; // Versión de caché actualizada
+        const CACHE_NAME = 'salud-ar-assets-cache-v18'; // Versión de caché actualizada
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSETS_CONFIG = [
             { name: 'cabeza1', imageExt: 'png' }, { name: 'corazon', imageExt: 'JPG' },
@@ -347,11 +360,8 @@
             editor.renderer.setSize(container.clientWidth, container.clientHeight);
             editor.renderer.setPixelRatio(window.devicePixelRatio);
             
-            // SOLUCIÓN: Se crean los loaders usando el THREE global, que incluye los addons.
-            editor.loader = new THREE.GLTFLoader();
-            editor.textureLoader = new THREE.TextureLoader();
-
-            editor.controls = new THREE.OrbitControls(editor.camera, editor.renderer.domElement);
+            // SOLUCIÓN: Se instancia OrbitControls usando la clase importada.
+            editor.controls = new OrbitControls(editor.camera, editor.renderer.domElement);
             editor.controls.enableDamping = true;
             
             const animate = () => { requestAnimationFrame(animate); editor.controls.update(); editor.renderer.render(editor.scene, editor.camera); };
@@ -411,7 +421,7 @@
                 updateModelTransformFromState(asset.transform);
                 updateTransformInputs(asset.transform);
 
-                editor.dragControls = new THREE.DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
+                editor.dragControls = new DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
                 editor.dragControls.addEventListener('dragstart', () => editor.controls.enabled = false);
                 editor.dragControls.addEventListener('dragend', (event) => {
                     editor.controls.enabled = true;
@@ -705,6 +715,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
