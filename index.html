@@ -12,12 +12,12 @@
     <!-- Favicon del repositorio -->
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
 
-    <!-- Se alinea la versión de Three.js con la que utiliza A-Frame 1.5.0 (r158) para evitar conflictos y la advertencia de "múltiples instancias". -->
+    <!-- CORREGIDO: Se alinea la versión de Three.js con la del archivo de referencia funcional (ecbook8.html) -->
     <script type="importmap">
         {
             "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+                "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/"
             }
         }
     </script>
@@ -192,7 +192,8 @@
         const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
         let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        const CACHE_NAME = 'salud-ar-assets-cache-v9'; 
+        // CORREGIDO: Se incrementa la versión del caché para forzar la recarga con la nueva lógica.
+        const CACHE_NAME = 'salud-ar-assets-cache-v11'; 
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSETS_CONFIG = [
             { name: 'cabeza1', imageExt: 'png' },
@@ -224,27 +225,13 @@
             },
         });
 
+        // CORREGIDO: Función de caché simplificada, idéntica a la del archivo funcional.
         async function fetchWithCache(url) {
-            // AÑADIDO: Log de depuración para ver la URL exacta que se está solicitando.
-            console.log("Solicitando URL:", url);
             const cache = await caches.open(CACHE_NAME);
-            let cachedResponse;
-            try {
-                 cachedResponse = await cache.match(url);
-            } catch (e) {
-                console.warn(`Error al acceder a la caché para ${url}`, e);
-            }
-
+            const cachedResponse = await cache.match(url);
             if (cachedResponse) return cachedResponse;
-            
             const networkResponse = await fetch(url);
-            if (networkResponse.ok) {
-                try {
-                    await cache.put(url, networkResponse.clone());
-                } catch (e) {
-                    console.warn(`No se pudo guardar en caché el recurso: ${url}`, e);
-                }
-            }
+            if (networkResponse.ok) await cache.put(url, networkResponse.clone());
             return networkResponse;
         }
         
@@ -262,6 +249,7 @@
             container.appendChild(grid);
         }
 
+        // CORREGIDO: Lógica de carga en paralelo, idéntica a la del archivo funcional.
         async function loadAssetsFromGitHub() {
             const loadingStatusDiv = document.getElementById('loading-status');
             const loadingText = document.getElementById('loading-text');
@@ -270,11 +258,12 @@
             progressBar.parentElement.classList.remove('hidden');
             loadingStatusDiv.classList.remove('hidden');
             document.getElementById('load-from-github-btn').disabled = true;
-            progressBar.style.width = `0%`;
+            progressBar.style.width = '0%';
+            progressBar.classList.remove('bg-red-600');
 
-            const totalAssets = ASSETS_CONFIG.length; 
+            const totalAssets = ASSETS_CONFIG.length;
             let loadedCount = 0;
-            
+
             const promises = ASSETS_CONFIG.map(async (assetConfig, index) => {
                 const { name, imageExt } = assetConfig;
                 const urls = {
@@ -283,9 +272,21 @@
                     image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
                 };
                 
-                const [markerRes, modelRes, imageRes] = await Promise.all([ fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image) ]);
-                if (!markerRes.ok || !modelRes.ok || !imageRes.ok) throw new Error(`Falló la descarga de recursos para ${name}`);
-                const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
+                const [markerRes, modelRes, imageRes] = await Promise.all([
+                    fetchWithCache(urls.marker),
+                    fetchWithCache(urls.model),
+                    fetchWithCache(urls.image)
+                ]);
+
+                if (!markerRes.ok || !modelRes.ok || !imageRes.ok) {
+                    throw new Error(`Falló la descarga de recursos para ${name}`);
+                }
+                
+                const [markerBlob, modelBlob, imageBlob] = await Promise.all([
+                    markerRes.blob(),
+                    modelRes.blob(),
+                    imageRes.blob()
+                ]);
 
                 loadedCount++;
                 progressBar.style.width = `${(loadedCount / totalAssets) * 100}%`;
@@ -307,6 +308,7 @@
                 displayLoadedImages(state.assets);
                 document.getElementById('goto-editor-btn').disabled = false;
                 setTimeout(() => { loadingStatusDiv.classList.add('hidden'); }, 1000);
+
             } catch (error) {
                 loadingText.textContent = 'Error al cargar los recursos. Revisa la consola.';
                 progressBar.classList.add('bg-red-600');
@@ -674,7 +676,4 @@
     </script>
 </body>
 </html>
-
-
-
 
