@@ -7,12 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
     
-    <!-- SOLUCIÓN: Se reintroduce el importmap para cargar explícitamente Three.js y sus addons. -->
-    <!-- Esto soluciona el error "THREE.OrbitControls is not a constructor". -->
-    <!-- Se usa la versión 0.158.0 para que coincida con la de A-Frame 1.5.0 -->
+    <!-- Se mantiene el importmap para cargar explícitamente Three.js y sus addons. -->
     <script type="importmap">
         {
             "imports": {
@@ -68,7 +65,7 @@
                 <p class="font-bold">¡Bienvenido!</p>
                 <p>Presiona el botón para descargar los modelos 3D y marcadores. Los archivos se guardarán en la caché de tu navegador para acelerar futuras cargas.</p>
             </div>
-            
+                        
             <div class="mt-6 text-center flex justify-center items-center gap-4">
                 <button id="load-from-github-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 text-lg shadow-md">
                     Cargar Recursos
@@ -83,7 +80,7 @@
                 <p id="loading-text" class="text-center text-gray-600 mt-2">Iniciando...</p>
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2"><div id="loading-progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div></div>
             </div>
-            
+                        
             <div id="image-preview-container" class="mt-6"></div>
 
             <div class="mt-8 text-center">
@@ -170,26 +167,26 @@
             </div>
         </div>
     </div>
-    
+        
     <div id="ar-preloader" class="hidden fixed inset-0 bg-black bg-opacity-75 flex flex-col justify-center items-center z-[10000]">
         <div class="loader"></div><p class="text-white text-lg mt-4">Iniciando cámara...</p>
     </div>
 
     <script type="module">
-    // SOLUCIÓN: Se reintroducen las importaciones explícitas de Three.js y sus addons.
+    // Se reintroducen las importaciones explícitas de Three.js y sus addons.
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { DragControls } from 'three/addons/controls/DragControls.js';
-    
+
     document.addEventListener('DOMContentLoaded', () => {
         // Se elimina 'const THREE = window.THREE' porque ahora lo importamos directamente.
 
-        const state = { 
-            assets: [], 
-            currentPage: 'page-upload', 
-            isArActive: false, 
-            areAssetsPreloaded: false,
+        const state = {
+             assets: [],
+             currentPage: 'page-upload',
+             isArActive: false,
+             areAssetsPreloaded: false,
         };
         let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
@@ -360,7 +357,7 @@
             editor.renderer.setSize(container.clientWidth, container.clientHeight);
             editor.renderer.setPixelRatio(window.devicePixelRatio);
             
-            // SOLUCIÓN: Se instancia OrbitControls usando la clase importada.
+            // Se instancia OrbitControls usando la clase importada.
             editor.controls = new OrbitControls(editor.camera, editor.renderer.domElement);
             editor.controls.enableDamping = true;
             
@@ -430,7 +427,7 @@
                 });
             });
         }
-
+        
         function updateModelTransformFromState(transform) {
             if (!editor.currentTarget) return;
             const asset = state.assets.find(a => a.id === parseInt(document.getElementById('asset-selector').value));
@@ -473,9 +470,9 @@
                 document.getElementById('start-ar-pc-btn').disabled = false;
                 document.getElementById('start-ar-mobile-btn').disabled = false;
             });
-            assetsEl.addEventListener('timeout', (e) => { 
-                arStatusText.textContent = 'Error: La carga de modelos tardó mucho.'; 
-                arLoader.classList.add('hidden');
+            assetsEl.addEventListener('timeout', (e) => {
+                 arStatusText.textContent = 'Error: La carga de modelos tardó mucho.';
+                 arLoader.classList.add('hidden');
                 console.error("La carga de recursos excedió el tiempo límite:", e.detail.src);
             });
             tempScene.appendChild(assetsEl);
@@ -493,8 +490,15 @@
             sceneEl.setAttribute('embedded', '');
             
             const markerUrlList = state.assets.map(a => a.markerDataUrl).join(';');
-            const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrackables: ${state.assets.length}; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
             
+            // =================================================================
+            // SOLUCIÓN: Se cambia `maxTrackables` a 1.
+            // Esto le dice a MindAR que cargue todos los marcadores, pero que solo
+            // rastree uno a la vez. Es más eficiente y soluciona el problema de
+            // que solo se detecte el primer marcador.
+            // =================================================================
+            const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
+
             sceneEl.setAttribute('mindar-image', mindARSettings);
             sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
             sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
@@ -549,7 +553,7 @@
             state.isArActive = true;
             
             if (shouldEnterFullscreen) { 
-                document.documentElement.requestFullscreen().catch(err => {
+                 document.documentElement.requestFullscreen().catch(err => {
                     console.warn("No se pudo entrar a pantalla completa automáticamente.", err);
                 });
             }
