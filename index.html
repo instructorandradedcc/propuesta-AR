@@ -40,10 +40,10 @@
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.1</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.3</div>
 
         <div class="flex justify-center items-center mb-6">
-             <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
+             <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
              <div>
                  <h1 class="text-4xl font-bold text-center" style="color: #1e3a8a;">PROPUESTA en SALUD</h1>
                  <p class="text-center text-gray-500">Visualización de modelos anatómicos con Realidad Aumentada.</p>
@@ -53,7 +53,7 @@
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 1: Cargar Recursos</h2>
             <div id="welcome-box" class="bg-indigo-50 border-l-4 border-indigo-500 text-indigo-700 p-4 mb-6" role="alert">
                 <p class="font-bold">¡Bienvenido!</p>
-                <p>Presiona el botón para descargar los recursos. Los archivos se guardarán en la caché de tu navegador para acelerar futuras cargas.</p>
+                <p>Presiona el botón para descargar los recursos por primera vez. Se guardarán en la caché para futuras visitas.</p>
             </div>
             <div class="mt-6 flex flex-col items-center gap-4">
                 <button id="load-from-github-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 text-lg shadow-md">
@@ -161,29 +161,23 @@
     </div>
     
     <script type="module">
-        // Importaciones de Three.js
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { DragControls } from 'three/addons/controls/DragControls.js';
 
         document.addEventListener('DOMContentLoaded', () => {
-            const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false, };
-            let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null, };
+            const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
+            let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
             
-            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.1';
+            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.3';
+            // CORRECCIÓN CRÍTICA: La carpeta en GitHub SÍ se llama 'asetss' (doble 's'). Se revierte el cambio anterior.
             const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
             
-            // CORRECCIÓN: Se usa una configuración de objetos para especificar la extensión de cada imagen.
-            const ASSETS_CONFIG = [
-                { name: 'cabeza1', imageExt: 'png' },
-                { name: 'corazon', imageExt: 'JPG' },
-                { name: 'dedo-mano', imageExt: 'JPG' },
-                { name: 'dedo', imageExt: 'JPG' },
-                { name: 'hueso-columna', imageExt: 'JPG' },
-                { name: 'huesosmano', imageExt: 'png' },
-                { name: 'mano-iz-protesis', imageExt: 'JPG' },
-                { name: 'protesis-mano-brazo', imageExt: 'JPG' }
+            // SIMPLIFICACIÓN: Como todas las imágenes ahora son .png, volvemos a una lista simple.
+            const ASSET_NAMES = [
+                'cabeza1', 'corazon', 'dedo-mano', 'dedo', 'hueso-columna', 
+                'huesosmano', 'mano-iz-protesis', 'protesis-mano-brazo'
             ];
 
             AFRAME.registerComponent('ar-rotator', {
@@ -246,18 +240,20 @@
                 githubBtn.disabled = true;
                 progressBar.style.width = `0%`;
                 progressBar.classList.remove('bg-red-600');
-                const totalAssets = ASSETS_CONFIG.length;
+                const totalAssets = ASSET_NAMES.length;
                 let loadedCount = 0;
                 
-                const promises = ASSETS_CONFIG.map(async (assetConfig, index) => {
-                    const { name, imageExt } = assetConfig; // Desestructurar el objeto
+                const promises = ASSET_NAMES.map(async (name, index) => {
                     const urls = {
                         marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
                         model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
-                        image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}` // Usar la extensión correcta
+                        image: `${GITHUB_BASE_URL}imagenes/${name}.png` // Ahora todas las imágenes son .png
                     };
                     const [markerRes, modelRes, imageRes] = await Promise.all([ fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image) ]);
-                    if (!markerRes.ok || !modelRes.ok || !imageRes.ok) throw new Error(`Falló la descarga de recursos para ${name}`);
+                    if (!markerRes.ok || !modelRes.ok || !imageRes.ok) {
+                        console.error(`Error al descargar ${name}. Estado: Marker=${markerRes.status}, Model=${modelRes.status}, Image=${imageRes.status}`);
+                        throw new Error(`Falló la descarga de recursos para ${name}`);
+                    }
                     const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
                     
                     loadedCount++;
@@ -265,7 +261,7 @@
                     loadingText.textContent = `Cargando ${name}... (${loadedCount}/${totalAssets})`;
 
                     return {
-                        id: index, name: name, imageExt: imageExt,
+                        id: index, name: name,
                         markerDataUrl: URL.createObjectURL(markerBlob),
                         modelDataUrl: URL.createObjectURL(modelBlob),
                         imageDataUrl: URL.createObjectURL(imageBlob),
@@ -534,15 +530,14 @@
                 try {
                     const cache = await caches.open(CACHE_NAME);
                     const keys = await cache.keys();
-                    if (keys.length < ASSETS_CONFIG.length * 3) throw new Error("Cache incompleto.");
-                    state.assets = await Promise.all(ASSETS_CONFIG.map(async (assetConfig, index) => {
-                        const { name, imageExt } = assetConfig;
-                        const urls = { marker: `${GITHUB_BASE_URL}markers/${name}.mind`, model: `${GITHUB_BASE_URL}modelss/${name}.glb`, image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}` };
+                    if (keys.length < ASSET_NAMES.length * 3) throw new Error("Cache incompleto.");
+                    state.assets = await Promise.all(ASSET_NAMES.map(async (name, index) => {
+                        const urls = { marker: `${GITHUB_BASE_URL}markers/${name}.mind`, model: `${GITHUB_BASE_URL}modelss/${name}.glb`, image: `${GITHUB_BASE_URL}imagenes/${name}.png` };
                         const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
                         if (!markerRes || !modelRes || !imageRes) throw new Error(`Asset ${name} no encontrado en caché.`);
                         const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
                         return {
-                            id: index, name: name, imageExt: imageExt,
+                            id: index, name: name,
                             markerDataUrl: URL.createObjectURL(markerBlob), modelDataUrl: URL.createObjectURL(modelBlob), imageDataUrl: URL.createObjectURL(imageBlob),
                             transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
                             hasBeenNormalized: false, normalizationFactor: 1,
