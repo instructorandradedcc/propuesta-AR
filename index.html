@@ -10,14 +10,11 @@
 
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
 
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
-            }
-        }
-    </script>
+    <!-- SOLUCIÓN: Se elimina el <script type="importmap">.
+         A-Frame ya incluye Three.js. Importarlo de nuevo causa conflictos graves
+         que impiden que los componentes de MindAR funcionen correctamente.
+         Este es el cambio más importante para la estabilidad de la aplicación.
+    -->
     
     <style>
         html.ar-active, body.ar-active { overflow: hidden; width: 100%; height: 100%; margin: 0; padding: 0; }
@@ -173,17 +170,19 @@
     </div>
 
     <script type="module">
-    // Importaciones de Three.js
-    import * as THREE from 'three';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { DragControls } from 'three/addons/controls/DragControls.js';
+    const THREE = window.THREE; // Usar el THREE que A-Frame ya cargó
 
     document.addEventListener('DOMContentLoaded', () => {
-        const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
-        let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
+        const state = { 
+            assets: [], 
+            currentPage: 'page-upload', 
+            isArActive: false, 
+            areAssetsPreloaded: false,
+            compiledMindFileUrl: 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/markers/targets.mind' 
+        };
+        let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new THREE.GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        const CACHE_NAME = 'salud-ar-assets-cache-v13'; 
+        const CACHE_NAME = 'salud-ar-assets-cache-v14';
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSETS_CONFIG = [
             { name: 'cabeza1', imageExt: 'png' }, { name: 'corazon', imageExt: 'JPG' },
@@ -230,7 +229,9 @@
             const cachedResponse = await cache.match(url);
             if (cachedResponse) return cachedResponse;
             const networkResponse = await fetchWithRetry(url);
-            if (networkResponse && networkResponse.ok) await cache.put(url, networkResponse.clone());
+            if (networkResponse && networkResponse.ok) {
+                await cache.put(url, networkResponse.clone());
+            }
             return networkResponse;
         }
         
@@ -248,57 +249,6 @@
             container.appendChild(grid);
         }
 
-        async function loadAssetsInBatches(assetConfigs, batchSize = 4) {
-            const loadingText = document.getElementById('loading-text');
-            const progressBar = document.getElementById('loading-progress-bar');
-            const totalAssets = assetConfigs.length;
-            let loadedAssets = [];
-            let loadedCount = 0;
-
-            for (let i = 0; i < totalAssets; i += batchSize) {
-                const batch = assetConfigs.slice(i, i + batchSize);
-                const batchPromises = batch.map(async (assetConfig, indexInBatch) => {
-                    const { name, imageExt } = assetConfig;
-                    const currentIndex = i + indexInBatch;
-                    loadingText.textContent = `Cargando ${name}... (${currentIndex + 1}/${totalAssets})`;
-
-                    const urls = {
-                        marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                        model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
-                        image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
-                    };
-
-                    const [markerRes, modelRes, imageRes] = await Promise.all([
-                        fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image)
-                    ]);
-
-                    if (!markerRes.ok || !modelRes.ok || !imageRes.ok) {
-                        throw new Error(`Falló la descarga de recursos para ${name}`);
-                    }
-
-                    const [markerBlob, modelBlob, imageBlob] = await Promise.all([
-                        markerRes.blob(), modelRes.blob(), imageRes.blob()
-                    ]);
-                    
-                    loadedCount++;
-                    progressBar.style.width = `${(loadedCount / totalAssets) * 100}%`;
-
-                    return {
-                        id: currentIndex, name,
-                        markerDataUrl: URL.createObjectURL(markerBlob),
-                        modelDataUrl: URL.createObjectURL(modelBlob),
-                        imageDataUrl: URL.createObjectURL(imageBlob),
-                        transform: { position: { x: 0, y: 0, z: 0.1 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 0.3, y: 0.3, z: 0.3 } },
-                        hasBeenNormalized: false, normalizationFactor: 1,
-                    };
-                });
-                
-                const batchResults = await Promise.all(batchPromises);
-                loadedAssets = loadedAssets.concat(batchResults);
-            }
-            return loadedAssets;
-        }
-
         async function loadAssetsFromGitHub() {
             const loadingStatusDiv = document.getElementById('loading-status');
             const loadingText = document.getElementById('loading-text');
@@ -310,7 +260,42 @@
             progressBar.classList.remove('bg-red-600');
 
             try {
-                state.assets = await loadAssetsInBatches(ASSETS_CONFIG);
+                loadingText.textContent = 'Descargando archivo de marcadores compilado...';
+                await fetchWithCache(state.compiledMindFileUrl);
+                
+                const totalAssets = ASSETS_CONFIG.length;
+                let loadedCount = 0;
+
+                const assetPromises = ASSETS_CONFIG.map(async (assetConfig, index) => {
+                    const { name, imageExt } = assetConfig;
+                    loadingText.textContent = `Cargando ${name}... (${loadedCount + 1}/${totalAssets})`;
+                    
+                    const urls = {
+                        model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
+                        image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
+                    };
+
+                    const [modelRes, imageRes] = await Promise.all([
+                        fetchWithCache(urls.model), fetchWithCache(urls.image)
+                    ]);
+                    if (!modelRes.ok || !imageRes.ok) throw new Error(`Falló la descarga de recursos para ${name}`);
+                    
+                    const [modelBlob, imageBlob] = await Promise.all([modelRes.blob(), imageRes.blob()]);
+                    
+                    loadedCount++;
+                    progressBar.style.width = `${(loadedCount / totalAssets) * 100}%`;
+
+                    return {
+                        id: index, name,
+                        modelDataUrl: URL.createObjectURL(modelBlob),
+                        imageDataUrl: URL.createObjectURL(imageBlob),
+                        transform: { position: { x: 0, y: 0, z: 0.1 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 0.3, y: 0.3, z: 0.3 } },
+                        hasBeenNormalized: false, normalizationFactor: 1,
+                    };
+                });
+                
+                state.assets = await Promise.all(assetPromises);
+                
                 loadingText.textContent = '¡Todos los recursos cargados y guardados en caché!';
                 displayLoadedImages(state.assets);
                 document.getElementById('goto-editor-btn').disabled = false;
@@ -328,11 +313,9 @@
             const loadingStatusDiv = document.getElementById('loading-status');
             const loadingText = document.getElementById('loading-text');
             const progressBar = document.getElementById('loading-progress-bar');
-
             progressBar.parentElement.classList.add('hidden');
             loadingStatusDiv.classList.remove('hidden');
             loadingText.textContent = 'Limpiando la caché de la aplicación...';
-
             try {
                 await caches.delete(CACHE_NAME);
                 loadingText.textContent = 'Caché limpiada con éxito. La página se recargará.';
@@ -344,9 +327,10 @@
         }
         
         function initEditor() {
+            if (editor.renderer) return;
             const canvas = document.getElementById('editor-canvas');
             const container = document.getElementById('editor-container');
-            if (!canvas || !container || editor.renderer) return;
+
             editor.scene = new THREE.Scene();
             editor.scene.background = new THREE.Color(0xeeeeee);
             editor.camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
@@ -358,8 +342,10 @@
             editor.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
             editor.renderer.setSize(container.clientWidth, container.clientHeight);
             editor.renderer.setPixelRatio(window.devicePixelRatio);
-            editor.controls = new OrbitControls(editor.camera, editor.renderer.domElement);
+            
+            editor.controls = new THREE.OrbitControls(editor.camera, editor.renderer.domElement);
             editor.controls.enableDamping = true;
+            
             const animate = () => { requestAnimationFrame(animate); editor.controls.update(); editor.renderer.render(editor.scene, editor.camera); };
             animate();
         }
@@ -388,8 +374,14 @@
         function displayAssetInEditor(assetId) {
             const asset = state.assets.find(a => a.id === assetId);
             if (!asset || !editor.scene) return;
-            if (editor.currentTarget) { editor.scene.remove(editor.currentTarget); if (editor.dragControls) editor.dragControls.dispose(); }
-            if (editor.currentPlane) editor.scene.remove(editor.currentPlane);
+
+            if (editor.currentTarget) {
+                editor.scene.remove(editor.currentTarget);
+                if (editor.dragControls) editor.dragControls.dispose();
+            }
+            if (editor.currentPlane) {
+                editor.scene.remove(editor.currentPlane);
+            }
 
             editor.textureLoader.load(asset.imageDataUrl, (texture) => {
                 const aspect = texture.image.width / texture.image.height;
@@ -403,14 +395,17 @@
                     const box = new THREE.Box3().setFromObject(editor.currentTarget);
                     const size = box.getSize(new THREE.Vector3());
                     const center = box.getCenter(new THREE.Vector3());
+                    // Normalizamos el modelo para que la escala sea consistente
                     asset.normalizationFactor = 1.0 / Math.max(size.x, size.y, size.z);
-                    editor.currentTarget.position.sub(center);
+                    editor.currentTarget.position.sub(center); // Centramos el modelo
                     asset.hasBeenNormalized = true;
                 }
                 editor.scene.add(editor.currentTarget);
                 updateModelTransformFromState(asset.transform);
                 updateTransformInputs(asset.transform);
-                editor.dragControls = new DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
+
+                // Habilitamos el arrastre del modelo
+                editor.dragControls = new THREE.DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
                 editor.dragControls.addEventListener('dragstart', () => editor.controls.enabled = false);
                 editor.dragControls.addEventListener('dragend', (event) => {
                     editor.controls.enabled = true;
@@ -419,17 +414,22 @@
                 });
             });
         }
-                
+
         function updateModelTransformFromState(transform) {
             if (!editor.currentTarget) return;
             const asset = state.assets.find(a => a.id === parseInt(document.getElementById('asset-selector').value));
             if (!asset) return;
+            
             const finalScale = transform.scale.x * asset.normalizationFactor;
             editor.currentTarget.position.set(transform.position.x, transform.position.y, transform.position.z);
-            editor.currentTarget.rotation.set(THREE.MathUtils.degToRad(transform.rotation.x), THREE.MathUtils.degToRad(transform.rotation.y), THREE.MathUtils.degToRad(transform.rotation.z));
+            editor.currentTarget.rotation.set(
+                THREE.MathUtils.degToRad(transform.rotation.x),
+                THREE.MathUtils.degToRad(transform.rotation.y),
+                THREE.MathUtils.degToRad(transform.rotation.z)
+            );
             editor.currentTarget.scale.set(finalScale, finalScale, finalScale);
         }
-        
+
         function preloadARAssets() {
             if (state.areAssetsPreloaded || state.assets.length === 0) return;
             const arPreloadContainer = document.getElementById('ar-preload-container');
@@ -476,13 +476,13 @@
             const sceneEl = document.createElement('a-scene');
             sceneEl.setAttribute('embedded', '');
             
-            const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
+            const mindARSettings = `imageTargetSrc: ${state.compiledMindFileUrl}; maxTrackables: ${state.assets.length}; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
             
             sceneEl.setAttribute('mindar-image', mindARSettings);
             sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
             sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
             sceneEl.setAttribute('color-space', 'sRGB');
-            sceneEl.setAttribute('renderer', 'colorManagement: true; physicallyCorrectLights: true; useLegacyLights: false;');
+            sceneEl.setAttribute('renderer', 'colorManagement: true; physicallyCorrectLights: true;');
 
             const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
             if(preloadedAssets) sceneEl.appendChild(preloadedAssets.cloneNode(true)); 
@@ -516,10 +516,7 @@
             sceneEl.addEventListener('arReady', () => {
                 scanningUI.classList.remove('hidden');
                 document.getElementById('ar-preloader').classList.add('hidden');
-                
-                setTimeout(() => { 
-                    if (sceneEl.renderer) sceneEl.renderer.setSize(window.innerWidth, window.innerHeight); 
-                }, 100); 
+                setTimeout(() => { if (sceneEl.renderer) sceneEl.renderer.setSize(window.innerWidth, window.innerHeight); }, 100); 
             });
             sceneEl.addEventListener('targetFound', () => scanningUI.classList.add('hidden'));
             sceneEl.addEventListener('targetLost', () => scanningUI.classList.remove('hidden'));
@@ -540,13 +537,17 @@
                 });
             }
         }
-
+        
         function stopAR() {
             const arSceneContainer = document.getElementById('ar-scene-container');
             const sceneEl = arSceneContainer.querySelector('a-scene');
             if (sceneEl && sceneEl.hasLoaded) {
-                if(sceneEl.systems['mindar-image-system']) sceneEl.systems['mindar-image-system'].stop();
-                if (sceneEl.parentNode) sceneEl.parentNode.removeChild(sceneEl);
+                if(sceneEl.systems['mindar-image-system']) {
+                    sceneEl.systems['mindar-image-system'].stop();
+                }
+                if (sceneEl.parentNode) {
+                    sceneEl.parentNode.removeChild(sceneEl);
+                }
             }
             arSceneContainer.innerHTML = '';
             document.getElementById('ar-preload-container').innerHTML = '';
@@ -562,11 +563,10 @@
             if (document.fullscreenElement) {
                 document.exitFullscreen().catch(err => console.error("Error al salir de pantalla completa:", err));
             }
-
             state.isArActive = false;
         }
-        
-        function toggleFullScreen() {
+
+        function toggleFullScreen(){
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => console.error(`Error al intentar activar el modo de pantalla completa: ${err.message} (${err.name})`));
             } else {
@@ -575,7 +575,9 @@
         }
 
         function navigateTo(pageId) {
-            if (state.isArActive) stopAR();
+            if (state.isArActive) {
+                stopAR();
+            }
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             state.currentPage = pageId;
@@ -583,33 +585,41 @@
             if (pageId === 'page-editor') {
                 if (!editor.renderer) initEditor();
                 populateEditorSelector();
-                if (state.assets.length > 0) displayAssetInEditor(parseInt(document.getElementById('asset-selector').value) || 0);
+                if (state.assets.length > 0) {
+                    displayAssetInEditor(parseInt(document.getElementById('asset-selector').value) || 0);
+                }
             } else if (pageId === 'page-ar') {
                 document.getElementById('start-ar-pc-btn').disabled = true;
                 document.getElementById('start-ar-mobile-btn').disabled = true;
                 preloadARAssets();
             }
         }
-
+        
         async function loadAssetsFromCacheOnStartup() {
             try {
                 const cache = await caches.open(CACHE_NAME);
                 const keys = await cache.keys();
-                if (keys.length < ASSETS_CONFIG.length * 3) throw new Error("Caché incompleto.");
+                // Verifica si el archivo compilado y los demás assets están en caché
+                if (keys.length < ASSETS_CONFIG.length * 2 + 1) { // 2 por asset (modelo/imagen) + 1 del .mind
+                    throw new Error("Caché incompleto.");
+                }
 
+                await cache.match(state.compiledMindFileUrl); // Confirma que el .mind existe
+                
                 const assets = await Promise.all(ASSETS_CONFIG.map(async (assetConfig, index) => {
                     const { name, imageExt } = assetConfig;
                     const urls = {
-                        marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
                         model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
                         image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
                     };
-                    const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
-                    if (!markerRes || !modelRes || !imageRes) throw new Error(`Recurso ${name} no encontrado en caché.`);
-                    const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
+                    const [modelRes, imageRes] = await Promise.all([cache.match(urls.model), cache.match(urls.image)]);
+                    
+                    if (!modelRes || !imageRes) throw new Error(`Recurso ${name} no encontrado en caché.`);
+                    
+                    const [modelBlob, imageBlob] = await Promise.all([modelRes.blob(), imageRes.blob()]);
+                    
                     return {
                         id: index, name,
-                        markerDataUrl: URL.createObjectURL(markerBlob),
                         modelDataUrl: URL.createObjectURL(modelBlob),
                         imageDataUrl: URL.createObjectURL(imageBlob),
                         transform: { position: { x: 0, y: 0, z: 0.1 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 0.3, y: 0.3, z: 0.3 } },
@@ -640,7 +650,7 @@
             }
         }
 
-        // --- Asignación de Event Listeners ---
+        // --- Asignación de todos los Event Listeners ---
         document.getElementById('load-from-github-btn').addEventListener('click', loadAssetsFromGitHub);
         document.getElementById('clear-cache-btn').addEventListener('click', clearCache);
         document.getElementById('goto-editor-btn').addEventListener('click', () => navigateTo('page-editor'));
