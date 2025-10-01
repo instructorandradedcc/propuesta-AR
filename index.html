@@ -10,6 +10,18 @@
 
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
     
+    <!-- SOLUCIÓN: Reintroducimos el importmap como en el ejemplo que funciona. -->
+    <!-- Esto asegura que Three.js y sus módulos se carguen de forma explícita y correcta. -->
+    <!-- Se usa la versión 0.158.0 para coincidir con la de A-Frame 1.5.0 -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+            }
+        }
+    </script>
+
     <style>
         html.ar-active, body.ar-active { overflow: hidden; width: 100%; height: 100%; margin: 0; padding: 0; }
         .app-container.ar-fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; max-height: none; padding: 0; margin: 0 !important; border-radius: 0; overflow: hidden; }
@@ -164,7 +176,11 @@
     </div>
 
     <script type="module">
-    const THREE = window.THREE; // Usar el THREE que A-Frame ya cargó
+    // SOLUCIÓN: Se importan explícitamente los módulos de Three.js
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DragControls } from 'three/addons/controls/DragControls.js';
 
     document.addEventListener('DOMContentLoaded', () => {
         const state = { 
@@ -173,9 +189,10 @@
             isArActive: false, 
             areAssetsPreloaded: false,
         };
-        let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new THREE.GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
+        // Ya no se necesita 'loader' y 'textureLoader' aquí, se crean dentro de la función initEditor
+        let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, currentTarget: null, currentPlane: null };
         
-        const CACHE_NAME = 'salud-ar-assets-cache-v15'; // Versión de caché actualizada
+        const CACHE_NAME = 'salud-ar-assets-cache-v16'; // Versión de caché actualizada
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSETS_CONFIG = [
             { name: 'cabeza1', imageExt: 'png' }, { name: 'corazon', imageExt: 'JPG' },
@@ -207,7 +224,7 @@
             for (let i = 0; i <= retries; i++) {
                 try {
                     const response = await fetch(url);
-                    if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                    if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText} for ${url}`);
                     return response;
                 } catch (error) {
                     if (i === retries) throw error;
@@ -261,7 +278,6 @@
                     loadingText.textContent = `Cargando ${name}... (${loadedCount + 1}/${totalAssets})`;
                     
                     const urls = {
-                        // SOLUCIÓN: Se vuelve a cargar el .mind individual para cada asset
                         marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
                         model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
                         image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
@@ -286,7 +302,6 @@
 
                     return {
                         id: index, name,
-                        // SOLUCIÓN: Se guarda la URL del .mind individual
                         markerDataUrl: URL.createObjectURL(markerBlob),
                         modelDataUrl: URL.createObjectURL(modelBlob),
                         imageDataUrl: URL.createObjectURL(imageBlob),
@@ -344,7 +359,11 @@
             editor.renderer.setSize(container.clientWidth, container.clientHeight);
             editor.renderer.setPixelRatio(window.devicePixelRatio);
             
-            editor.controls = new THREE.OrbitControls(editor.camera, editor.renderer.domElement);
+            // Se crean los loaders aquí porque dependen de la importación de THREE
+            editor.loader = new GLTFLoader();
+            editor.textureLoader = new THREE.TextureLoader();
+
+            editor.controls = new OrbitControls(editor.camera, editor.renderer.domElement);
             editor.controls.enableDamping = true;
             
             const animate = () => { requestAnimationFrame(animate); editor.controls.update(); editor.renderer.render(editor.scene, editor.camera); };
@@ -404,7 +423,7 @@
                 updateModelTransformFromState(asset.transform);
                 updateTransformInputs(asset.transform);
 
-                editor.dragControls = new THREE.DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
+                editor.dragControls = new DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
                 editor.dragControls.addEventListener('dragstart', () => editor.controls.enabled = false);
                 editor.dragControls.addEventListener('dragend', (event) => {
                     editor.controls.enabled = true;
@@ -475,7 +494,6 @@
             const sceneEl = document.createElement('a-scene');
             sceneEl.setAttribute('embedded', '');
             
-            // SOLUCIÓN: Se unen las URLs de los .mind individuales con ';'
             const markerUrlList = state.assets.map(a => a.markerDataUrl).join(';');
             const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
             
@@ -600,7 +618,6 @@
             try {
                 const cache = await caches.open(CACHE_NAME);
                 const keys = await cache.keys();
-                // SOLUCIÓN: Se buscan 3 archivos por asset (mind, glb, imagen)
                 if (keys.length < ASSETS_CONFIG.length * 3) {
                     throw new Error("Caché incompleto.");
                 }
