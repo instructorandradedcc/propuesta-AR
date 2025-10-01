@@ -463,8 +463,8 @@
                     sceneEl.systems['mindar-image-system'].start();
                 });
 
-                // CAMBIO CLAVE: Se adoptan los listeners simples del ejemplo funcional.
-                // Estos no causan errores y permiten que MindAR maneje la visibilidad de los modelos.
+                // CORRECCIÓN CLAVE: Se adoptan los listeners simples del ejemplo funcional.
+                // Estos no intentan acceder a 'e.detail', evitando el error que bloqueaba la detección.
                 const scanningUI = document.getElementById('scanning-ui');
                 sceneEl.addEventListener('arReady', () => {
                     scanningUI.classList.remove('hidden');
