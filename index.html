@@ -12,7 +12,7 @@
     <!-- Favicon del repositorio -->
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
 
-    <!-- CORREGIDO: Se alinea la versión de Three.js con la del archivo de referencia funcional (ecbook8.html) -->
+    <!-- Versión de Three.js alineada con la del archivo de referencia funcional -->
     <script type="importmap">
         {
             "imports": {
@@ -192,8 +192,7 @@
         const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
         let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        // CORREGIDO: Se incrementa la versión del caché para forzar la recarga con la nueva lógica.
-        const CACHE_NAME = 'salud-ar-assets-cache-v11'; 
+        const CACHE_NAME = 'salud-ar-assets-cache-v12'; 
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSETS_CONFIG = [
             { name: 'cabeza1', imageExt: 'png' },
@@ -225,13 +224,29 @@
             },
         });
 
-        // CORREGIDO: Función de caché simplificada, idéntica a la del archivo funcional.
+        async function fetchWithRetry(url, retries = 2, delay = 500) {
+            for (let i = 0; i <= retries; i++) {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                    return response;
+                } catch (error) {
+                    if (i === retries) throw error;
+                    console.warn(`Intento ${i + 1} fallido para ${url}. Reintentando en ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
         async function fetchWithCache(url) {
             const cache = await caches.open(CACHE_NAME);
             const cachedResponse = await cache.match(url);
             if (cachedResponse) return cachedResponse;
-            const networkResponse = await fetch(url);
-            if (networkResponse.ok) await cache.put(url, networkResponse.clone());
+
+            const networkResponse = await fetchWithRetry(url);
+            if (networkResponse && networkResponse.ok) {
+                await cache.put(url, networkResponse.clone());
+            }
             return networkResponse;
         }
         
@@ -249,66 +264,73 @@
             container.appendChild(grid);
         }
 
-        // CORREGIDO: Lógica de carga en paralelo, idéntica a la del archivo funcional.
+        async function loadAssetsInBatches(assetConfigs, batchSize = 4) {
+            const loadingText = document.getElementById('loading-text');
+            const progressBar = document.getElementById('loading-progress-bar');
+            const totalAssets = assetConfigs.length;
+            let loadedAssets = [];
+            let loadedCount = 0;
+
+            for (let i = 0; i < totalAssets; i += batchSize) {
+                const batch = assetConfigs.slice(i, i + batchSize);
+                const batchPromises = batch.map(async (assetConfig, indexInBatch) => {
+                    const { name, imageExt } = assetConfig;
+                    const currentIndex = i + indexInBatch;
+                    loadingText.textContent = `Cargando ${name}... (${currentIndex + 1}/${totalAssets})`;
+
+                    const urls = {
+                        marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
+                        model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
+                        image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
+                    };
+
+                    const [markerRes, modelRes, imageRes] = await Promise.all([
+                        fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image)
+                    ]);
+
+                    if (!markerRes.ok || !modelRes.ok || !imageRes.ok) {
+                        throw new Error(`Falló la descarga de recursos para ${name}`);
+                    }
+
+                    const [markerBlob, modelBlob, imageBlob] = await Promise.all([
+                        markerRes.blob(), modelRes.blob(), imageRes.blob()
+                    ]);
+                    
+                    loadedCount++;
+                    progressBar.style.width = `${(loadedCount / totalAssets) * 100}%`;
+
+                    return {
+                        id: currentIndex, name,
+                        markerDataUrl: URL.createObjectURL(markerBlob),
+                        modelDataUrl: URL.createObjectURL(modelBlob),
+                        imageDataUrl: URL.createObjectURL(imageBlob),
+                        transform: { position: { x: 0, y: 0, z: 0.1 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 0.3, y: 0.3, z: 0.3 } },
+                        hasBeenNormalized: false, normalizationFactor: 1,
+                    };
+                });
+                
+                const batchResults = await Promise.all(batchPromises);
+                loadedAssets = loadedAssets.concat(batchResults);
+            }
+            return loadedAssets;
+        }
+
         async function loadAssetsFromGitHub() {
             const loadingStatusDiv = document.getElementById('loading-status');
             const loadingText = document.getElementById('loading-text');
             const progressBar = document.getElementById('loading-progress-bar');
             
-            progressBar.parentElement.classList.remove('hidden');
             loadingStatusDiv.classList.remove('hidden');
             document.getElementById('load-from-github-btn').disabled = true;
             progressBar.style.width = '0%';
             progressBar.classList.remove('bg-red-600');
 
-            const totalAssets = ASSETS_CONFIG.length;
-            let loadedCount = 0;
-
-            const promises = ASSETS_CONFIG.map(async (assetConfig, index) => {
-                const { name, imageExt } = assetConfig;
-                const urls = {
-                    marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                    model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
-                    image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
-                };
-                
-                const [markerRes, modelRes, imageRes] = await Promise.all([
-                    fetchWithCache(urls.marker),
-                    fetchWithCache(urls.model),
-                    fetchWithCache(urls.image)
-                ]);
-
-                if (!markerRes.ok || !modelRes.ok || !imageRes.ok) {
-                    throw new Error(`Falló la descarga de recursos para ${name}`);
-                }
-                
-                const [markerBlob, modelBlob, imageBlob] = await Promise.all([
-                    markerRes.blob(),
-                    modelRes.blob(),
-                    imageRes.blob()
-                ]);
-
-                loadedCount++;
-                progressBar.style.width = `${(loadedCount / totalAssets) * 100}%`;
-                loadingText.textContent = `Cargando ${name}... (${loadedCount}/${totalAssets})`;
-
-                return {
-                    id: index, name,
-                    markerDataUrl: URL.createObjectURL(markerBlob),
-                    modelDataUrl: URL.createObjectURL(modelBlob),
-                    imageDataUrl: URL.createObjectURL(imageBlob),
-                    transform: { position: { x: 0, y: 0, z: 0.1 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 0.3, y: 0.3, z: 0.3 } },
-                    hasBeenNormalized: false, normalizationFactor: 1,
-                };
-            });
-
             try {
-                state.assets = await Promise.all(promises);
+                state.assets = await loadAssetsInBatches(ASSETS_CONFIG);
                 loadingText.textContent = '¡Todos los recursos cargados y guardados en caché!';
                 displayLoadedImages(state.assets);
                 document.getElementById('goto-editor-btn').disabled = false;
                 setTimeout(() => { loadingStatusDiv.classList.add('hidden'); }, 1000);
-
             } catch (error) {
                 loadingText.textContent = 'Error al cargar los recursos. Revisa la consola.';
                 progressBar.classList.add('bg-red-600');
@@ -330,9 +352,7 @@
             try {
                 await caches.delete(CACHE_NAME);
                 loadingText.textContent = 'Caché limpiada con éxito. La página se recargará.';
-                setTimeout(() => {
-                    location.reload();
-                }, 2000);
+                setTimeout(() => { location.reload(); }, 2000);
             } catch (error) {
                 loadingText.textContent = 'No se pudo limpiar la caché. Revisa la consola.';
                 console.error('Falló la limpieza de caché:', error);
@@ -676,4 +696,3 @@
     </script>
 </body>
 </html>
-
