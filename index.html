@@ -9,12 +9,16 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
     
-    <!-- Se mantiene el importmap para cargar explícitamente Three.js y sus addons. -->
+    <!-- ================================================================= -->
+    <!-- SOLUCIÓN: Se cambia la versión de Three.js a la 0.152.2. -->
+    <!-- Esta es la versión usada en la aplicación de referencia que sí funciona -->
+    <!-- y parece resolver la incompatibilidad con la detección de múltiples marcadores. -->
+    <!-- ================================================================= -->
     <script type="importmap">
         {
             "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+                "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/"
             }
         }
     </script>
@@ -491,25 +495,13 @@
             
             const markerUrlList = state.assets.map(a => a.markerDataUrl).join(';');
             
-            // =================================================================
-            // CORRECCIÓN 1: Se cambia `maxTrackables` por `maxTrack`.
-            // La consola indicaba que 'maxTrackables' era una propiedad desconocida.
-            // El nombre correcto según la documentación de MindAR es 'maxTrack'.
-            // =================================================================
             const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrack: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
 
             sceneEl.setAttribute('mindar-image', mindARSettings);
             sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
             sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
             sceneEl.setAttribute('color-space', 'sRGB');
-
-            // =================================================================
-            // CORRECCIÓN 2: Se elimina `physicallyCorrectLights`.
-            // Esta propiedad está obsoleta en las versiones recientes de Three.js
-            // y causaba una advertencia en la consola. `colorManagement: true`
-            // es suficiente.
-            // =================================================================
-            sceneEl.setAttribute('renderer', 'colorManagement: true;');
+            sceneEl.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights');
 
             const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
             if(preloadedAssets) sceneEl.appendChild(preloadedAssets.cloneNode(true)); 
@@ -725,8 +717,6 @@
     </script>
 </body>
 </html>
-
-
 
 
 
