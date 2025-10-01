@@ -8,7 +8,7 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-    <!-- CORRECCIÓN: Se restaura el importmap para el funcionamiento del editor 3D. -->
+    <!-- Se mantiene el importmap para el funcionamiento del editor 3D. -->
     <script type="importmap">
         {
             "imports": {
@@ -109,7 +109,7 @@
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
         <!-- VERSIÓN -->
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v1.1</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v1.2</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -232,7 +232,6 @@
         <p class="text-white text-lg mt-4">Iniciando cámara...</p>
     </div>
 
-    <!-- CORRECCIÓN: Se revierte a script type="module" para usar importaciones. -->
     <script type="module">
         // Importaciones de Three.js para el editor
         import * as THREE from 'three';
@@ -263,43 +262,7 @@
                 'cabeza1', 'corazon', 'dedo-mano', 'dedo', 'hueso-columna',
                 'huesosmano', 'mano-iz-protesis', 'protesis-mano-brazo'
             ];
-            // Componente de A-Frame para rotación con TACTIL y MOUSE
-            AFRAME.registerComponent('ar-rotator', {
-                schema: { rotationFactor: { type: 'number', default: 0.5 } },
-                init: function () {
-                    this.isVisible = false;
-                    this.isDragging = false;
-                    this.previousDrag = { x: 0, y: 0 };
-                    const canvas = this.el.sceneEl.canvas;
-                    const startDrag = (x, y) => {
-                        if (this.isVisible) {
-                            this.isDragging = true;
-                            this.previousDrag = { x, y };
-                        }
-                    };
-                    const drag = (x, y) => {
-                        if (this.isDragging && this.isVisible) {
-                            const deltaX = x - this.previousDrag.x;
-                            const deltaY = y - this.previousDrag.y;
-                            this.el.object3D.rotation.y += THREE.MathUtils.degToRad(deltaX * this.data.rotationFactor);
-                            this.el.object3D.rotation.x += THREE.MathUtils.degToRad(deltaY * this.data.rotationFactor);
-                            this.previousDrag = { x, y };
-                        }
-                    };
-                    const endDrag = () => { this.isDragging = false; };
-                    // Eventos Táctiles
-                    canvas.addEventListener('touchstart', (e) => { if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY); });
-                    canvas.addEventListener('touchmove', (e) => { if (e.touches.length === 1) drag(e.touches[0].clientX, e.touches[0].clientY); });
-                    canvas.addEventListener('touchend', endDrag);
-                    // Eventos de Mouse
-                    canvas.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
-                    canvas.addEventListener('mousemove', (e) => drag(e.clientX, e.clientY));
-                    canvas.addEventListener('mouseup', endDrag);
-                    canvas.addEventListener('mouseleave', endDrag);
-                    this.el.parentEl.addEventListener('targetFound', () => { this.isVisible = true; });
-                    this.el.parentEl.addEventListener('targetLost', () => { this.isVisible = false; });
-                },
-            });
+            
             async function fetchWithCache(url) {
                 const cache = await caches.open(CACHE_NAME);
                 const cachedResponse = await cache.match(url);
@@ -717,6 +680,7 @@
     </script>
 </body>
 </html>
+
 
 
 
