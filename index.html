@@ -189,7 +189,7 @@
         const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
         let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        const CACHE_NAME = 'salud-ar-assets-cache-v2'; // Versión de caché actualizada
+        const CACHE_NAME = 'salud-ar-assets-cache-v3'; // Versión de caché actualizada para forzar recarga
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSETS_CONFIG = [
             { name: 'cabeza1', imageExt: 'png' },
@@ -620,3 +620,5 @@
     </script>
 </body>
 </html>
+
+
