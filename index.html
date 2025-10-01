@@ -17,49 +17,6 @@
         }
     </script>
     
-    <script>
-        AFRAME.registerComponent('ar-rotator', {
-            schema: { rotationFactor: { type: 'number', default: 0.5 } },
-            init: function () {
-                this.isVisible = false;
-                this.isDragging = false;
-                this.previousDrag = { x: 0, y: 0 };
-                const canvas = this.el.sceneEl.canvas;
-
-                const startDrag = (x, y) => {
-                    if (this.isVisible) {
-                        this.isDragging = true;
-                        this.previousDrag = { x, y };
-                    }
-                };
-
-                const drag = (x, y) => {
-                    if (this.isDragging && this.isVisible) {
-                        const deltaX = x - this.previousDrag.x;
-                        const deltaY = y - this.previousDrag.y;
-                        this.el.object3D.rotation.y += THREE.MathUtils.degToRad(deltaX * this.data.rotationFactor);
-                        this.el.object3D.rotation.x += THREE.MathUtils.degToRad(deltaY * this.data.rotationFactor);
-                        this.previousDrag = { x, y };
-                    }
-                };
-
-                const endDrag = () => { this.isDragging = false; };
-
-                canvas.addEventListener('touchstart', (e) => { if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY); });
-                canvas.addEventListener('touchmove', (e) => { if (e.touches.length === 1) drag(e.touches[0].clientX, e.touches[0].clientY); });
-                canvas.addEventListener('touchend', endDrag);
-
-                canvas.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
-                canvas.addEventListener('mousemove', (e) => drag(e.clientX, e.clientY));
-                canvas.addEventListener('mouseup', endDrag);
-                canvas.addEventListener('mouseleave', endDrag);
-
-                this.el.parentEl.addEventListener('targetFound', () => { this.isVisible = true; });
-                this.el.parentEl.addEventListener('targetLost', () => { this.isVisible = false; });
-            },
-        });
-    </script>
-
     <style>
         /* Estilos generales y para el modo AR (sin cambios) */
         html.ar-active, body.ar-active { overflow: hidden; width: 100%; height: 100%; margin: 0; padding: 0; }
@@ -83,7 +40,7 @@
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v1.6</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v1.7</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -98,9 +55,12 @@
                 <p class="font-bold">¡Bienvenido!</p>
                 <p>Presiona el botón para descargar los recursos. Los archivos se guardarán en la caché de tu navegador para acelerar futuras cargas.</p>
             </div>
-            <div class="mt-6 text-center">
-                <button id="load-from-github-btn" class="bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition duration-300 text-lg shadow-md">
+            <div class="mt-6 flex flex-col items-center gap-4">
+                <button id="load-from-github-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 text-lg shadow-md">
                     Cargar Recursos Anatómicos
+                </button>
+                <button id="clear-cache-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition duration-300 text-sm shadow-md hidden">
+                    Limpiar Caché
                 </button>
             </div>
             <div id="loading-status" class="mt-6 hidden">
@@ -201,22 +161,54 @@
     </div>
     
     <script type="module">
-        // Importaciones de Three.js para el editor
+        // Importaciones de Three.js
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { DragControls } from 'three/addons/controls/DragControls.js';
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Estado global de la aplicación
-            const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
-            // Objeto para manejar la escena del editor 3D
-            let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
-            // Constantes
-            const CACHE_NAME = 'anatomia-ar-cache-v1';
+            const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false, };
+            let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null, };
+            
+            const CACHE_NAME = 'anatomia-ar-cache-v1.7'; // Se actualiza el nombre de la caché para forzar la recarga de recursos si es necesario.
             const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
             const ASSET_NAMES = [ 'cabeza1', 'corazon', 'dedo-mano', 'dedo', 'hueso-columna', 'huesosmano', 'mano-iz-protesis', 'protesis-mano-brazo' ];
-            
+
+            // ESTRUCTURA: El componente de rotación ahora vive dentro del script principal, igual que en el ejemplo funcional.
+            AFRAME.registerComponent('ar-rotator', {
+                schema: { rotationFactor: { type: 'number', default: 0.5 } }, // Reducido para un control menos sensible
+                init: function () {
+                    this.isVisible = false;
+                    this.isDragging = false;
+                    this.previousDrag = { x: 0, y: 0 };
+                    const canvas = this.el.sceneEl.canvas;
+
+                    const startDrag = (x, y) => { if (this.isVisible) { this.isDragging = true; this.previousDrag = { x, y }; } };
+                    const drag = (x, y) => {
+                        if (this.isDragging && this.isVisible) {
+                            const deltaX = x - this.previousDrag.x;
+                            const deltaY = y - this.previousDrag.y;
+                            this.el.object3D.rotation.y += THREE.MathUtils.degToRad(deltaX * this.data.rotationFactor);
+                            this.el.object3D.rotation.x += THREE.MathUtils.degToRad(deltaY * this.data.rotationFactor);
+                            this.previousDrag = { x, y };
+                        }
+                    };
+                    const endDrag = () => { this.isDragging = false; };
+
+                    canvas.addEventListener('touchstart', (e) => { if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY); });
+                    canvas.addEventListener('touchmove', (e) => { if (e.touches.length === 1) drag(e.touches[0].clientX, e.touches[0].clientY); });
+                    canvas.addEventListener('touchend', endDrag);
+                    canvas.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
+                    canvas.addEventListener('mousemove', (e) => drag(e.clientX, e.clientY));
+                    canvas.addEventListener('mouseup', endDrag);
+                    canvas.addEventListener('mouseleave', endDrag);
+                    
+                    this.el.parentEl.addEventListener('targetFound', () => { this.isVisible = true; });
+                    this.el.parentEl.addEventListener('targetLost', () => { this.isVisible = false; });
+                },
+            });
+
             async function fetchWithCache(url) {
                 const cache = await caches.open(CACHE_NAME);
                 const cachedResponse = await cache.match(url);
@@ -252,7 +244,7 @@
                 progressBar.classList.remove('bg-red-600');
                 const totalAssets = ASSET_NAMES.length;
                 let loadedCount = 0;
-                console.log('[Asset Loader] Iniciando descarga de recursos...');
+                
                 const promises = ASSET_NAMES.map(async (name, index) => {
                     const urls = {
                         marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
@@ -260,25 +252,20 @@
                         image: `${GITHUB_BASE_URL}imagenes/${name}.png`
                     };
                     const [markerRes, modelRes, imageRes] = await Promise.all([ fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image) ]);
-                    if (!markerRes.ok || !modelRes.ok || !imageRes.ok) { throw new Error(`Failed to fetch assets for ${name}`); }
+                    if (!markerRes.ok || !modelRes.ok || !imageRes.ok) throw new Error(`Falló la descarga de recursos para ${name}`);
                     const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
                     
-                    console.log(`[Asset Loader] Cargado ${name}:`);
-                    console.log(`  -> Marker: ${urls.marker} (tamaño: ${markerBlob.size} bytes)`);
-                    console.log(`  -> Model: ${urls.model} (tamaño: ${modelBlob.size} bytes)`);
-                    console.log(`  -> Image: ${urls.image} (tamaño: ${imageBlob.size} bytes)`);
-
                     loadedCount++;
                     progressBar.style.width = `${(loadedCount / totalAssets) * 100}%`;
                     loadingText.textContent = `Cargando ${name}... (${loadedCount}/${totalAssets})`;
+
                     return {
                         id: index, name: name,
                         markerDataUrl: URL.createObjectURL(markerBlob),
                         modelDataUrl: URL.createObjectURL(modelBlob),
                         imageDataUrl: URL.createObjectURL(imageBlob),
                         transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
-                        hasBeenNormalized: false,
-                        normalizationFactor: 1,
+                        hasBeenNormalized: false, normalizationFactor: 1,
                     };
                 });
                 try {
@@ -290,9 +277,20 @@
                 } catch (error) {
                     loadingText.textContent = 'Error al cargar los recursos. Revisa la consola.';
                     progressBar.classList.add('bg-red-600');
-                    console.error("Asset loading failed:", error);
+                    console.error("Fallo en la carga de recursos:", error);
                 } finally {
                     githubBtn.disabled = false;
+                }
+            }
+            
+            async function clearCache() {
+                try {
+                    await caches.delete(CACHE_NAME);
+                    alert('Caché limpiada con éxito. La página se recargará.');
+                    location.reload();
+                } catch (error) {
+                    alert('No se pudo limpiar la caché.');
+                    console.error('Falló la limpieza de caché:', error);
                 }
             }
 
@@ -346,9 +344,7 @@
                 
                 editor.textureLoader.load(asset.imageDataUrl, (texture) => {
                     const aspect = texture.image.width / texture.image.height;
-                    const planeGeom = new THREE.PlaneGeometry(1, 1 / aspect);
-                    editor.currentPlane = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.9 }));
-                    editor.currentPlane.position.set(0, 0, 0);
+                    editor.currentPlane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1 / aspect), new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.9 }));
                     editor.scene.add(editor.currentPlane);
                 });
 
@@ -369,8 +365,7 @@
                     editor.dragControls.addEventListener('dragstart', () => editor.controls.enabled = false);
                     editor.dragControls.addEventListener('dragend', (event) => {
                         editor.controls.enabled = true;
-                        const { x, y, z } = event.object.position;
-                        Object.assign(asset.transform.position, { x, y, z });
+                        Object.assign(asset.transform.position, event.object.position);
                         updateTransformInputs(asset.transform);
                     });
                 });
@@ -416,28 +411,23 @@
                 assetsEl.addEventListener('timeout', (e) => {
                     arStatusText.textContent = 'Error: La carga de modelos tardó mucho.';
                     arLoader.classList.add('hidden');
-                    console.error("Asset loading timed out:", e.detail.src);
+                    console.error("La carga de assets tardó demasiado:", e.detail.src);
                 });
                 tempScene.appendChild(assetsEl);
                 arPreloadContainer.appendChild(tempScene);
             }
 
             function setupAndStartAR(shouldEnterFullscreen) {
-                if (!state.areAssetsPreloaded) {
-                    document.getElementById('ar-status-text').textContent = 'Error: Modelos 3D no listos.';
-                    return;
-                }
-                const arPreloader = document.getElementById('ar-preloader');
-                arPreloader.classList.remove('hidden');
+                if (!state.areAssetsPreloaded) return;
+                
+                document.getElementById('ar-preloader').classList.remove('hidden');
                 const arSceneContainer = document.getElementById('ar-scene-container');
                 arSceneContainer.innerHTML = '';
+                
                 const sceneEl = document.createElement('a-scene');
                 sceneEl.setAttribute('embedded', '');
                 
-                const markerUrlList = state.assets.map(a => a.markerDataUrl).join(';');
-                
-                // MEJORA: Se añaden parámetros de suavizado (filterMinCF y filterBeta) para reducir el "jittering".
-                const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no; filterMinCF: 0.001; filterBeta: 10;`;
+                const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no; filterMinCF: 0.001; filterBeta: 10;`;
                 
                 sceneEl.setAttribute('mindar-image', mindARSettings);
                 sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
@@ -446,8 +436,8 @@
                 sceneEl.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights');
 
                 const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
-                if(preloadedAssets) { sceneEl.appendChild(preloadedAssets.cloneNode(true)); }
-
+                if(preloadedAssets) sceneEl.appendChild(preloadedAssets.cloneNode(true));
+                
                 const cameraEl = document.createElement('a-camera');
                 cameraEl.setAttribute('position', '0 0 0');
                 cameraEl.setAttribute('look-controls', 'enabled: false');
@@ -473,28 +463,25 @@
                     sceneEl.systems['mindar-image-system'].start();
                 });
 
+                // CAMBIO CLAVE: Se adoptan los listeners simples del ejemplo funcional.
+                // Estos no causan errores y permiten que MindAR maneje la visibilidad de los modelos.
                 const scanningUI = document.getElementById('scanning-ui');
                 sceneEl.addEventListener('arReady', () => {
                     scanningUI.classList.remove('hidden');
-                    arPreloader.classList.add('hidden');
-                    setTimeout(() => { if (sceneEl.renderer) { sceneEl.renderer.setSize(window.innerWidth, window.innerHeight); } }, 100);
+                    document.getElementById('ar-preloader').classList.add('hidden');
+                    setTimeout(() => { if (sceneEl.renderer) sceneEl.renderer.setSize(window.innerWidth, window.innerHeight); }, 100);
                 });
 
-                // CORRECCIÓN: Se accede correctamente al índice del marcador a través de e.detail.target.
-                sceneEl.addEventListener('targetFound', (e) => {
-                    const foundIndex = e.detail.target.getAttribute('mindar-image-target').targetIndex;
-                    console.log(`[AR Event] Marcador encontrado: targetIndex ${foundIndex}`);
+                sceneEl.addEventListener('targetFound', () => {
                     scanningUI.classList.add('hidden');
                 });
                 
-                // CORRECCIÓN: Se accede correctamente al índice del marcador a través de e.detail.target.
-                sceneEl.addEventListener('targetLost', (e) => {
-                    const lostIndex = e.detail.target.getAttribute('mindar-image-target').targetIndex;
-                    console.log(`[AR Event] Marcador perdido: targetIndex ${lostIndex}`);
+                sceneEl.addEventListener('targetLost', () => {
                     scanningUI.classList.remove('hidden');
                 });
                 
                 arSceneContainer.appendChild(sceneEl);
+
                 const appContainer = document.getElementById('app');
                 document.documentElement.classList.add('ar-active');
                 document.body.classList.add('ar-active');
@@ -505,7 +492,7 @@
                 document.getElementById('ar-active-controls').classList.remove('hidden');
                 state.isArActive = true;
                 if (shouldEnterFullscreen) {
-                     document.documentElement.requestFullscreen().catch(err => { console.warn("No se pudo entrar en pantalla completa automáticamente.", err); });
+                     document.documentElement.requestFullscreen().catch(err => { console.warn("Fullscreen failed:", err); });
                 }
             }
 
@@ -513,12 +500,12 @@
                 const arSceneContainer = document.getElementById('ar-scene-container');
                 const sceneEl = arSceneContainer.querySelector('a-scene');
                 if (sceneEl && sceneEl.hasLoaded) {
-                    if(sceneEl.systems['mindar-image-system']) { sceneEl.systems['mindar-image-system'].stop(); }
-                    if (sceneEl.parentNode) { sceneEl.parentNode.removeChild(sceneEl); }
+                    if(sceneEl.systems['mindar-image-system']) sceneEl.systems['mindar-image-system'].stop();
+                    if (sceneEl.parentNode) sceneEl.parentNode.removeChild(sceneEl);
                 }
                 arSceneContainer.innerHTML = '';
                 document.getElementById('ar-preload-container').innerHTML = '';
-                state.areAssetsPreloaded = false;
+                state.areAssetsPreloaded = false; // Forzar precarga la próxima vez
                 const appContainer = document.getElementById('app');
                 document.documentElement.classList.remove('ar-active');
                 document.body.classList.remove('ar-active');
@@ -527,20 +514,20 @@
                 document.getElementById('ar-ui-container').classList.remove('hidden');
                 document.getElementById('ar-active-controls').classList.add('hidden');
                 document.getElementById('scanning-ui').classList.add('hidden');
-                if (document.fullscreenElement) { document.exitFullscreen().catch(err => console.error("Error al salir de pantalla completa:", err)); }
+                if (document.fullscreenElement) { document.exitFullscreen().catch(err => console.error("Exit fullscreen failed:", err)); }
                 state.isArActive = false;
             }
 
             function toggleFullScreen() {
                 if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().catch(err => { console.error(`Error al intentar entrar en pantalla completa: ${err.message} (${err.name})`); });
+                    document.documentElement.requestFullscreen().catch(err => console.error(`Enter fullscreen failed: ${err.message}`));
                 } else {
                     document.exitFullscreen();
                 }
             }
 
             function navigateTo(pageId) {
-                if (state.isArActive) { stopAR(); }
+                if (state.isArActive) stopAR();
                 document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
                 const targetPage = document.getElementById(pageId);
                 if (targetPage) { targetPage.classList.add('active'); state.currentPage = pageId; }
@@ -548,7 +535,7 @@
                 if (pageId === 'page-editor') {
                     if (!editor.renderer) initEditor();
                     populateEditorSelector();
-                    if (state.assets.length > 0) { displayAssetInEditor(parseInt(document.getElementById('asset-selector').value) || 0); }
+                    if (state.assets.length > 0) displayAssetInEditor(parseInt(document.getElementById('asset-selector').value) || 0);
                 } else if (pageId === 'page-ar') {
                     document.getElementById('start-ar-pc-btn').disabled = true;
                     document.getElementById('start-ar-mobile-btn').disabled = true;
@@ -561,21 +548,18 @@
                     const cache = await caches.open(CACHE_NAME);
                     const keys = await cache.keys();
                     if (keys.length < ASSET_NAMES.length * 3) throw new Error("Cache incompleto.");
-                    const assets = await Promise.all(ASSET_NAMES.map(async (name, index) => {
+                    state.assets = await Promise.all(ASSET_NAMES.map(async (name, index) => {
                         const urls = { marker: `${GITHUB_BASE_URL}markers/${name}.mind`, model: `${GITHUB_BASE_URL}modelss/${name}.glb`, image: `${GITHUB_BASE_URL}imagenes/${name}.png` };
                         const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
                         if (!markerRes || !modelRes || !imageRes) throw new Error(`Asset ${name} no encontrado en caché.`);
                         const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
                         return {
                             id: index, name: name,
-                            markerDataUrl: URL.createObjectURL(markerBlob),
-                            modelDataUrl: URL.createObjectURL(modelBlob),
-                            imageDataUrl: URL.createObjectURL(imageBlob),
+                            markerDataUrl: URL.createObjectURL(markerBlob), modelDataUrl: URL.createObjectURL(modelBlob), imageDataUrl: URL.createObjectURL(imageBlob),
                             transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
                             hasBeenNormalized: false, normalizationFactor: 1,
                         };
                     }));
-                    state.assets = assets;
                     return true;
                 } catch (error) {
                     console.warn("No se pudieron cargar los assets desde la caché:", error.message);
@@ -585,20 +569,22 @@
 
             async function initializeApp() {
                 const successfullyLoadedFromCache = await loadAssetsFromCacheOnStartup();
+                const clearCacheBtn = document.getElementById('clear-cache-btn');
                 if (successfullyLoadedFromCache) {
-                    console.log("Assets cargados desde la caché al iniciar.");
                     document.getElementById('load-from-github-btn').textContent = 'Recargar Recursos';
                     document.getElementById('goto-editor-btn').disabled = false;
                     displayLoadedImages(state.assets);
                     document.querySelector('#welcome-box p:last-child').textContent = '¡Recursos cargados desde la caché! Ya puedes continuar o recargarlos si lo deseas.';
+                    clearCacheBtn.classList.remove('hidden');
                 } else {
-                    console.log("No hay assets en caché. Listo para la primera carga.");
                     document.querySelector('#welcome-box p:last-child').textContent = 'Presiona el botón para descargar los recursos por primera vez. Se guardarán en la caché para futuras visitas.';
+                    clearCacheBtn.classList.add('hidden');
                 }
             }
 
             // Asignación de todos los event listeners
             document.getElementById('load-from-github-btn').addEventListener('click', loadAssetsFromGitHub);
+            document.getElementById('clear-cache-btn').addEventListener('click', clearCache);
             document.getElementById('goto-editor-btn').addEventListener('click', () => navigateTo('page-editor'));
             document.getElementById('goto-ar-btn').addEventListener('click', () => navigateTo('page-ar'));
             document.getElementById('back-to-upload-btn').addEventListener('click', () => navigateTo('page-upload'));
@@ -607,7 +593,7 @@
             document.getElementById('start-ar-mobile-btn').addEventListener('click', () => setupAndStartAR(true));
             document.getElementById('stop-ar-btn').addEventListener('click', stopAR);
             document.getElementById('fullscreen-ar-btn').addEventListener('click', toggleFullScreen);
-            document.getElementById('back-to-editor-btn-post').addEventListener('click', () => { navigateTo('page-editor'); });
+            document.getElementById('back-to-editor-btn-post').addEventListener('click', () => navigateTo('page-editor'));
             document.getElementById('asset-selector').addEventListener('change', (e) => displayAssetInEditor(parseInt(e.target.value)));
             
             ['pos-x', 'pos-y', 'pos-z', 'rot-x', 'rot-y', 'rot-z', 'scale'].forEach(id => {
@@ -626,9 +612,7 @@
             window.addEventListener('resize', () => {
                 if (state.isArActive) {
                     const sceneEl = document.querySelector('#ar-scene-container a-scene');
-                    if (sceneEl && sceneEl.renderer) {
-                        sceneEl.renderer.setSize(window.innerWidth, window.innerHeight);
-                    }
+                    if (sceneEl && sceneEl.renderer) sceneEl.renderer.setSize(window.innerWidth, window.innerHeight);
                 }
             });
 
@@ -637,4 +621,3 @@
     </script>
 </body>
 </html>
-
