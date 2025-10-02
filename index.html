@@ -11,8 +11,8 @@
     <script type="importmap">
         {
             "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/"
+                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
             }
         }
     </script>
@@ -30,14 +30,14 @@
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         #scanning-ui { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9991; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; background-color: rgba(0,0,0,0.3); transition: opacity 0.3s; }
-        #scanning-ui.hidden { display: none; }
+        #scanning-ui.hidden { opacity: 0; pointer-events: none; }
         .scan-text { margin-top: 24px; padding: 8px 16px; background-color: rgba(0,0,0,0.5); color: white; font-size: 1.1rem; border-radius: 8px; text-shadow: 1px 1px 2px black; }
         #ar-active-controls { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 9999; }
     </style>
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.9</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v3.0</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -131,6 +131,10 @@
                  </div>
                  <div id="ar-preload-container" class="hidden"></div>
                  <div id="ar-scene-container"></div>
+                 <!-- CORRECCIÓN: El div 'scanning-ui' se restaura aquí -->
+                 <div id="scanning-ui" class="hidden">
+                     <p class="scan-text">Apunte al marcador</p>
+                 </div>
                  <div id="ar-active-controls" class="hidden p-4 bg-black bg-opacity-50">
                      <div class="flex justify-center items-center max-w-4xl mx-auto">
                          <button id="stop-ar-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">Detener Cámara</button>
@@ -155,11 +159,11 @@
             let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
             let isRotating = false; 
 
-            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.9';
+            const CACHE_NAME = 'propuesta-salud-ar-cache-v3.0';
             const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
             const ASSET_NAMES = [ 'cabeza1', 'corazon', 'dedo-mano', 'dedo', 'hueso-columna', 'huesosmano', 'mano-iz-protesis', 'protesis-mano-brazo' ];
 
-            // --- FUNCIONES DE CARGA DE RECURSOS ---
+            // --- FUNCIONES DE CARGA ---
             async function fetchWithCache(url) {
                 const cache = await caches.open(CACHE_NAME);
                 const cachedResponse = await cache.match(url);
@@ -203,9 +207,7 @@
                         image: `${GITHUB_BASE_URL}imagenes/${name}.png`
                     };
                     const [markerRes, modelRes, imageRes] = await Promise.all([ fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image) ]);
-                    if (!markerRes.ok || !modelRes.ok || !imageRes.ok) {
-                        throw new Error(`Falló la descarga de recursos para ${name}`);
-                    }
+                    if (!markerRes.ok || !modelRes.ok || !imageRes.ok) throw new Error(`Falló la descarga de recursos para ${name}`);
                     const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
                     
                     loadedCount++;
@@ -214,9 +216,7 @@
 
                     return {
                         id: index, name: name,
-                        markerDataUrl: URL.createObjectURL(markerBlob),
-                        modelDataUrl: URL.createObjectURL(modelBlob),
-                        imageDataUrl: URL.createObjectURL(imageBlob),
+                        markerDataUrl: URL.createObjectURL(markerBlob), modelDataUrl: URL.createObjectURL(modelBlob), imageDataUrl: URL.createObjectURL(imageBlob),
                         transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
                         hasBeenNormalized: false, normalizationFactor: 1,
                     };
@@ -605,6 +605,5 @@
     </script>
 </body>
 </html>
-
 
 
