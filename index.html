@@ -37,7 +37,7 @@
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.7</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.9</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -155,23 +155,9 @@
             let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
             let isRotating = false; 
 
-            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.7';
+            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.9';
             const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
             const ASSET_NAMES = [ 'cabeza1', 'corazon', 'dedo-mano', 'dedo', 'hueso-columna', 'huesosmano', 'mano-iz-protesis', 'protesis-mano-brazo' ];
-
-            // --- COMPONENTES A-FRAME ---
-            AFRAME.registerComponent('model-loader', {
-                schema: { modelId: {type: 'string'}, loaderId: {type: 'string'} },
-                init: function () {
-                    const modelEl = document.querySelector(this.data.modelId);
-                    const loaderEl = document.querySelector(this.data.loaderId);
-                    if(modelEl) {
-                        modelEl.addEventListener('model-loaded', () => {
-                            if(loaderEl) loaderEl.setAttribute('visible', 'false');
-                        });
-                    }
-                }
-            });
 
             // --- FUNCIONES DE CARGA DE RECURSOS ---
             async function fetchWithCache(url) {
@@ -210,14 +196,6 @@
                 const totalAssets = ASSET_NAMES.length;
                 let loadedCount = 0;
                 
-                console.log("Iniciando la descarga de assets. URLs a solicitar:");
-                ASSET_NAMES.forEach(name => {
-                    console.log(`- ${name}:`);
-                    console.log(`  - Marker: ${GITHUB_BASE_URL}markers/${name}.mind`);
-                    console.log(`  - Model: ${GITHUB_BASE_URL}modelss/${name}.glb`);
-                    console.log(`  - Image: ${GITHUB_BASE_URL}imagenes/${name}.png`);
-                });
-
                 const promises = ASSET_NAMES.map(async (name, index) => {
                     const urls = {
                         marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
@@ -226,7 +204,6 @@
                     };
                     const [markerRes, modelRes, imageRes] = await Promise.all([ fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image) ]);
                     if (!markerRes.ok || !modelRes.ok || !imageRes.ok) {
-                        console.error(`Error al descargar ${name}. Estado: Marker=${markerRes.status}, Model=${modelRes.status}, Image=${imageRes.status}`);
                         throw new Error(`Falló la descarga de recursos para ${name}`);
                     }
                     const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
@@ -250,7 +227,6 @@
                     displayLoadedImages(state.assets);
                     document.getElementById('goto-editor-btn').disabled = false;
                     document.getElementById('clear-cache-btn').classList.remove('hidden');
-                    console.log("Assets cargados exitosamente:", state.assets);
                     setTimeout(() => { loadingStatusDiv.classList.add('hidden'); }, 1000);
                 } catch (error) {
                     loadingText.textContent = 'Error al cargar los recursos. Revisa la consola.';
@@ -289,7 +265,6 @@
                             hasBeenNormalized: false, normalizationFactor: 1,
                         };
                     }));
-                    console.log("Assets cargados exitosamente desde la CACHÉ:", state.assets);
                     return true;
                 } catch (error) {
                     console.warn("No se pudieron cargar los assets desde la caché:", error.message);
@@ -411,7 +386,6 @@
             // --- FUNCIONES DE REALIDAD AUMENTADA ---
             function preloadARAssets() {
                 if (state.areAssetsPreloaded || state.assets.length === 0) return;
-                console.log("Preloading AR assets...");
                 const arPreloadContainer = document.getElementById('ar-preload-container');
                 arPreloadContainer.innerHTML = ''; 
 
@@ -436,13 +410,11 @@
                 arLoader.classList.remove('hidden');
 
                 assetsEl.addEventListener('loaded', () => {
-                    console.log('All AR assets preloaded successfully!');
                     state.areAssetsPreloaded = true;
                     arStatusText.textContent = '¡Recursos listos! Activa la cámara.';
                     arLoader.classList.add('hidden');
                 });
                 assetsEl.addEventListener('timeout', (e) => {
-                    console.error('Asset loading timed out:', e.detail.src);
                     arStatusText.textContent = 'Error: La carga de modelos tardó mucho.';
                     arLoader.classList.add('hidden');
                 });
@@ -458,7 +430,8 @@
                 }
                 const arSceneContainer = document.getElementById('ar-scene-container');
                 arSceneContainer.innerHTML = '';
-                const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 8; autoStart: true; uiLoading: no; uiError: no; uiScanning: no;`;
+                
+                const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 8; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
                 
                 const sceneEl = document.createElement('a-scene');
                 sceneEl.setAttribute('mindar-image', mindARSettings);
@@ -478,29 +451,31 @@
                 state.assets.forEach((asset, index) => {
                     const targetEl = document.createElement('a-entity');
                     targetEl.setAttribute('mindar-image-target', `targetIndex: ${index}`);
-                    
                     const t = asset.transform;
                     const finalScale = asset.normalizationFactor * t.scale.x;
 
-                    const loaderEntity = document.createElement('a-plane');
-                    loaderEntity.id = `loader-${asset.id}`;
-                    loaderEntity.setAttribute('position', '0 0.5 0');
-                    loaderEntity.setAttribute('scale', '0.4 0.4 0.4');
-                    loaderEntity.setAttribute('material', 'src: https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.1.0/assets/loading.png; transparent: true;');
-                    loaderEntity.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear;');
-
                     const modelEntity = document.createElement('a-gltf-model');
-                    modelEntity.id = `gltf-model-${asset.id}`;
                     modelEntity.setAttribute('src', `#model-${asset.id}`);
                     modelEntity.setAttribute('position', `${t.position.x} ${t.position.y} ${t.position.z}`);
                     modelEntity.setAttribute('rotation', `${t.rotation.x} ${t.rotation.y} ${t.rotation.z}`);
                     modelEntity.setAttribute('scale', `${finalScale} ${finalScale} ${finalScale}`);
-
-                    targetEl.setAttribute('model-loader', `modelId: #gltf-model-${asset.id}; loaderId: #loader-${asset.id}`);
                     
-                    targetEl.appendChild(loaderEntity);
                     targetEl.appendChild(modelEntity);
                     sceneEl.appendChild(targetEl);
+                });
+
+                const scanningUI = document.getElementById('scanning-ui');
+                sceneEl.addEventListener('loaded', () => {
+                    sceneEl.systems['mindar-image-system'].start();
+                });
+                sceneEl.addEventListener('arReady', () => {
+                    scanningUI.classList.remove('hidden');
+                });
+                sceneEl.addEventListener('targetFound', () => {
+                    scanningUI.classList.add('hidden');
+                });
+                sceneEl.addEventListener('targetLost', () => {
+                    scanningUI.classList.remove('hidden');
                 });
 
                 arSceneContainer.appendChild(sceneEl);
@@ -558,7 +533,7 @@
                 }
             }
 
-            // Navigation
+            // --- Event Listeners ---
             document.getElementById('goto-editor-btn').addEventListener('click', () => navigateTo('page-editor'));
             document.getElementById('goto-ar-btn').addEventListener('click', () => navigateTo('page-ar'));
             document.getElementById('back-to-upload-btn').addEventListener('click', () => navigateTo('page-upload'));
@@ -566,11 +541,9 @@
             document.getElementById('start-ar-btn').addEventListener('click', startAR);
             document.getElementById('stop-ar-btn').addEventListener('click', stopAR);
             
-            // GitHub Loading
             document.getElementById('load-from-github-btn').addEventListener('click', loadAssetsFromGitHub);
             document.getElementById('clear-cache-btn').addEventListener('click', clearCache);
 
-            // Editor Logic
             const assetSelector = document.getElementById('asset-selector');
             assetSelector.addEventListener('change', (e) => displayAssetInEditor(parseInt(e.target.value)));
             
@@ -632,5 +605,6 @@
     </script>
 </body>
 </html>
+
 
 
