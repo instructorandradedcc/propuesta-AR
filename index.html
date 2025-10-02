@@ -39,7 +39,7 @@
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v3.3-corregido</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v3.4-corregido</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -488,7 +488,6 @@
                     const assetItem = document.createElement('a-asset-item');
                     assetItem.id = `model-${asset.id}`;
                     assetItem.setAttribute('src', asset.modelDataUrl);
-                    // CORREGIDO: Se añade 'response-type' para asegurar que los .glb se traten como archivos binarios.
                     assetItem.setAttribute('response-type', 'arraybuffer');
                     
                     assetItem.addEventListener('loaded', () => {
@@ -537,6 +536,17 @@
                 sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
                 sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
                 
+                // CORREGIDO: Integrar A-Frame Asset Management System para los modelos
+                const assetsEl = document.createElement('a-assets');
+                state.assets.forEach(asset => {
+                    const assetItem = document.createElement('a-asset-item');
+                    assetItem.id = `model-${asset.id}`;
+                    assetItem.setAttribute('src', asset.modelDataUrl);
+                    assetItem.setAttribute('response-type', 'arraybuffer');
+                    assetsEl.appendChild(assetItem);
+                });
+                sceneEl.appendChild(assetsEl);
+                
                 const cameraEl = document.createElement('a-camera');
                 cameraEl.setAttribute('position', '0 0 0');
                 cameraEl.setAttribute('look-controls', 'enabled: false');
@@ -560,7 +570,8 @@
                     const finalScale = asset.normalizationFactor * t.scale.x;
 
                     const modelEntity = document.createElement('a-gltf-model');
-                    modelEntity.setAttribute('src', asset.modelDataUrl); 
+                    // CORREGIDO: Referenciar el modelo desde a-assets usando su ID
+                    modelEntity.setAttribute('src', `#model-${asset.id}`); 
                     modelEntity.setAttribute('position', `${t.position.x} ${t.position.y} ${t.position.z}`);
                     modelEntity.setAttribute('rotation', `${t.rotation.x} ${t.rotation.y} ${t.rotation.z}`);
                     modelEntity.setAttribute('scale', `${finalScale} ${finalScale} ${finalScale}`);
