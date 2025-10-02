@@ -33,11 +33,12 @@
         #scanning-ui.hidden { opacity: 0; pointer-events: none; }
         .scan-text { margin-top: 24px; padding: 8px 16px; background-color: rgba(0,0,0,0.5); color: white; font-size: 1.1rem; border-radius: 8px; text-shadow: 1px 1px 2px black; }
         #ar-active-controls { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 9999; }
+        #debug-info { position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px; font-size: 10px; max-width: 300px; max-height: 100px; overflow-y: auto; z-index: 10000; border-radius: 4px; font-family: monospace; white-space: pre-wrap; }
     </style>
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v3.1</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v3.1-corregido</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -51,7 +52,7 @@
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 1: Cargar Recursos</h2>
             <div id="welcome-box" class="bg-indigo-50 border-l-4 border-indigo-500 text-indigo-700 p-4 mb-6" role="alert">
                 <p class="font-bold">¡Bienvenido!</p>
-                <p>Presiona el botón para descargar los recursos desde el repositorio. Si tienes problemas, revisa la consola del navegador (F12).</p>
+                <p>Presiona el botón para descargar los recursos desde el repositorio. Si tienes problemas, revisa la consola del navegador (F12) y el panel de depuración.</p>
             </div>
             <div class="mt-6 flex flex-col items-center gap-4">
                 <button id="load-from-github-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 text-lg shadow-md">
@@ -129,7 +130,6 @@
                          <button id="start-ar-btn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Activar Cámara AR</button>
                      </div>
                  </div>
-                 <div id="ar-preload-container" class="hidden"></div>
                  <div id="ar-scene-container"></div>
                  <div id="scanning-ui" class="hidden">
                      <p class="scan-text">Apunte al marcador</p>
@@ -142,10 +142,8 @@
              </div>
         </div>
     </div>
-    <div id="ar-preloader" class="hidden fixed inset-0 bg-black bg-opacity-75 flex flex-col justify-center items-center z-[10000]">
-        <div class="loader"></div>
-        <p class="text-white text-lg mt-4">Iniciando cámara...</p>
-    </div>
+    
+    <div id="debug-info"></div>
     
     <script type="module">
         import * as THREE from 'three';
@@ -162,13 +160,29 @@
             const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
             const ASSET_NAMES = [ 'cabeza1', 'corazon', 'dedo-mano', 'dedo', 'hueso-columna', 'huesosmano', 'mano-iz-protesis', 'protesis-mano-brazo' ];
 
-            // --- FUNCIONES DE CARGA ---
+            // --- Sistema de Depuración ---
+            function debugLog(message) {
+                console.log(`[DEBUG] ${message}`);
+                const debugEl = document.getElementById('debug-info');
+                if (debugEl) {
+                    debugEl.textContent += message + "\n";
+                    debugEl.scrollTop = debugEl.scrollHeight;
+                }
+            }
+
+            // --- FUNCIONES DE CARGA Y CACHÉ ---
             async function fetchWithCache(url) {
                 const cache = await caches.open(CACHE_NAME);
                 const cachedResponse = await cache.match(url);
-                if (cachedResponse) return cachedResponse;
+                if (cachedResponse) {
+                    debugLog(`Cargado desde caché: ${url.split('/').pop()}`);
+                    return cachedResponse;
+                }
+                debugLog(`Descargando: ${url.split('/').pop()}`);
                 const networkResponse = await fetch(url);
-                if (networkResponse.ok) await cache.put(url, networkResponse.clone());
+                if (networkResponse.ok) {
+                    await cache.put(url, networkResponse.clone());
+                }
                 return networkResponse;
             }
 
@@ -185,6 +199,25 @@
                     grid.appendChild(img);
                 });
                 container.appendChild(grid);
+            }
+
+            async function validateMarkers() {
+                debugLog("Validando archivos .mind...");
+                let allValid = true;
+                for (const asset of state.assets) {
+                    try {
+                        const response = await fetch(asset.markerDataUrl);
+                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                        debugLog(`- Marcador OK: ${asset.name}`);
+                    } catch (error) {
+                        console.error(`Error al validar el marcador para ${asset.name}:`, error);
+                        debugLog(`- ERROR marcador: ${asset.name}`);
+                        alert(`Error al cargar el archivo de marcador para: ${asset.name}. Podría estar corrupto o no disponible.`);
+                        allValid = false;
+                    }
+                }
+                if (allValid) debugLog("Todos los marcadores son válidos.");
+                return allValid;
             }
 
             async function loadAssetsFromGitHub() {
@@ -205,9 +238,22 @@
                         model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
                         image: `${GITHUB_BASE_URL}imagenes/${name}.png`
                     };
-                    const [markerRes, modelRes, imageRes] = await Promise.all([ fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image) ]);
-                    if (!markerRes.ok || !modelRes.ok || !imageRes.ok) throw new Error(`Falló la descarga de recursos para ${name}`);
-                    const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
+                    
+                    const [markerRes, modelRes, imageRes] = await Promise.all([ 
+                        fetchWithCache(urls.marker), 
+                        fetchWithCache(urls.model), 
+                        fetchWithCache(urls.image) 
+                    ]);
+                    
+                    if (!markerRes.ok || !modelRes.ok || !imageRes.ok) {
+                        throw new Error(`Falló la descarga de recursos para ${name}. Marcador: ${markerRes.status}, Modelo: ${modelRes.status}, Imagen: ${imageRes.status}`);
+                    }
+                    
+                    const [markerBlob, modelBlob, imageBlob] = await Promise.all([ 
+                        markerRes.blob(), 
+                        modelRes.blob(), 
+                        imageRes.blob() 
+                    ]);
                     
                     loadedCount++;
                     progressBar.style.width = `${(loadedCount / totalAssets) * 100}%`;
@@ -215,22 +261,31 @@
 
                     return {
                         id: index, name: name,
-                        markerDataUrl: URL.createObjectURL(markerBlob), modelDataUrl: URL.createObjectURL(modelBlob), imageDataUrl: URL.createObjectURL(imageBlob),
+                        markerDataUrl: URL.createObjectURL(markerBlob), 
+                        modelDataUrl: URL.createObjectURL(modelBlob), 
+                        imageDataUrl: URL.createObjectURL(imageBlob),
                         transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
                         hasBeenNormalized: false, normalizationFactor: 1,
                     };
                 });
+
                 try {
                     state.assets = await Promise.all(promises);
-                    loadingText.textContent = '¡Todos los recursos cargados y guardados en caché!';
+                    const markersAreValid = await validateMarkers();
+                    if (!markersAreValid) {
+                        throw new Error("Algunos archivos de marcadores no son válidos. Proceso detenido.");
+                    }
+                    debugLog("Todos los recursos cargados y validados.");
+                    loadingText.textContent = '¡Recursos cargados y guardados en caché!';
                     displayLoadedImages(state.assets);
                     document.getElementById('goto-editor-btn').disabled = false;
                     document.getElementById('clear-cache-btn').classList.remove('hidden');
-                    setTimeout(() => { loadingStatusDiv.classList.add('hidden'); }, 1000);
+                    setTimeout(() => { loadingStatusDiv.classList.add('hidden'); }, 1500);
                 } catch (error) {
-                    loadingText.textContent = 'Error al cargar los recursos. Revisa la consola.';
+                    loadingText.textContent = 'Error al cargar recursos. Revisa la consola y el panel de depuración.';
                     progressBar.classList.add('bg-red-600');
                     console.error("Fallo en la carga de recursos:", error);
+                    debugLog(`ERROR: ${error.message}`);
                 } finally {
                     githubBtn.disabled = false;
                 }
@@ -251,22 +306,46 @@
                 try {
                     const cache = await caches.open(CACHE_NAME);
                     const keys = await cache.keys();
-                    if (keys.length < ASSET_NAMES.length * 3) throw new Error("Cache incompleto.");
+                    if (keys.length < ASSET_NAMES.length * 3) throw new Error("Caché incompleto.");
+                    
                     state.assets = await Promise.all(ASSET_NAMES.map(async (name, index) => {
-                        const urls = { marker: `${GITHUB_BASE_URL}markers/${name}.mind`, model: `${GITHUB_BASE_URL}modelss/${name}.glb`, image: `${GITHUB_BASE_URL}imagenes/${name}.png` };
-                        const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
+                        const urls = { 
+                            marker: `${GITHUB_BASE_URL}markers/${name}.mind`, 
+                            model: `${GITHUB_BASE_URL}modelss/${name}.glb`, 
+                            image: `${GITHUB_BASE_URL}imagenes/${name}.png` 
+                        };
+                        const [markerRes, modelRes, imageRes] = await Promise.all([ 
+                            cache.match(urls.marker), 
+                            cache.match(urls.model), 
+                            cache.match(urls.image) 
+                        ]);
                         if (!markerRes || !modelRes || !imageRes) throw new Error(`Asset ${name} no encontrado en caché.`);
-                        const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
+                        
+                        const [markerBlob, modelBlob, imageBlob] = await Promise.all([ 
+                            markerRes.blob(), 
+                            modelRes.blob(), 
+                            imageRes.blob() 
+                        ]);
+
                         return {
                             id: index, name: name,
-                            markerDataUrl: URL.createObjectURL(markerBlob), modelDataUrl: URL.createObjectURL(modelBlob), imageDataUrl: URL.createObjectURL(imageBlob),
+                            markerDataUrl: URL.createObjectURL(markerBlob), 
+                            modelDataUrl: URL.createObjectURL(modelBlob), 
+                            imageDataUrl: URL.createObjectURL(imageBlob),
                             transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
                             hasBeenNormalized: false, normalizationFactor: 1,
                         };
                     }));
+                    
+                    const markersAreValid = await validateMarkers();
+                    if (!markersAreValid) {
+                        state.assets = []; // Limpiar assets si los marcadores son inválidos
+                        throw new Error("Marcadores en caché inválidos.");
+                    }
+                    
                     return true;
                 } catch (error) {
-                    console.warn("No se pudieron cargar los assets desde la caché:", error.message);
+                    debugLog(`No se cargó desde caché: ${error.message}`);
                     return false;
                 }
             }
@@ -341,7 +420,7 @@
                         const center = box.getCenter(new THREE.Vector3());
                         asset.normalizationFactor = 1.0 / Math.max(size.x, size.y, size.z);
                         editor.currentTarget.position.sub(center);
-                        asset.transform.scale = { x: 5, y: 5, z: 5 }; // Default scale
+                        asset.transform.scale = { x: 5, y: 5, z: 5 }; // Escala inicial por defecto
                         asset.hasBeenNormalized = true;
                     }
                     
@@ -350,8 +429,8 @@
                     updateTransformInputs(asset.transform);
                     setupDragControls(editor.currentTarget);
                 }, undefined, (error) => {
-                    console.error(`Error loading model ${asset.name}:`, error)
-                    alert(`Could not load model for ${asset.name}. It might be corrupted.`);
+                    console.error(`Error loading model ${asset.name}:`, error);
+                    alert(`Error al cargar el modelo: ${asset.name}. Puede que el archivo esté corrupto.`);
                 });
             }
                 
@@ -364,7 +443,11 @@
                 const finalScale = transform.scale.x * asset.normalizationFactor;
                 
                 editor.currentTarget.position.set(transform.position.x, transform.position.y, transform.position.z);
-                editor.currentTarget.rotation.set( THREE.MathUtils.degToRad(transform.rotation.x), THREE.MathUtils.degToRad(transform.rotation.y), THREE.MathUtils.degToRad(transform.rotation.z) );
+                editor.currentTarget.rotation.set( 
+                    THREE.MathUtils.degToRad(transform.rotation.x), 
+                    THREE.MathUtils.degToRad(transform.rotation.y), 
+                    THREE.MathUtils.degToRad(transform.rotation.z) 
+                );
                 editor.currentTarget.scale.set(finalScale, finalScale, finalScale);
             }
 
@@ -385,76 +468,112 @@
             // --- FUNCIONES DE REALIDAD AUMENTADA ---
             function preloadARAssets() {
                 if (state.areAssetsPreloaded || state.assets.length === 0) return;
-                const arPreloadContainer = document.getElementById('ar-preload-container');
-                arPreloadContainer.innerHTML = ''; 
-
-                const tempScene = document.createElement('a-scene');
-                tempScene.setAttribute('embedded', '');
-                tempScene.style.cssText = 'position:fixed; height:1px; width:1px; top:-9999px; left:-9999px;';
                 
+                const arStatusText = document.getElementById('ar-status-text');
+                const arLoader = document.querySelector('#ar-status .loader');
+                arStatusText.textContent = 'Precargando modelos 3D...';
+                arLoader.classList.remove('hidden');
+
+                // Crear escena temporal para precargar los modelos en a-assets
+                const tempScene = document.createElement('a-scene');
+                tempScene.style.cssText = 'position:fixed; height:1px; width:1px; top:-9999px; left:-9999px;';
+                document.body.appendChild(tempScene);
+
                 const assetsEl = document.createElement('a-assets');
                 assetsEl.setAttribute('timeout', '30000');
 
+                let loadedCount = 0;
                 state.assets.forEach(asset => {
                     const assetItem = document.createElement('a-asset-item');
                     assetItem.id = `model-${asset.id}`;
                     assetItem.setAttribute('src', asset.modelDataUrl);
-                    assetItem.setAttribute('response-type', 'arraybuffer');
+                    
+                    assetItem.addEventListener('loaded', () => {
+                        debugLog(`Modelo precargado: ${asset.name}`);
+                        loadedCount++;
+                        if (loadedCount === state.assets.length) {
+                            state.areAssetsPreloaded = true;
+                            arStatusText.textContent = '¡Recursos listos! Ya puedes activar la cámara.';
+                            arLoader.classList.add('hidden');
+                            document.body.removeChild(tempScene); // Limpiar la escena temporal
+                        }
+                    });
+                    
+                    assetItem.addEventListener('error', (e) => {
+                        console.error(`Error precargando el modelo ${asset.name}:`, e);
+                        debugLog(`ERROR precarga: ${asset.name}`);
+                        arStatusText.textContent = `Error cargando modelo: ${asset.name}`;
+                        arLoader.classList.add('hidden');
+                    });
+                    
                     assetsEl.appendChild(assetItem);
                 });
                 
-                const arStatusText = document.getElementById('ar-status-text');
-                const arLoader = document.querySelector('#ar-status .loader');
-                arStatusText.textContent = 'Cargando modelos 3D...';
-                arLoader.classList.remove('hidden');
-
-                assetsEl.addEventListener('loaded', () => {
-                    state.areAssetsPreloaded = true;
-                    arStatusText.textContent = '¡Recursos listos! Activa la cámara.';
-                    arLoader.classList.add('hidden');
-                });
-                assetsEl.addEventListener('timeout', (e) => {
-                    arStatusText.textContent = 'Error: La carga de modelos tardó mucho.';
-                    arLoader.classList.add('hidden');
-                });
-
                 tempScene.appendChild(assetsEl);
-                arPreloadContainer.appendChild(tempScene);
             }
 
             function startAR() {
                 if (!state.areAssetsPreloaded) {
-                    alert("Los modelos 3D aún se están cargando. Por favor espera.");
+                    alert("Los modelos 3D aún se están cargando. Por favor, espera a que el estado cambie a '¡Recursos listos!'.");
                     return;
                 }
-                const arSceneContainer = document.getElementById('ar-scene-container');
-                arSceneContainer.innerHTML = '';
                 
-                const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 8; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
+                debugLog("Iniciando AR con múltiples marcadores...");
+                
+                const arSceneContainer = document.getElementById('ar-scene-container');
+                arSceneContainer.innerHTML = ''; // Limpiar contenedor
+                
+                // a) Configuración correcta de MindAR para múltiples marcadores usando un objeto
+                const mindARSettings = {
+                    imageTargetSrc: state.assets.map(a => a.markerDataUrl),
+                    maxTrack: state.assets.length,
+                    autoStart: false,
+                    uiLoading: "no",
+                    uiError: "no",
+                    uiScanning: "no"
+                };
                 
                 const sceneEl = document.createElement('a-scene');
-                sceneEl.setAttribute('mindar-image', mindARSettings);
+                // Convertir el objeto a una cadena para el atributo
+                const settingsString = Object.entries(mindARSettings).map(([key, value]) => {
+                    if (Array.isArray(value)) {
+                        return `${key}: ${value.join(';')}`;
+                    }
+                    return `${key}: ${value}`;
+                }).join(';');
+                sceneEl.setAttribute('mindar-image', settingsString);
                 sceneEl.setAttribute('color-space', 'sRGB');
                 sceneEl.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights');
                 sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
                 sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
-                
-                const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
-                if(preloadedAssets) sceneEl.appendChild(preloadedAssets.cloneNode(true));
                 
                 const cameraEl = document.createElement('a-camera');
                 cameraEl.setAttribute('position', '0 0 0');
                 cameraEl.setAttribute('look-controls', 'enabled: false');
                 sceneEl.appendChild(cameraEl);
 
+                // c) Crear targets, asegurando índice correcto y eventos específicos
                 state.assets.forEach((asset, index) => {
+                    debugLog(`- Creando target para ${asset.name} (índice: ${index})`);
+                    
                     const targetEl = document.createElement('a-entity');
                     targetEl.setAttribute('mindar-image-target', `targetIndex: ${index}`);
+                    
+                    // Eventos específicos para este target individual
+                    targetEl.addEventListener('targetFound', () => {
+                        debugLog(`Target ENCONTRADO: ${asset.name}`);
+                    });
+                    
+                    targetEl.addEventListener('targetLost', () => {
+                        debugLog(`Target PERDIDO: ${asset.name}`);
+                    });
+                    
                     const t = asset.transform;
                     const finalScale = asset.normalizationFactor * t.scale.x;
 
                     const modelEntity = document.createElement('a-gltf-model');
-                    modelEntity.setAttribute('src', `#model-${asset.id}`);
+                    // Usamos la URL del blob directamente, ya que A-Frame la manejará
+                    modelEntity.setAttribute('src', asset.modelDataUrl); 
                     modelEntity.setAttribute('position', `${t.position.x} ${t.position.y} ${t.position.z}`);
                     modelEntity.setAttribute('rotation', `${t.rotation.x} ${t.rotation.y} ${t.rotation.z}`);
                     modelEntity.setAttribute('scale', `${finalScale} ${finalScale} ${finalScale}`);
@@ -465,15 +584,22 @@
 
                 const scanningUI = document.getElementById('scanning-ui');
                 sceneEl.addEventListener('loaded', () => {
-                    sceneEl.systems['mindar-image-system'].start();
+                    debugLog("Escena AR cargada, iniciando sistema MindAR...");
+                    // El sistema se inicia automáticamente por A-Frame, pero podemos forzarlo si es necesario
+                    // sceneEl.systems['mindar-image-system'].start();
                 });
+                
                 sceneEl.addEventListener('arReady', () => {
+                    debugLog("Sistema AR listo. Buscando marcadores...");
                     scanningUI.classList.remove('hidden');
                 });
+                
                 sceneEl.addEventListener('targetFound', () => {
-                    scanningUI.classList.add('hidden');
+                    scanningUI.classList.add('hidden'); // Ocultar UI de escaneo general
                 });
+                
                 sceneEl.addEventListener('targetLost', () => {
+                    // Solo mostrar si no hay otros targets visibles (requiere lógica más compleja no implementada aquí)
                     scanningUI.classList.remove('hidden');
                 });
 
@@ -488,16 +614,25 @@
                 const arSceneContainer = document.getElementById('ar-scene-container');
                 const sceneEl = arSceneContainer.querySelector('a-scene');
                 if (sceneEl && sceneEl.hasLoaded) {
-                    if (sceneEl.systems['mindar-image-system']) sceneEl.systems['mindar-image-system'].stop();
-                    if (sceneEl.parentNode) sceneEl.parentNode.removeChild(sceneEl);
+                    if (sceneEl.systems['mindar-image-system']) {
+                         sceneEl.systems['mindar-image-system'].stop();
+                    }
+                    sceneEl.pause();
+                    if (sceneEl.parentNode) {
+                        sceneEl.parentNode.removeChild(sceneEl);
+                    }
                 }
                 arSceneContainer.innerHTML = '';
-                document.getElementById('ar-preload-container').innerHTML = '';
-                state.areAssetsPreloaded = false;
+                
+                // Reiniciar el estado de precarga para la próxima vez
+                state.areAssetsPreloaded = false; 
+                document.getElementById('ar-status-text').textContent = "Estado: Esperando cámara...";
+
                 arSceneContainer.classList.remove('ar-active');
                 document.getElementById('ar-ui-container').classList.remove('hidden');
                 document.getElementById('ar-active-controls').classList.add('hidden');
                 state.isArActive = false;
+                debugLog("Sistema AR detenido.");
             }
 
             // --- NAVEGACIÓN Y EVENTOS ---
@@ -511,16 +646,20 @@
                 if (pageId === 'page-editor') {
                     if (!editor.renderer) initEditor();
                     populateEditorSelector();
-                    if (state.assets.length > 0) displayAssetInEditor(parseInt(document.getElementById('asset-selector').value) || 0);
+                    if (state.assets.length > 0) {
+                        displayAssetInEditor(parseInt(document.getElementById('asset-selector').value) || 0);
+                    }
                 } else if (pageId === 'page-ar') {
                     preloadARAssets();
                 }
             }
             
             async function initializeApp() {
+                debugLog("Inicializando aplicación...");
                 const successfullyLoadedFromCache = await loadAssetsFromCacheOnStartup();
                 const clearCacheBtn = document.getElementById('clear-cache-btn');
                 if (successfullyLoadedFromCache) {
+                    debugLog("Recursos cargados desde caché.");
                     document.getElementById('load-from-github-btn').textContent = 'Recargar Recursos';
                     document.getElementById('goto-editor-btn').disabled = false;
                     displayLoadedImages(state.assets);
@@ -552,8 +691,16 @@
                     const asset = state.assets.find(a => a.id === assetId);
                     if (!asset || !editor.currentTarget) return;
                     
-                    asset.transform.position = { x: parseFloat(document.getElementById('pos-x').value), y: parseFloat(document.getElementById('pos-y').value), z: parseFloat(document.getElementById('pos-z').value) };
-                    asset.transform.rotation = { x: parseFloat(document.getElementById('rot-x').value), y: parseFloat(document.getElementById('rot-y').value), z: parseFloat(document.getElementById('rot-z').value) };
+                    asset.transform.position = { 
+                        x: parseFloat(document.getElementById('pos-x').value), 
+                        y: parseFloat(document.getElementById('pos-y').value), 
+                        z: parseFloat(document.getElementById('pos-z').value) 
+                    };
+                    asset.transform.rotation = { 
+                        x: parseFloat(document.getElementById('rot-x').value), 
+                        y: parseFloat(document.getElementById('rot-y').value), 
+                        z: parseFloat(document.getElementById('rot-z').value) 
+                    };
                     const scaleVal = parseFloat(document.getElementById('scale').value);
                     asset.transform.scale = { x: scaleVal, y: scaleVal, z: scaleVal };
                     
@@ -592,15 +739,10 @@
                     if (editor.dragControls) editor.dragControls.enabled = true;
                 }
             });
-            window.addEventListener('resize', () => {
-                if (state.isArActive) {
-                    const sceneEl = document.querySelector('#ar-scene-container a-scene');
-                    if (sceneEl && sceneEl.renderer) sceneEl.renderer.setSize(window.innerWidth, window.innerHeight);
-                }
-            });
-
+            
             initializeApp();
         });
     </script>
 </body>
 </html>
+
