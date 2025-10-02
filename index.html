@@ -37,7 +37,7 @@
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.5</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.6</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -51,7 +51,7 @@
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 1: Cargar Recursos</h2>
             <div id="welcome-box" class="bg-indigo-50 border-l-4 border-indigo-500 text-indigo-700 p-4 mb-6" role="alert">
                 <p class="font-bold">¡Bienvenido!</p>
-                <p>Presiona el botón para descargar los recursos por primera vez. Se guardarán en la caché para futuras visitas.</p>
+                <p>Presiona el botón para descargar los recursos. Si tienes problemas, revisa la consola del navegador (F12) para ver los detalles de la carga.</p>
             </div>
             <div class="mt-6 flex flex-col items-center gap-4">
                 <button id="load-from-github-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 text-lg shadow-md">
@@ -169,7 +169,7 @@
             const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
             let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
             
-            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.5';
+            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.6';
             const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
             
             const ASSET_NAMES = [
@@ -240,6 +240,16 @@
                 const totalAssets = ASSET_NAMES.length;
                 let loadedCount = 0;
                 
+                // --- INICIO DE DEPURACIÓN ---
+                console.log("Iniciando la descarga de assets. URLs a solicitar:");
+                ASSET_NAMES.forEach(name => {
+                    console.log(`- ${name}:`);
+                    console.log(`  - Marker: ${GITHUB_BASE_URL}markers/${name}.mind`);
+                    console.log(`  - Model: ${GITHUB_BASE_URL}modelss/${name}.glb`);
+                    console.log(`  - Image: ${GITHUB_BASE_URL}imagenes/${name}.png`);
+                });
+                // --- FIN DE DEPURACIÓN ---
+
                 const promises = ASSET_NAMES.map(async (name, index) => {
                     const urls = {
                         marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
@@ -272,11 +282,17 @@
                     displayLoadedImages(state.assets);
                     document.getElementById('goto-editor-btn').disabled = false;
                     document.getElementById('clear-cache-btn').classList.remove('hidden');
+                    // --- INICIO DE DEPURACIÓN ---
+                    console.log("Assets cargados exitosamente:", state.assets);
+                    // --- FIN DE DEPURACIÓN ---
                     setTimeout(() => { loadingStatusDiv.classList.add('hidden'); }, 1000);
                 } catch (error) {
                     loadingText.textContent = 'Error al cargar los recursos. Revisa la consola.';
                     progressBar.classList.add('bg-red-600');
                     console.error("Fallo en la carga de recursos:", error);
+                    // --- INICIO DE DEPURACIÓN ---
+                    console.log("Proceso de carga fallido. Assets que se lograron cargar:", state.assets);
+                    // --- FIN DE DEPURACIÓN ---
                 } finally {
                     githubBtn.disabled = false;
                 }
@@ -426,7 +442,7 @@
                 arSceneContainer.innerHTML = '';
                 const sceneEl = document.createElement('a-scene');
                 sceneEl.setAttribute('embedded', '');
-                const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
+                const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 8; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
                 sceneEl.setAttribute('mindar-image', mindARSettings);
                 sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
                 sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
@@ -543,6 +559,9 @@
                             hasBeenNormalized: false, normalizationFactor: 1,
                         };
                     }));
+                     // --- INICIO DE DEPURACIÓN ---
+                    console.log("Assets cargados exitosamente desde la CACHÉ:", state.assets);
+                    // --- FIN DE DEPURACIÓN ---
                     return true;
                 } catch (error) {
                     console.warn("No se pudieron cargar los assets desde la caché:", error.message);
@@ -565,6 +584,7 @@
                 }
             }
 
+            // --- Event Listeners ---
             document.getElementById('load-from-github-btn').addEventListener('click', loadAssetsFromGitHub);
             document.getElementById('clear-cache-btn').addEventListener('click', clearCache);
             document.getElementById('goto-editor-btn').addEventListener('click', () => navigateTo('page-editor'));
@@ -603,3 +623,4 @@
     </script>
 </body>
 </html>
+
