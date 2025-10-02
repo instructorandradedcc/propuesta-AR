@@ -37,7 +37,7 @@
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.6</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v2.7</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -51,7 +51,7 @@
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 1: Cargar Recursos</h2>
             <div id="welcome-box" class="bg-indigo-50 border-l-4 border-indigo-500 text-indigo-700 p-4 mb-6" role="alert">
                 <p class="font-bold">¡Bienvenido!</p>
-                <p>Presiona el botón para descargar los recursos. Si tienes problemas, revisa la consola del navegador (F12) para ver los detalles de la carga.</p>
+                <p>Presiona el botón para descargar los recursos desde el repositorio. Si tienes problemas, revisa la consola del navegador (F12).</p>
             </div>
             <div class="mt-6 flex flex-col items-center gap-4">
                 <button id="load-from-github-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 text-lg shadow-md">
@@ -80,7 +80,8 @@
                  <p class="font-bold">Controles:</p>
                  <ul class="list-disc list-inside mt-1">
                      <li><strong>Mover Modelo:</strong> Arrastra el modelo con el ratón o un dedo.</li>
-                     <li><strong>Orbitar/Zoom:</strong> Clic derecho y arrastrar para mover, rueda para zoom. En táctil, usa dos dedos.</li>
+                     <li><strong>Orbitar/Zoom:</strong> Arrastra con el botón izquierdo o usa dos dedos.</li>
+                     <li><strong>Rotar Modelo:</strong> Arrastra con el botón derecho del ratón.</li>
                  </ul>
              </div>
             <div class="flex flex-col md:flex-row gap-6">
@@ -117,38 +118,22 @@
                  <div id="ar-ui-container" class="relative z-10">
                      <h2 class="text-2xl font-semibold mb-4 text-center">Paso 3: Vista de Realidad Aumentada</h2>
                      <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-                         <p class="text-center">Apunta tu cámara a una de las imágenes de los marcadores. <strong>Puedes girar el modelo 3D deslizando el dedo o con el mouse.</strong></p>
+                         <p class="text-center">Apunta tu cámara a una de las imágenes de los marcadores.</p>
                          <div id="ar-status" class="text-center font-mono p-2 bg-gray-100 rounded mt-2 flex justify-center items-center gap-2">
                              <div class="loader hidden"></div>
                              <span id="ar-status-text">Estado: Esperando cámara...</span>
                          </div>
                      </div>
-                     <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-                         <button id="back-to-editor-btn-pre" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 w-full sm:w-auto">Atrás</button>
-                         <button id="start-ar-pc-btn" disabled class="bg-sky-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-600 transition duration-300 disabled:bg-gray-300 w-full sm:w-auto flex items-center justify-center gap-2">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                             Activar AR en PC
-                         </button>
-                         <button id="start-ar-mobile-btn" disabled class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 disabled:bg-gray-300 w-full sm:w-auto flex items-center justify-center gap-2">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                             Iniciar AR en Celular
-                         </button>
+                     <div class="mt-6 flex justify-between items-center">
+                         <button id="back-to-editor-btn-pre" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300">Atrás</button>
+                         <button id="start-ar-btn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Activar Cámara AR</button>
                      </div>
                  </div>
                  <div id="ar-preload-container" class="hidden"></div>
                  <div id="ar-scene-container"></div>
-                 <div id="scanning-ui" class="hidden">
-                     <p class="scan-text">Apunte al marcador</p>
-                 </div>
                  <div id="ar-active-controls" class="hidden p-4 bg-black bg-opacity-50">
-                     <div class="relative flex justify-center items-center gap-4 max-w-4xl mx-auto">
-                         <button id="back-to-editor-btn-post" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300">Volver al Editor</button>
+                     <div class="flex justify-center items-center max-w-4xl mx-auto">
                          <button id="stop-ar-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">Detener Cámara</button>
-                         <button id="fullscreen-ar-btn" title="Pantalla Completa" class="absolute right-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-                             </svg>
-                         </button>
                      </div>
                  </div>
              </div>
@@ -168,42 +153,27 @@
         document.addEventListener('DOMContentLoaded', () => {
             const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
             let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
-            
-            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.6';
-            const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
-            
-            const ASSET_NAMES = [
-                'cabeza1', 'corazon', 'dedo-mano', 'dedo', 'hueso-columna', 
-                'huesosmano', 'mano-iz-protesis', 'protesis-mano-brazo'
-            ];
+            let isRotating = false; 
 
-            AFRAME.registerComponent('ar-rotator', {
-                schema: { rotationFactor: { type: 'number', default: 0.5 } },
+            const CACHE_NAME = 'propuesta-salud-ar-cache-v2.7';
+            const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
+            const ASSET_NAMES = [ 'cabeza1', 'corazon', 'dedo-mano', 'dedo', 'hueso-columna', 'huesosmano', 'mano-iz-protesis', 'protesis-mano-brazo' ];
+
+            // --- COMPONENTES A-FRAME ---
+            AFRAME.registerComponent('model-loader', {
+                schema: { modelId: {type: 'string'}, loaderId: {type: 'string'} },
                 init: function () {
-                    this.isVisible = false; this.isDragging = false; this.previousDrag = { x: 0, y: 0 };
-                    const canvas = this.el.sceneEl.canvas;
-                    const startDrag = (x, y) => { if (this.isVisible) { this.isDragging = true; this.previousDrag = { x, y }; } };
-                    const drag = (x, y) => {
-                        if (this.isDragging && this.isVisible) {
-                            const deltaX = x - this.previousDrag.x; const deltaY = y - this.previousDrag.y;
-                            this.el.object3D.rotation.y += THREE.MathUtils.degToRad(deltaX * this.data.rotationFactor);
-                            this.el.object3D.rotation.x += THREE.MathUtils.degToRad(deltaY * this.data.rotationFactor);
-                            this.previousDrag = { x, y };
-                        }
-                    };
-                    const endDrag = () => { this.isDragging = false; };
-                    canvas.addEventListener('touchstart', (e) => { if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY); });
-                    canvas.addEventListener('touchmove', (e) => { if (e.touches.length === 1) drag(e.touches[0].clientX, e.touches[0].clientY); });
-                    canvas.addEventListener('touchend', endDrag);
-                    canvas.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
-                    canvas.addEventListener('mousemove', (e) => drag(e.clientX, e.clientY));
-                    canvas.addEventListener('mouseup', endDrag);
-                    canvas.addEventListener('mouseleave', endDrag);
-                    this.el.parentEl.addEventListener('targetFound', () => { this.isVisible = true; });
-                    this.el.parentEl.addEventListener('targetLost', () => { this.isVisible = false; });
-                },
+                    const modelEl = document.querySelector(this.data.modelId);
+                    const loaderEl = document.querySelector(this.data.loaderId);
+                    if(modelEl) {
+                        modelEl.addEventListener('model-loaded', () => {
+                            if(loaderEl) loaderEl.setAttribute('visible', 'false');
+                        });
+                    }
+                }
             });
 
+            // --- FUNCIONES DE CARGA DE RECURSOS ---
             async function fetchWithCache(url) {
                 const cache = await caches.open(CACHE_NAME);
                 const cachedResponse = await cache.match(url);
@@ -240,7 +210,6 @@
                 const totalAssets = ASSET_NAMES.length;
                 let loadedCount = 0;
                 
-                // --- INICIO DE DEPURACIÓN ---
                 console.log("Iniciando la descarga de assets. URLs a solicitar:");
                 ASSET_NAMES.forEach(name => {
                     console.log(`- ${name}:`);
@@ -248,7 +217,6 @@
                     console.log(`  - Model: ${GITHUB_BASE_URL}modelss/${name}.glb`);
                     console.log(`  - Image: ${GITHUB_BASE_URL}imagenes/${name}.png`);
                 });
-                // --- FIN DE DEPURACIÓN ---
 
                 const promises = ASSET_NAMES.map(async (name, index) => {
                     const urls = {
@@ -282,17 +250,12 @@
                     displayLoadedImages(state.assets);
                     document.getElementById('goto-editor-btn').disabled = false;
                     document.getElementById('clear-cache-btn').classList.remove('hidden');
-                    // --- INICIO DE DEPURACIÓN ---
                     console.log("Assets cargados exitosamente:", state.assets);
-                    // --- FIN DE DEPURACIÓN ---
                     setTimeout(() => { loadingStatusDiv.classList.add('hidden'); }, 1000);
                 } catch (error) {
                     loadingText.textContent = 'Error al cargar los recursos. Revisa la consola.';
                     progressBar.classList.add('bg-red-600');
                     console.error("Fallo en la carga de recursos:", error);
-                    // --- INICIO DE DEPURACIÓN ---
-                    console.log("Proceso de carga fallido. Assets que se lograron cargar:", state.assets);
-                    // --- FIN DE DEPURACIÓN ---
                 } finally {
                     githubBtn.disabled = false;
                 }
@@ -308,22 +271,51 @@
                     console.error('Falló la limpieza de caché:', error);
                 }
             }
+            
+            async function loadAssetsFromCacheOnStartup() {
+                try {
+                    const cache = await caches.open(CACHE_NAME);
+                    const keys = await cache.keys();
+                    if (keys.length < ASSET_NAMES.length * 3) throw new Error("Cache incompleto.");
+                    state.assets = await Promise.all(ASSET_NAMES.map(async (name, index) => {
+                        const urls = { marker: `${GITHUB_BASE_URL}markers/${name}.mind`, model: `${GITHUB_BASE_URL}modelss/${name}.glb`, image: `${GITHUB_BASE_URL}imagenes/${name}.png` };
+                        const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
+                        if (!markerRes || !modelRes || !imageRes) throw new Error(`Asset ${name} no encontrado en caché.`);
+                        const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
+                        return {
+                            id: index, name: name,
+                            markerDataUrl: URL.createObjectURL(markerBlob), modelDataUrl: URL.createObjectURL(modelBlob), imageDataUrl: URL.createObjectURL(imageBlob),
+                            transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
+                            hasBeenNormalized: false, normalizationFactor: 1,
+                        };
+                    }));
+                    console.log("Assets cargados exitosamente desde la CACHÉ:", state.assets);
+                    return true;
+                } catch (error) {
+                    console.warn("No se pudieron cargar los assets desde la caché:", error.message);
+                    return false;
+                }
+            }
 
+            // --- FUNCIONES DEL EDITOR 3D ---
             function initEditor() {
                 const canvas = document.getElementById('editor-canvas');
                 const container = document.getElementById('editor-container');
                 if (!canvas || !container || editor.renderer) return;
+
                 editor.scene = new THREE.Scene();
                 editor.scene.background = new THREE.Color(0xeeeeee);
                 editor.camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-                editor.camera.position.set(0, 0.25, 1.5);
+                editor.camera.position.set(0, 1, 15);
                 editor.scene.add(new THREE.AmbientLight(0xffffff, 2));
                 const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
                 directionalLight.position.set(2, 5, 3);
                 editor.scene.add(directionalLight);
+
                 editor.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
                 editor.renderer.setSize(container.clientWidth, container.clientHeight);
                 editor.renderer.setPixelRatio(window.devicePixelRatio);
+
                 editor.controls = new OrbitControls(editor.camera, editor.renderer.domElement);
                 editor.controls.enableDamping = true;
                 const animate = () => { requestAnimationFrame(animate); editor.controls.update(); editor.renderer.render(editor.scene, editor.camera); };
@@ -354,60 +346,82 @@
             function displayAssetInEditor(assetId) {
                 const asset = state.assets.find(a => a.id === assetId);
                 if (!asset || !editor.scene) return;
-                if (editor.currentTarget) { editor.scene.remove(editor.currentTarget); if (editor.dragControls) editor.dragControls.dispose(); }
+                if (editor.currentTarget) editor.scene.remove(editor.currentTarget);
                 if (editor.currentPlane) editor.scene.remove(editor.currentPlane);
+                if (editor.dragControls) editor.dragControls.dispose();
                 
                 editor.textureLoader.load(asset.imageDataUrl, (texture) => {
                     const aspect = texture.image.width / texture.image.height;
-                    editor.currentPlane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1 / aspect), new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.9 }));
+                    const planeWidth = 10;
+                    editor.currentPlane = new THREE.Mesh(new THREE.PlaneGeometry(planeWidth, planeWidth / aspect), new THREE.MeshBasicMaterial({ map: texture }));
+                    editor.currentPlane.position.set(0, 0, -0.1);
                     editor.scene.add(editor.currentPlane);
                 });
 
                 editor.loader.load(asset.modelDataUrl, (gltf) => {
                     editor.currentTarget = gltf.scene;
+                    
                     if (!asset.hasBeenNormalized) {
                         const box = new THREE.Box3().setFromObject(editor.currentTarget);
                         const size = box.getSize(new THREE.Vector3());
                         const center = box.getCenter(new THREE.Vector3());
                         asset.normalizationFactor = 1.0 / Math.max(size.x, size.y, size.z);
                         editor.currentTarget.position.sub(center);
+                        asset.transform.scale = { x: 5, y: 5, z: 5 }; // Default scale
                         asset.hasBeenNormalized = true;
                     }
+                    
                     editor.scene.add(editor.currentTarget);
                     updateModelTransformFromState(asset.transform);
                     updateTransformInputs(asset.transform);
-                    editor.dragControls = new DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
-                    editor.dragControls.addEventListener('dragstart', () => editor.controls.enabled = false);
-                    editor.dragControls.addEventListener('dragend', (event) => {
-                        editor.controls.enabled = true;
-                        Object.assign(asset.transform.position, event.object.position);
-                        updateTransformInputs(asset.transform);
-                    });
+                    setupDragControls(editor.currentTarget);
                 }, undefined, (error) => {
-                    console.error(`Error al cargar el modelo ${asset.name} en el editor:`, error);
-                    alert(`El archivo del modelo 3D "${asset.name}.glb" podría estar dañado o no ser compatible. Revisa la consola para más detalles.`);
+                    console.error(`Error loading model ${asset.name}:`, error)
+                    alert(`Could not load model for ${asset.name}. It might be corrupted.`);
                 });
             }
-
+                
             function updateModelTransformFromState(transform) {
                 if (!editor.currentTarget) return;
-                const asset = state.assets.find(a => a.id === parseInt(document.getElementById('asset-selector').value));
-                if (!asset) return;
+                const assetId = parseInt(document.getElementById('asset-selector').value);
+                const asset = state.assets.find(a => a.id === assetId);
+                if (!asset || !asset.normalizationFactor) return;
+
                 const finalScale = transform.scale.x * asset.normalizationFactor;
+                
                 editor.currentTarget.position.set(transform.position.x, transform.position.y, transform.position.z);
                 editor.currentTarget.rotation.set( THREE.MathUtils.degToRad(transform.rotation.x), THREE.MathUtils.degToRad(transform.rotation.y), THREE.MathUtils.degToRad(transform.rotation.z) );
                 editor.currentTarget.scale.set(finalScale, finalScale, finalScale);
             }
 
+            function setupDragControls(object) {
+                editor.dragControls = new DragControls([object], editor.camera, editor.renderer.domElement);
+                editor.dragControls.addEventListener('dragstart', () => { if (!isRotating) editor.controls.enabled = false; });
+                editor.dragControls.addEventListener('dragend', (event) => {
+                    if (!isRotating) editor.controls.enabled = true;
+                    const assetId = parseInt(document.getElementById('asset-selector').value);
+                    const asset = state.assets.find(a => a.id === assetId);
+                    if (asset) {
+                        Object.assign(asset.transform.position, event.object.position);
+                        updateTransformInputs(asset.transform);
+                    }
+                });
+            }
+
+            // --- FUNCIONES DE REALIDAD AUMENTADA ---
             function preloadARAssets() {
                 if (state.areAssetsPreloaded || state.assets.length === 0) return;
+                console.log("Preloading AR assets...");
                 const arPreloadContainer = document.getElementById('ar-preload-container');
-                arPreloadContainer.innerHTML = '';
+                arPreloadContainer.innerHTML = ''; 
+
                 const tempScene = document.createElement('a-scene');
                 tempScene.setAttribute('embedded', '');
                 tempScene.style.cssText = 'position:fixed; height:1px; width:1px; top:-9999px; left:-9999px;';
+                
                 const assetsEl = document.createElement('a-assets');
                 assetsEl.setAttribute('timeout', '30000');
+
                 state.assets.forEach(asset => {
                     const assetItem = document.createElement('a-asset-item');
                     assetItem.id = `model-${asset.id}`;
@@ -415,160 +429,120 @@
                     assetItem.setAttribute('response-type', 'arraybuffer');
                     assetsEl.appendChild(assetItem);
                 });
+                
                 const arStatusText = document.getElementById('ar-status-text');
                 const arLoader = document.querySelector('#ar-status .loader');
                 arStatusText.textContent = 'Cargando modelos 3D...';
                 arLoader.classList.remove('hidden');
+
                 assetsEl.addEventListener('loaded', () => {
+                    console.log('All AR assets preloaded successfully!');
                     state.areAssetsPreloaded = true;
-                    arStatusText.textContent = '¡Recursos listos! Elige un modo para activar la cámara.';
+                    arStatusText.textContent = '¡Recursos listos! Activa la cámara.';
                     arLoader.classList.add('hidden');
-                    document.getElementById('start-ar-pc-btn').disabled = false;
-                    document.getElementById('start-ar-mobile-btn').disabled = false;
                 });
                 assetsEl.addEventListener('timeout', (e) => {
+                    console.error('Asset loading timed out:', e.detail.src);
                     arStatusText.textContent = 'Error: La carga de modelos tardó mucho.';
                     arLoader.classList.add('hidden');
-                    console.error("La carga de assets tardó demasiado:", e.detail.src);
                 });
+
                 tempScene.appendChild(assetsEl);
                 arPreloadContainer.appendChild(tempScene);
             }
 
-            function setupAndStartAR(shouldEnterFullscreen) {
-                if (!state.areAssetsPreloaded) return;
-                document.getElementById('ar-preloader').classList.remove('hidden');
+            function startAR() {
+                if (!state.areAssetsPreloaded) {
+                    alert("Los modelos 3D aún se están cargando. Por favor espera.");
+                    return;
+                }
                 const arSceneContainer = document.getElementById('ar-scene-container');
                 arSceneContainer.innerHTML = '';
+                const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 8; autoStart: true; uiLoading: no; uiError: no; uiScanning: no;`;
+                
                 const sceneEl = document.createElement('a-scene');
-                sceneEl.setAttribute('embedded', '');
-                const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 8; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
                 sceneEl.setAttribute('mindar-image', mindARSettings);
-                sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
-                sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
                 sceneEl.setAttribute('color-space', 'sRGB');
                 sceneEl.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights');
+                sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
+                sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
+                
                 const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
                 if(preloadedAssets) sceneEl.appendChild(preloadedAssets.cloneNode(true));
+                
                 const cameraEl = document.createElement('a-camera');
                 cameraEl.setAttribute('position', '0 0 0');
                 cameraEl.setAttribute('look-controls', 'enabled: false');
-                cameraEl.setAttribute('fov', '75');
                 sceneEl.appendChild(cameraEl);
+
                 state.assets.forEach((asset, index) => {
                     const targetEl = document.createElement('a-entity');
                     targetEl.setAttribute('mindar-image-target', `targetIndex: ${index}`);
+                    
                     const t = asset.transform;
-                    const finalScale = t.scale.x * asset.normalizationFactor;
+                    const finalScale = asset.normalizationFactor * t.scale.x;
+
+                    const loaderEntity = document.createElement('a-plane');
+                    loaderEntity.id = `loader-${asset.id}`;
+                    loaderEntity.setAttribute('position', '0 0.5 0');
+                    loaderEntity.setAttribute('scale', '0.4 0.4 0.4');
+                    loaderEntity.setAttribute('material', 'src: https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.1.0/assets/loading.png; transparent: true;');
+                    loaderEntity.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear;');
+
                     const modelEntity = document.createElement('a-gltf-model');
+                    modelEntity.id = `gltf-model-${asset.id}`;
                     modelEntity.setAttribute('src', `#model-${asset.id}`);
                     modelEntity.setAttribute('position', `${t.position.x} ${t.position.y} ${t.position.z}`);
                     modelEntity.setAttribute('rotation', `${t.rotation.x} ${t.rotation.y} ${t.rotation.z}`);
                     modelEntity.setAttribute('scale', `${finalScale} ${finalScale} ${finalScale}`);
-                    modelEntity.setAttribute('ar-rotator', '');
+
+                    targetEl.setAttribute('model-loader', `modelId: #gltf-model-${asset.id}; loaderId: #loader-${asset.id}`);
+                    
+                    targetEl.appendChild(loaderEntity);
                     targetEl.appendChild(modelEntity);
                     sceneEl.appendChild(targetEl);
                 });
-                sceneEl.addEventListener('loaded', () => {
-                    sceneEl.systems['mindar-image-system'].start();
-                });
-                const scanningUI = document.getElementById('scanning-ui');
-                sceneEl.addEventListener('arReady', () => {
-                    scanningUI.classList.remove('hidden');
-                    document.getElementById('ar-preloader').classList.add('hidden');
-                    setTimeout(() => { if (sceneEl.renderer) sceneEl.renderer.setSize(window.innerWidth, window.innerHeight); }, 100);
-                });
-                sceneEl.addEventListener('targetFound', () => { scanningUI.classList.add('hidden'); });
-                sceneEl.addEventListener('targetLost', () => { scanningUI.classList.remove('hidden'); });
+
                 arSceneContainer.appendChild(sceneEl);
-                const appContainer = document.getElementById('app');
-                document.documentElement.classList.add('ar-active');
-                document.body.classList.add('ar-active');
-                appContainer.classList.add('ar-fullscreen');
-                appContainer.style.maxHeight = '';
                 arSceneContainer.classList.add('ar-active');
                 document.getElementById('ar-ui-container').classList.add('hidden');
                 document.getElementById('ar-active-controls').classList.remove('hidden');
                 state.isArActive = true;
-                if (shouldEnterFullscreen) {
-                     document.documentElement.requestFullscreen().catch(err => { console.warn("Fullscreen failed:", err); });
-                }
             }
 
             function stopAR() {
                 const arSceneContainer = document.getElementById('ar-scene-container');
                 const sceneEl = arSceneContainer.querySelector('a-scene');
                 if (sceneEl && sceneEl.hasLoaded) {
-                    if(sceneEl.systems['mindar-image-system']) sceneEl.systems['mindar-image-system'].stop();
+                    if (sceneEl.systems['mindar-image-system']) sceneEl.systems['mindar-image-system'].stop();
                     if (sceneEl.parentNode) sceneEl.parentNode.removeChild(sceneEl);
                 }
                 arSceneContainer.innerHTML = '';
                 document.getElementById('ar-preload-container').innerHTML = '';
                 state.areAssetsPreloaded = false;
-                const appContainer = document.getElementById('app');
-                document.documentElement.classList.remove('ar-active');
-                document.body.classList.remove('ar-active');
-                appContainer.classList.remove('ar-fullscreen');
-                appContainer.style.maxHeight = '85vh';
+                arSceneContainer.classList.remove('ar-active');
                 document.getElementById('ar-ui-container').classList.remove('hidden');
                 document.getElementById('ar-active-controls').classList.add('hidden');
-                document.getElementById('scanning-ui').classList.add('hidden');
-                if (document.fullscreenElement) { document.exitFullscreen().catch(err => console.error("Exit fullscreen failed:", err)); }
                 state.isArActive = false;
             }
 
-            function toggleFullScreen() {
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().catch(err => console.error(`Enter fullscreen failed: ${err.message}`));
-                } else {
-                    document.exitFullscreen();
-                }
-            }
-
+            // --- NAVEGACIÓN Y EVENTOS ---
             function navigateTo(pageId) {
                 if (state.isArActive) stopAR();
                 document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
                 const targetPage = document.getElementById(pageId);
-                if (targetPage) { targetPage.classList.add('active'); state.currentPage = pageId; }
+                if (targetPage) targetPage.classList.add('active');
+                state.currentPage = pageId;
                 
                 if (pageId === 'page-editor') {
                     if (!editor.renderer) initEditor();
                     populateEditorSelector();
                     if (state.assets.length > 0) displayAssetInEditor(parseInt(document.getElementById('asset-selector').value) || 0);
                 } else if (pageId === 'page-ar') {
-                    document.getElementById('start-ar-pc-btn').disabled = true;
-                    document.getElementById('start-ar-mobile-btn').disabled = true;
                     preloadARAssets();
                 }
             }
-
-            async function loadAssetsFromCacheOnStartup() {
-                try {
-                    const cache = await caches.open(CACHE_NAME);
-                    const keys = await cache.keys();
-                    if (keys.length < ASSET_NAMES.length * 3) throw new Error("Cache incompleto.");
-                    state.assets = await Promise.all(ASSET_NAMES.map(async (name, index) => {
-                        const urls = { marker: `${GITHUB_BASE_URL}markers/${name}.mind`, model: `${GITHUB_BASE_URL}modelss/${name}.glb`, image: `${GITHUB_BASE_URL}imagenes/${name}.png` };
-                        const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
-                        if (!markerRes || !modelRes || !imageRes) throw new Error(`Asset ${name} no encontrado en caché.`);
-                        const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
-                        return {
-                            id: index, name: name,
-                            markerDataUrl: URL.createObjectURL(markerBlob), modelDataUrl: URL.createObjectURL(modelBlob), imageDataUrl: URL.createObjectURL(imageBlob),
-                            transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
-                            hasBeenNormalized: false, normalizationFactor: 1,
-                        };
-                    }));
-                     // --- INICIO DE DEPURACIÓN ---
-                    console.log("Assets cargados exitosamente desde la CACHÉ:", state.assets);
-                    // --- FIN DE DEPURACIÓN ---
-                    return true;
-                } catch (error) {
-                    console.warn("No se pudieron cargar los assets desde la caché:", error.message);
-                    return false;
-                }
-            }
-
+            
             async function initializeApp() {
                 const successfullyLoadedFromCache = await loadAssetsFromCacheOnStartup();
                 const clearCacheBtn = document.getElementById('clear-cache-btn');
@@ -576,41 +550,76 @@
                     document.getElementById('load-from-github-btn').textContent = 'Recargar Recursos';
                     document.getElementById('goto-editor-btn').disabled = false;
                     displayLoadedImages(state.assets);
-                    document.querySelector('#welcome-box p:last-child').textContent = '¡Recursos cargados desde la caché! Ya puedes continuar o recargarlos si lo deseas.';
+                    document.querySelector('#welcome-box p').textContent = '¡Recursos cargados desde la caché! Ya puedes continuar o recargarlos si lo deseas.';
                     clearCacheBtn.classList.remove('hidden');
                 } else {
-                    document.querySelector('#welcome-box p:last-child').textContent = 'Presiona el botón para descargar los recursos por primera vez. Se guardarán en la caché para futuras visitas.';
+                    document.querySelector('#welcome-box p').textContent = 'Presiona el botón para descargar los recursos por primera vez. Se guardarán en la caché para futuras visitas.';
                     clearCacheBtn.classList.add('hidden');
                 }
             }
 
-            // --- Event Listeners ---
-            document.getElementById('load-from-github-btn').addEventListener('click', loadAssetsFromGitHub);
-            document.getElementById('clear-cache-btn').addEventListener('click', clearCache);
+            // Navigation
             document.getElementById('goto-editor-btn').addEventListener('click', () => navigateTo('page-editor'));
             document.getElementById('goto-ar-btn').addEventListener('click', () => navigateTo('page-ar'));
             document.getElementById('back-to-upload-btn').addEventListener('click', () => navigateTo('page-upload'));
             document.getElementById('back-to-editor-btn-pre').addEventListener('click', () => navigateTo('page-editor'));
-            document.getElementById('start-ar-pc-btn').addEventListener('click', () => setupAndStartAR(false));
-            document.getElementById('start-ar-mobile-btn').addEventListener('click', () => setupAndStartAR(true));
+            document.getElementById('start-ar-btn').addEventListener('click', startAR);
             document.getElementById('stop-ar-btn').addEventListener('click', stopAR);
-            document.getElementById('fullscreen-ar-btn').addEventListener('click', toggleFullScreen);
-            document.getElementById('back-to-editor-btn-post').addEventListener('click', () => navigateTo('page-editor'));
-            document.getElementById('asset-selector').addEventListener('change', (e) => displayAssetInEditor(parseInt(e.target.value)));
+            
+            // GitHub Loading
+            document.getElementById('load-from-github-btn').addEventListener('click', loadAssetsFromGitHub);
+            document.getElementById('clear-cache-btn').addEventListener('click', clearCache);
+
+            // Editor Logic
+            const assetSelector = document.getElementById('asset-selector');
+            assetSelector.addEventListener('change', (e) => displayAssetInEditor(parseInt(e.target.value)));
             
             ['pos-x', 'pos-y', 'pos-z', 'rot-x', 'rot-y', 'rot-z', 'scale'].forEach(id => {
                 document.getElementById(id).addEventListener('input', () => {
-                    const assetId = parseInt(document.getElementById('asset-selector').value);
+                    const assetId = parseInt(assetSelector.value);
                     const asset = state.assets.find(a => a.id === assetId);
                     if (!asset || !editor.currentTarget) return;
-                    asset.transform.position = { x: parseFloat(document.getElementById('pos-x').value) || 0, y: parseFloat(document.getElementById('pos-y').value) || 0, z: parseFloat(document.getElementById('pos-z').value) || 0 };
-                    asset.transform.rotation = { x: parseFloat(document.getElementById('rot-x').value) || 0, y: parseFloat(document.getElementById('rot-y').value) || 0, z: parseFloat(document.getElementById('rot-z').value) || 0 };
-                    const scaleVal = parseFloat(document.getElementById('scale').value) || 0;
+                    
+                    asset.transform.position = { x: parseFloat(document.getElementById('pos-x').value), y: parseFloat(document.getElementById('pos-y').value), z: parseFloat(document.getElementById('pos-z').value) };
+                    asset.transform.rotation = { x: parseFloat(document.getElementById('rot-x').value), y: parseFloat(document.getElementById('rot-y').value), z: parseFloat(document.getElementById('rot-z').value) };
+                    const scaleVal = parseFloat(document.getElementById('scale').value);
                     asset.transform.scale = { x: scaleVal, y: scaleVal, z: scaleVal };
+                    
                     updateModelTransformFromState(asset.transform);
                 });
             });
 
+            const canvas = document.getElementById('editor-canvas');
+            canvas.addEventListener('contextmenu', e => e.preventDefault());
+            let previousMousePosition = { x: 0, y: 0 };
+            canvas.addEventListener('mousedown', e => {
+                if (e.button === 2) { // Right click
+                    isRotating = true;
+                    editor.controls.enabled = false;
+                    if (editor.dragControls) editor.dragControls.enabled = false;
+                    previousMousePosition.x = e.clientX;
+                }
+            });
+            canvas.addEventListener('mousemove', e => {
+                if (isRotating && editor.currentTarget) {
+                    const deltaX = e.clientX - previousMousePosition.x;
+                    const assetId = parseInt(assetSelector.value);
+                    const asset = state.assets.find(a => a.id === assetId);
+                    if (!asset) return;
+
+                    asset.transform.rotation.y += deltaX * 0.5; 
+                    updateModelTransformFromState(asset.transform);
+                    document.getElementById('rot-y').value = Math.round(asset.transform.rotation.y % 360);
+                    previousMousePosition.x = e.clientX;
+                }
+            });
+            window.addEventListener('mouseup', e => {
+                if (e.button === 2) {
+                    isRotating = false;
+                    editor.controls.enabled = true;
+                    if (editor.dragControls) editor.dragControls.enabled = true;
+                }
+            });
             window.addEventListener('resize', () => {
                 if (state.isArActive) {
                     const sceneEl = document.querySelector('#ar-scene-container a-scene');
@@ -623,4 +632,5 @@
     </script>
 </body>
 </html>
+
 
