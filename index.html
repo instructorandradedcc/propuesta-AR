@@ -266,9 +266,17 @@
         };                
         const CACHE_NAME = `ar-assets-cache-v${APP_VERSION}`; // Cache con versión
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
-        const ASSET_NAMES = [
-            'cabeza1', 'corazon', 'dedo-mano', 'dedo', 
-            'hueso-columna', 'huesosmano', 'mano-iz-protesis', 'protesis-mano-brazo'
+        
+        // MAPA DE CORRECIÓN: Asocia el marcador (.mind) con el modelo (.glb) y la imagen (.png) correctos.
+        const ASSET_MAPPING = [
+            { marker: 'cabeza1', model: 'dedo' },
+            { marker: 'corazon', model: 'dedo-mano' },
+            { marker: 'dedo-mano', model: 'hueso-columna' },
+            { marker: 'dedo', model: 'huesosmano' },
+            { marker: 'hueso-columna', model: 'mano-iz-protesis' },
+            { marker: 'huesosmano', model: 'protesis-mano-brazo' },
+            { marker: 'mano-iz-protesis', model: 'cabeza1' },
+            { marker: 'protesis-mano-brazo', model: 'corazon' }
         ];
 
         AFRAME.registerComponent('ar-rotator', {
@@ -340,13 +348,11 @@
         }
 
         async function fetchWithCache(url) {
-            // Se fuerza la búsqueda en red para asegurar la última versión
             const networkResponse = await fetch(url, { cache: "no-store" });
             const cache = await caches.open(CACHE_NAME);
             if (networkResponse.ok) {
                 await cache.put(url, networkResponse.clone());
             }
-            // Si la red falla, intenta usar la caché como respaldo
             return networkResponse.ok ? networkResponse : (await cache.match(url) || networkResponse);
         }                
         
@@ -374,14 +380,14 @@
             githubBtn.disabled = true;
             progressBar.style.width = `0%`;
             progressBar.classList.remove('bg-red-600');
-            const totalAssets = ASSET_NAMES.length; 
+            const totalAssets = ASSET_MAPPING.length; 
             let loadedCount = 0;                        
             
-            const promises = ASSET_NAMES.map(async (name, index) => {
+            const promises = ASSET_MAPPING.map(async (assetPair, index) => {
                 const urls = {
-                    marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                    model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
-                    image: `${GITHUB_BASE_URL}imagenes/${name}.png`
+                    marker: `${GITHUB_BASE_URL}markers/${assetPair.marker}.mind`,
+                    model: `${GITHUB_BASE_URL}modelss/${assetPair.model}.glb`,
+                    image: `${GITHUB_BASE_URL}imagenes/${assetPair.model}.png`
                 };                          
                 const [markerRes, modelRes, imageRes] = await Promise.all([
                     fetchWithCache(urls.marker),
@@ -390,7 +396,7 @@
                 ]);
 
                 if (!markerRes.ok || !modelRes.ok || !imageRes.ok) {
-                    throw new Error(`Failed to fetch assets for ${name}`);
+                    throw new Error(`Failed to fetch assets for ${assetPair.model}`);
                 }
                 
                 const [markerBlob, modelBlob, imageBlob] = await Promise.all([
@@ -399,11 +405,11 @@
 
                 loadedCount++;
                 progressBar.style.width = `${(loadedCount / totalAssets) * 100}%`;
-                loadingText.textContent = `Cargando ${name}... (${loadedCount}/${totalAssets})`;
+                loadingText.textContent = `Cargando ${assetPair.model}... (${loadedCount}/${totalAssets})`;
                 
                 return {
                     id: index,
-                    name: name,
+                    name: assetPair.model,
                     markerDataUrl: URL.createObjectURL(markerBlob),
                     modelDataUrl: URL.createObjectURL(modelBlob),
                     imageDataUrl: URL.createObjectURL(imageBlob),
@@ -705,23 +711,23 @@
             try {
                 const cache = await caches.open(CACHE_NAME);
                 const keys = await cache.keys();
-                if (keys.length < ASSET_NAMES.length * 3) throw new Error("Cache incompleto.");
+                if (keys.length < ASSET_MAPPING.length * 3) throw new Error("Cache incompleto.");
 
-                const assets = await Promise.all(ASSET_NAMES.map(async (name, index) => {
+                const assets = await Promise.all(ASSET_MAPPING.map(async (assetPair, index) => {
                     const urls = {
-                        marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                        model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
-                        image: `${GITHUB_BASE_URL}imagenes/${name}.png`
+                        marker: `${GITHUB_BASE_URL}markers/${assetPair.marker}.mind`,
+                        model: `${GITHUB_BASE_URL}modelss/${assetPair.model}.glb`,
+                        image: `${GITHUB_BASE_URL}imagenes/${assetPair.model}.png`
                     };
                     const [markerRes, modelRes, imageRes] = await Promise.all([
                         cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image)
                     ]);
-                    if (!markerRes || !modelRes || !imageRes) throw new Error(`Asset ${name} no encontrado en caché.`);
+                    if (!markerRes || !modelRes || !imageRes) throw new Error(`Asset ${assetPair.model} no encontrado en caché.`);
                     const [markerBlob, modelBlob, imageBlob] = await Promise.all([
                         markerRes.blob(), modelRes.blob(), imageRes.blob()
                     ]);
                     return {
-                        id: index, name: name,
+                        id: index, name: assetPair.model,
                         markerDataUrl: URL.createObjectURL(markerBlob),
                         modelDataUrl: URL.createObjectURL(modelBlob),
                         imageDataUrl: URL.createObjectURL(imageBlob),
