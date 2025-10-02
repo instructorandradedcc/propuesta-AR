@@ -4,15 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Propuesta Modelo AR en Salud</title>
-    <!-- Dependencias -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
-    <!-- Favicon del repositorio -->
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
-
-    <!-- SOLUCIÓN: Se fija la versión de Three.js a 0.152.2 para asegurar compatibilidad con MindAR y los controles. -->
+    
     <script type="importmap">
         {
             "imports": {
@@ -21,15 +17,13 @@
             }
         }
     </script>
-    
+
     <style>
-        /* Estilos para una experiencia fluida en modo AR */
         html.ar-active, body.ar-active { overflow: hidden; width: 100%; height: 100%; margin: 0; padding: 0; }
         .app-container.ar-fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; max-height: none; padding: 0; margin: 0 !important; border-radius: 0; overflow: hidden; }
         .page { display: none; }
         .page.active { display: block; }
         #editor-canvas { width: 100%; height: 400px; border: 1px solid #ccc; background: #f0f0f0; cursor: move; touch-action: none; border-radius: 8px; }
-        
         #ar-scene-container.ar-active { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9990; }
         #ar-scene-container.ar-active a-scene { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         #ar-scene-container.ar-active video, 
@@ -44,7 +38,6 @@
         #ar-active-controls { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 9999; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         #scanning-ui {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9991; display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -58,21 +51,20 @@
     
     <div id="app" class="app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
         <div class="flex justify-center items-center mb-6">
-              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
-              <div>
-                  <h1 class="text-4xl font-bold text-center text-blue-800">Modelo AR en Salud</h1>
-                  <p class="text-center text-gray-500">Visualización de modelos anatómicos con Realidad Aumentada.</p>
-              </div>
+             <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
+             <div>
+                 <h1 class="text-4xl font-bold text-center text-blue-800">Modelo AR en Salud</h1>
+                 <p class="text-center text-gray-500">Visualización de modelos anatómicos con Realidad Aumentada.</p>
+             </div>
         </div>
 
-        <!-- PÁGINA 1: Carga de Recursos -->
         <div id="page-upload" class="page active bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 1: Cargar Recursos</h2>
             <div id="welcome-box" class="bg-indigo-50 border-l-4 border-indigo-500 text-indigo-700 p-4 mb-6" role="alert">
                 <p class="font-bold">¡Bienvenido!</p>
                 <p>Presiona el botón para descargar los modelos 3D y marcadores. Los archivos se guardarán en la caché de tu navegador para acelerar futuras cargas.</p>
             </div>
-            
+                        
             <div class="mt-6 text-center flex justify-center items-center gap-4">
                 <button id="load-from-github-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 text-lg shadow-md">
                     Cargar Recursos
@@ -87,7 +79,7 @@
                 <p id="loading-text" class="text-center text-gray-600 mt-2">Iniciando...</p>
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2"><div id="loading-progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div></div>
             </div>
-            
+                        
             <div id="image-preview-container" class="mt-6"></div>
 
             <div class="mt-8 text-center">
@@ -95,7 +87,6 @@
             </div>
         </div>
 
-        <!-- PÁGINA 2: Editor 3D -->
         <div id="page-editor" class="page bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Paso 2: Ajustar Modelos 3D</h2>
             <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-6 text-sm" role="alert">
@@ -136,7 +127,6 @@
             </div>
         </div>
 
-        <!-- PÁGINA 3: Vista AR -->
         <div id="page-ar" class="page">
             <div class="relative">
                 <div id="ar-ui-container" class="relative z-10">
@@ -148,15 +138,15 @@
                         </div>
                     </div>
                      <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-                          <button id="back-to-editor-btn-pre" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 w-full sm:w-auto">Atrás</button>
-                          <button id="start-ar-pc-btn" disabled class="bg-sky-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-600 disabled:bg-gray-300 w-full sm:w-auto flex items-center justify-center gap-2">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                              Activar AR en PC
-                          </button>
-                          <button id="start-ar-mobile-btn" disabled class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 disabled:bg-gray-300 w-full sm:w-auto flex items-center justify-center gap-2">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                              Iniciar AR en Celular
-                          </button>
+                         <button id="back-to-editor-btn-pre" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 w-full sm:w-auto">Atrás</button>
+                         <button id="start-ar-pc-btn" disabled class="bg-sky-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-600 disabled:bg-gray-300 w-full sm:w-auto flex items-center justify-center gap-2">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                             Activar AR en PC
+                         </button>
+                         <button id="start-ar-mobile-btn" disabled class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 disabled:bg-gray-300 w-full sm:w-auto flex items-center justify-center gap-2">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                             Iniciar AR en Celular
+                         </button>
                      </div>
                 </div>
                 <div id="ar-preload-container" class="hidden"></div>
@@ -164,46 +154,53 @@
                 <div id="scanning-ui" class="hidden"><p class="scan-text">Apunte al marcador</p></div>
                 <div id="ar-active-controls" class="hidden p-4 bg-black bg-opacity-50">
                      <div class="relative flex justify-center items-center gap-4 max-w-4xl mx-auto">
-                          <button id="back-to-editor-btn-post" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600">Volver al Editor</button>
-                          <button id="stop-ar-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600">Detener Cámara</button>
-                          <button id="fullscreen-ar-btn" title="Pantalla Completa" class="absolute right-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-                              </svg>
-                          </button>
+                         <button id="back-to-editor-btn-post" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600">Volver al Editor</button>
+                         <button id="stop-ar-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600">Detener Cámara</button>
+                         <button id="fullscreen-ar-btn" title="Pantalla Completa" class="absolute right-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                             </svg>
+                         </button>
                      </div>
                 </div>
             </div>
         </div>
     </div>
-    
+        
     <div id="ar-preloader" class="hidden fixed inset-0 bg-black bg-opacity-75 flex flex-col justify-center items-center z-[10000]">
         <div class="loader"></div><p class="text-white text-lg mt-4">Iniciando cámara...</p>
     </div>
 
     <script type="module">
-    // Importaciones de Three.js
+    // Se reintroducen las importaciones explícitas de Three.js y sus addons.
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { DragControls } from 'three/addons/controls/DragControls.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-        const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
+        // Se elimina 'const THREE = window.THREE' porque ahora lo importamos directamente.
+
+        const state = {
+             assets: [],
+             currentPage: 'page-upload',
+             isArActive: false,
+             areAssetsPreloaded: false,
+        };
         let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        // SOLUCIÓN: Incrementar la versión de la caché para forzar la recarga de recursos si cambian.
-        const CACHE_NAME = 'salud-ar-assets-cache-v19'; 
+        const CACHE_NAME = 'salud-ar-assets-cache-v18'; // Versión de caché actualizada
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
+        
+        // =================================================================
+        // SOLUCIÓN: Se corrigen las extensiones de 'JPG' a 'png' para que
+        // coincidan con los archivos reales en el repositorio de GitHub.
+        // =================================================================
         const ASSETS_CONFIG = [
-            { name: 'cabeza1', imageExt: 'png' },
-            { name: 'corazon', imageExt: 'JPG' },
-            { name: 'dedo-mano', imageExt: 'JPG' },
-            { name: 'dedo', imageExt: 'JPG' },
-            { name: 'hueso-columna', imageExt: 'JPG' },
-            { name: 'huesosmano', imageExt: 'png' },
-            { name: 'mano-iz-protesis', imageExt: 'JPG' },
-            { name: 'protesis-mano-brazo', imageExt: 'JPG' }
+            { name: 'cabeza1', imageExt: 'png' }, { name: 'corazon', imageExt: 'png' },
+            { name: 'dedo-mano', imageExt: 'png' }, { name: 'dedo', imageExt: 'png' },
+            { name: 'hueso-columna', imageExt: 'png' }, { name: 'huesosmano', imageExt: 'png' },
+            { name: 'mano-iz-protesis', imageExt: 'png' }, { name: 'protesis-mano-brazo', imageExt: 'png' }
         ];
 
         AFRAME.registerComponent('ar-rotator', {
@@ -225,7 +222,6 @@
             },
         });
 
-        // MEJORA: Se añade una función de reintento para hacer la carga de red más robusta.
         async function fetchWithRetry(url, retries = 2, delay = 500) {
             for (let i = 0; i <= retries; i++) {
                 try {
@@ -281,15 +277,13 @@
 
                 const assetPromises = ASSETS_CONFIG.map(async (assetConfig, index) => {
                     const { name, imageExt } = assetConfig;
+                    loadingText.textContent = `Cargando ${name}... (${loadedCount + 1}/${totalAssets})`;
                     
                     const urls = {
                         marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
                         model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
                         image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
                     };
-
-                    // Actualizar texto antes de la descarga
-                    loadingText.textContent = `Cargando ${name}... (${loadedCount + 1}/${totalAssets})`;
 
                     const [markerRes, modelRes, imageRes] = await Promise.all([
                         fetchWithCache(urls.marker),
@@ -367,6 +361,7 @@
             editor.renderer.setSize(container.clientWidth, container.clientHeight);
             editor.renderer.setPixelRatio(window.devicePixelRatio);
             
+            // Se instancia OrbitControls usando la clase importada.
             editor.controls = new OrbitControls(editor.camera, editor.renderer.domElement);
             editor.controls.enableDamping = true;
             
@@ -500,16 +495,12 @@
             
             const markerUrlList = state.assets.map(a => a.markerDataUrl).join(';');
             
-            // SOLUCIÓN DEFINITIVA: 
-            // 1. Se usa `maxTrackables: 1` que es la propiedad correcta para el seguimiento múltiple en esta versión.
-            // 2. Se añaden `filterMinCF` y `filterBeta` para suavizar el seguimiento del marcador y eliminar vibraciones.
             const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no; filterMinCF: 0.1; filterBeta: 10;`;
 
             sceneEl.setAttribute('mindar-image', mindARSettings);
             sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
             sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
             sceneEl.setAttribute('color-space', 'sRGB');
-            // SOLUCIÓN: Se corrige el renderer para eliminar advertencias y mejorar rendimiento.
             sceneEl.setAttribute('renderer', 'colorManagement: true');
 
             const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
