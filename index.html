@@ -38,7 +38,7 @@
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v3.1-corregido</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v3.2-corregido</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -523,7 +523,6 @@
                 const arSceneContainer = document.getElementById('ar-scene-container');
                 arSceneContainer.innerHTML = ''; // Limpiar contenedor
                 
-                // a) Configuración correcta de MindAR para múltiples marcadores usando un objeto
                 const mindARSettings = {
                     imageTargetSrc: state.assets.map(a => a.markerDataUrl),
                     maxTrack: state.assets.length,
@@ -534,32 +533,40 @@
                 };
                 
                 const sceneEl = document.createElement('a-scene');
-                // Convertir el objeto a una cadena para el atributo
                 const settingsString = Object.entries(mindARSettings).map(([key, value]) => {
                     if (Array.isArray(value)) {
                         return `${key}: ${value.join(';')}`;
                     }
                     return `${key}: ${value}`;
                 }).join(';');
+
                 sceneEl.setAttribute('mindar-image', settingsString);
                 sceneEl.setAttribute('color-space', 'sRGB');
                 sceneEl.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights');
                 sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
                 sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
                 
+                // Integrar A-Frame Asset Management System para los modelos
+                const assetsEl = document.createElement('a-assets');
+                state.assets.forEach(asset => {
+                    const assetItem = document.createElement('a-asset-item');
+                    assetItem.id = `model-${asset.id}`;
+                    assetItem.setAttribute('src', asset.modelDataUrl);
+                    assetsEl.appendChild(assetItem);
+                });
+                sceneEl.appendChild(assetsEl);
+
                 const cameraEl = document.createElement('a-camera');
                 cameraEl.setAttribute('position', '0 0 0');
                 cameraEl.setAttribute('look-controls', 'enabled: false');
                 sceneEl.appendChild(cameraEl);
 
-                // c) Crear targets, asegurando índice correcto y eventos específicos
                 state.assets.forEach((asset, index) => {
                     debugLog(`- Creando target para ${asset.name} (índice: ${index})`);
                     
                     const targetEl = document.createElement('a-entity');
                     targetEl.setAttribute('mindar-image-target', `targetIndex: ${index}`);
                     
-                    // Eventos específicos para este target individual
                     targetEl.addEventListener('targetFound', () => {
                         debugLog(`Target ENCONTRADO: ${asset.name}`);
                     });
@@ -572,8 +579,8 @@
                     const finalScale = asset.normalizationFactor * t.scale.x;
 
                     const modelEntity = document.createElement('a-gltf-model');
-                    // Usamos la URL del blob directamente, ya que A-Frame la manejará
-                    modelEntity.setAttribute('src', asset.modelDataUrl); 
+                    // Referenciar el modelo desde a-assets usando su ID
+                    modelEntity.setAttribute('src', `#model-${asset.id}`); 
                     modelEntity.setAttribute('position', `${t.position.x} ${t.position.y} ${t.position.z}`);
                     modelEntity.setAttribute('rotation', `${t.rotation.x} ${t.rotation.y} ${t.rotation.z}`);
                     modelEntity.setAttribute('scale', `${finalScale} ${finalScale} ${finalScale}`);
@@ -583,10 +590,17 @@
                 });
 
                 const scanningUI = document.getElementById('scanning-ui');
+                
+                // Iniciar el sistema MindAR manualmente ya que autoStart es false
                 sceneEl.addEventListener('loaded', () => {
-                    debugLog("Escena AR cargada, iniciando sistema MindAR...");
-                    // El sistema se inicia automáticamente por A-Frame, pero podemos forzarlo si es necesario
-                    // sceneEl.systems['mindar-image-system'].start();
+                    debugLog("Escena AR cargada. Iniciando sistema MindAR...");
+                    const mindarSystem = sceneEl.systems['mindar-image-system'];
+                    if (mindarSystem) {
+                        mindarSystem.start();
+                    } else {
+                        debugLog("ERROR: No se encontró el sistema mindar-image.");
+                        alert("Error crítico: No se pudo inicializar el sistema de Realidad Aumentada.");
+                    }
                 });
                 
                 sceneEl.addEventListener('arReady', () => {
@@ -595,11 +609,10 @@
                 });
                 
                 sceneEl.addEventListener('targetFound', () => {
-                    scanningUI.classList.add('hidden'); // Ocultar UI de escaneo general
+                    scanningUI.classList.add('hidden');
                 });
                 
                 sceneEl.addEventListener('targetLost', () => {
-                    // Solo mostrar si no hay otros targets visibles (requiere lógica más compleja no implementada aquí)
                     scanningUI.classList.remove('hidden');
                 });
 
@@ -745,4 +758,5 @@
     </script>
 </body>
 </html>
+
 
