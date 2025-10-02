@@ -8,11 +8,12 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
+    <!-- CORREGIDO: Versión de Three.js alineada con la del ejemplo funcional para evitar conflictos. -->
     <script type="importmap">
         {
             "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+                "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/"
             }
         }
     </script>
@@ -38,7 +39,7 @@
 </head>
 <body class="bg-gray-200 text-gray-800 font-sans">
     <div id="app" class="relative app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
-        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v3.2-corregido</div>
+        <div id="version-tag" class="absolute top-2 right-4 text-xs text-gray-400">v3.3-corregido</div>
 
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Prototipo" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
@@ -130,6 +131,7 @@
                          <button id="start-ar-btn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Activar Cámara AR</button>
                      </div>
                  </div>
+                 <div id="ar-preload-container" class="hidden"></div>
                  <div id="ar-scene-container"></div>
                  <div id="scanning-ui" class="hidden">
                      <p class="scan-text">Apunte al marcador</p>
@@ -474,7 +476,6 @@
                 arStatusText.textContent = 'Precargando modelos 3D...';
                 arLoader.classList.remove('hidden');
 
-                // Crear escena temporal para precargar los modelos en a-assets
                 const tempScene = document.createElement('a-scene');
                 tempScene.style.cssText = 'position:fixed; height:1px; width:1px; top:-9999px; left:-9999px;';
                 document.body.appendChild(tempScene);
@@ -487,6 +488,8 @@
                     const assetItem = document.createElement('a-asset-item');
                     assetItem.id = `model-${asset.id}`;
                     assetItem.setAttribute('src', asset.modelDataUrl);
+                    // CORREGIDO: Se añade 'response-type' para asegurar que los .glb se traten como archivos binarios.
+                    assetItem.setAttribute('response-type', 'arraybuffer');
                     
                     assetItem.addEventListener('loaded', () => {
                         debugLog(`Modelo precargado: ${asset.name}`);
@@ -495,7 +498,7 @@
                             state.areAssetsPreloaded = true;
                             arStatusText.textContent = '¡Recursos listos! Ya puedes activar la cámara.';
                             arLoader.classList.add('hidden');
-                            document.body.removeChild(tempScene); // Limpiar la escena temporal
+                            document.body.removeChild(tempScene);
                         }
                     });
                     
@@ -521,41 +524,19 @@
                 debugLog("Iniciando AR con múltiples marcadores...");
                 
                 const arSceneContainer = document.getElementById('ar-scene-container');
-                arSceneContainer.innerHTML = ''; // Limpiar contenedor
-                
-                const mindARSettings = {
-                    imageTargetSrc: state.assets.map(a => a.markerDataUrl),
-                    maxTrack: state.assets.length,
-                    autoStart: false,
-                    uiLoading: "no",
-                    uiError: "no",
-                    uiScanning: "no"
-                };
+                arSceneContainer.innerHTML = '';
                 
                 const sceneEl = document.createElement('a-scene');
-                const settingsString = Object.entries(mindARSettings).map(([key, value]) => {
-                    if (Array.isArray(value)) {
-                        return `${key}: ${value.join(';')}`;
-                    }
-                    return `${key}: ${value}`;
-                }).join(';');
+                sceneEl.setAttribute('embedded', '');
+                
+                const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: ${state.assets.length}; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
 
-                sceneEl.setAttribute('mindar-image', settingsString);
+                sceneEl.setAttribute('mindar-image', mindARSettings);
                 sceneEl.setAttribute('color-space', 'sRGB');
                 sceneEl.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights');
                 sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
                 sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
                 
-                // Integrar A-Frame Asset Management System para los modelos
-                const assetsEl = document.createElement('a-assets');
-                state.assets.forEach(asset => {
-                    const assetItem = document.createElement('a-asset-item');
-                    assetItem.id = `model-${asset.id}`;
-                    assetItem.setAttribute('src', asset.modelDataUrl);
-                    assetsEl.appendChild(assetItem);
-                });
-                sceneEl.appendChild(assetsEl);
-
                 const cameraEl = document.createElement('a-camera');
                 cameraEl.setAttribute('position', '0 0 0');
                 cameraEl.setAttribute('look-controls', 'enabled: false');
@@ -579,8 +560,7 @@
                     const finalScale = asset.normalizationFactor * t.scale.x;
 
                     const modelEntity = document.createElement('a-gltf-model');
-                    // Referenciar el modelo desde a-assets usando su ID
-                    modelEntity.setAttribute('src', `#model-${asset.id}`); 
+                    modelEntity.setAttribute('src', asset.modelDataUrl); 
                     modelEntity.setAttribute('position', `${t.position.x} ${t.position.y} ${t.position.z}`);
                     modelEntity.setAttribute('rotation', `${t.rotation.x} ${t.rotation.y} ${t.rotation.z}`);
                     modelEntity.setAttribute('scale', `${finalScale} ${finalScale} ${finalScale}`);
@@ -591,7 +571,6 @@
 
                 const scanningUI = document.getElementById('scanning-ui');
                 
-                // Iniciar el sistema MindAR manualmente ya que autoStart es false
                 sceneEl.addEventListener('loaded', () => {
                     debugLog("Escena AR cargada. Iniciando sistema MindAR...");
                     const mindarSystem = sceneEl.systems['mindar-image-system'];
@@ -637,7 +616,6 @@
                 }
                 arSceneContainer.innerHTML = '';
                 
-                // Reiniciar el estado de precarga para la próxima vez
                 state.areAssetsPreloaded = false; 
                 document.getElementById('ar-status-text').textContent = "Estado: Esperando cámara...";
 
