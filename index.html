@@ -12,7 +12,7 @@
     <!-- Favicon del repositorio -->
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
 
-    <!-- Importmap para Three.js (necesario para el editor 3D) -->
+    <!-- SOLUCIÓN: Se fija la versión de Three.js a 0.152.2 para asegurar compatibilidad con MindAR y los controles. -->
     <script type="importmap">
         {
             "imports": {
@@ -58,11 +58,11 @@
     
     <div id="app" class="app-container container mx-auto p-6 md:p-8 max-w-5xl bg-white rounded-xl shadow-lg my-8 overflow-y-auto" style="max-height: 85vh;">
         <div class="flex justify-center items-center mb-6">
-             <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
-             <div>
-                 <h1 class="text-4xl font-bold text-center text-blue-800">Modelo AR en Salud</h1>
-                 <p class="text-center text-gray-500">Visualización de modelos anatómicos con Realidad Aumentada.</p>
-             </div>
+              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
+              <div>
+                  <h1 class="text-4xl font-bold text-center text-blue-800">Modelo AR en Salud</h1>
+                  <p class="text-center text-gray-500">Visualización de modelos anatómicos con Realidad Aumentada.</p>
+              </div>
         </div>
 
         <!-- PÁGINA 1: Carga de Recursos -->
@@ -148,15 +148,15 @@
                         </div>
                     </div>
                      <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-                         <button id="back-to-editor-btn-pre" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 w-full sm:w-auto">Atrás</button>
-                         <button id="start-ar-pc-btn" disabled class="bg-sky-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-600 disabled:bg-gray-300 w-full sm:w-auto flex items-center justify-center gap-2">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                             Activar AR en PC
-                         </button>
-                         <button id="start-ar-mobile-btn" disabled class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 disabled:bg-gray-300 w-full sm:w-auto flex items-center justify-center gap-2">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                             Iniciar AR en Celular
-                         </button>
+                          <button id="back-to-editor-btn-pre" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 w-full sm:w-auto">Atrás</button>
+                          <button id="start-ar-pc-btn" disabled class="bg-sky-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-600 disabled:bg-gray-300 w-full sm:w-auto flex items-center justify-center gap-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                              Activar AR en PC
+                          </button>
+                          <button id="start-ar-mobile-btn" disabled class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 disabled:bg-gray-300 w-full sm:w-auto flex items-center justify-center gap-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                              Iniciar AR en Celular
+                          </button>
                      </div>
                 </div>
                 <div id="ar-preload-container" class="hidden"></div>
@@ -164,13 +164,13 @@
                 <div id="scanning-ui" class="hidden"><p class="scan-text">Apunte al marcador</p></div>
                 <div id="ar-active-controls" class="hidden p-4 bg-black bg-opacity-50">
                      <div class="relative flex justify-center items-center gap-4 max-w-4xl mx-auto">
-                         <button id="back-to-editor-btn-post" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600">Volver al Editor</button>
-                         <button id="stop-ar-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600">Detener Cámara</button>
-                         <button id="fullscreen-ar-btn" title="Pantalla Completa" class="absolute right-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-                             </svg>
-                         </button>
+                          <button id="back-to-editor-btn-post" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600">Volver al Editor</button>
+                          <button id="stop-ar-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600">Detener Cámara</button>
+                          <button id="fullscreen-ar-btn" title="Pantalla Completa" class="absolute right-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                              </svg>
+                          </button>
                      </div>
                 </div>
             </div>
@@ -192,7 +192,8 @@
         const state = { assets: [], currentPage: 'page-upload', isArActive: false, areAssetsPreloaded: false };
         let editor = { scene: null, camera: null, renderer: null, controls: null, dragControls: null, loader: new GLTFLoader(), textureLoader: new THREE.TextureLoader(), currentTarget: null, currentPlane: null };
         
-        const CACHE_NAME = 'salud-ar-assets-cache-v7'; // Incremented cache version
+        // SOLUCIÓN: Incrementar la versión de la caché para forzar la recarga de recursos si cambian.
+        const CACHE_NAME = 'salud-ar-assets-cache-v19'; 
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         const ASSETS_CONFIG = [
             { name: 'cabeza1', imageExt: 'png' },
@@ -224,18 +225,28 @@
             },
         });
 
+        // MEJORA: Se añade una función de reintento para hacer la carga de red más robusta.
+        async function fetchWithRetry(url, retries = 2, delay = 500) {
+            for (let i = 0; i <= retries; i++) {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText} for ${url}`);
+                    return response;
+                } catch (error) {
+                    if (i === retries) throw error;
+                    console.warn(`Intento ${i + 1} fallido para ${url}. Reintentando en ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
         async function fetchWithCache(url) {
             const cache = await caches.open(CACHE_NAME);
             const cachedResponse = await cache.match(url);
             if (cachedResponse) return cachedResponse;
-            
-            const networkResponse = await fetch(url);
-            if (networkResponse.ok) {
-                try {
-                    await cache.put(url, networkResponse.clone());
-                } catch (e) {
-                    console.warn(`Could not cache resource: ${url}`, e);
-                }
+            const networkResponse = await fetchWithRetry(url);
+            if (networkResponse && networkResponse.ok) {
+                await cache.put(url, networkResponse.clone());
             }
             return networkResponse;
         }
@@ -259,50 +270,64 @@
             const loadingText = document.getElementById('loading-text');
             const progressBar = document.getElementById('loading-progress-bar');
             
-            progressBar.parentElement.classList.remove('hidden');
             loadingStatusDiv.classList.remove('hidden');
             document.getElementById('load-from-github-btn').disabled = true;
-            progressBar.style.width = `0%`;
-
-            const totalAssets = ASSETS_CONFIG.length; 
-            let loadedCount = 0;
-            
-            const promises = ASSETS_CONFIG.map(async (assetConfig, index) => {
-                const { name, imageExt } = assetConfig;
-                const urls = {
-                    marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
-                    model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
-                    image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
-                };
-                
-                const [markerRes, modelRes, imageRes] = await Promise.all([ fetchWithCache(urls.marker), fetchWithCache(urls.model), fetchWithCache(urls.image) ]);
-                if (!markerRes.ok || !modelRes.ok || !imageRes.ok) throw new Error(`Failed to fetch assets for ${name}`);
-                const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
-
-                loadedCount++;
-                progressBar.style.width = `${(loadedCount / totalAssets) * 100}%`;
-                loadingText.textContent = `Cargando ${name}... (${loadedCount}/${totalAssets})`;
-
-                return {
-                    id: index, name,
-                    markerDataUrl: URL.createObjectURL(markerBlob),
-                    modelDataUrl: URL.createObjectURL(modelBlob),
-                    imageDataUrl: URL.createObjectURL(imageBlob),
-                    transform: { position: { x: 0, y: 0, z: 0.1 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 0.3, y: 0.3, z: 0.3 } },
-                    hasBeenNormalized: false, normalizationFactor: 1,
-                };
-            });
+            progressBar.style.width = '0%';
+            progressBar.classList.remove('bg-red-600');
 
             try {
-                state.assets = await Promise.all(promises);
+                const totalAssets = ASSETS_CONFIG.length;
+                let loadedCount = 0;
+
+                const assetPromises = ASSETS_CONFIG.map(async (assetConfig, index) => {
+                    const { name, imageExt } = assetConfig;
+                    
+                    const urls = {
+                        marker: `${GITHUB_BASE_URL}markers/${name}.mind`,
+                        model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
+                        image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
+                    };
+
+                    // Actualizar texto antes de la descarga
+                    loadingText.textContent = `Cargando ${name}... (${loadedCount + 1}/${totalAssets})`;
+
+                    const [markerRes, modelRes, imageRes] = await Promise.all([
+                        fetchWithCache(urls.marker),
+                        fetchWithCache(urls.model), 
+                        fetchWithCache(urls.image)
+                    ]);
+
+                    if (!markerRes.ok || !modelRes.ok || !imageRes.ok) {
+                        throw new Error(`Falló la descarga de recursos para ${name}`);
+                    }
+                    
+                    const [markerBlob, modelBlob, imageBlob] = await Promise.all([
+                        markerRes.blob(), modelRes.blob(), imageRes.blob()
+                    ]);
+                    
+                    loadedCount++;
+                    progressBar.style.width = `${(loadedCount / totalAssets) * 100}%`;
+
+                    return {
+                        id: index, name,
+                        markerDataUrl: URL.createObjectURL(markerBlob),
+                        modelDataUrl: URL.createObjectURL(modelBlob),
+                        imageDataUrl: URL.createObjectURL(imageBlob),
+                        transform: { position: { x: 0, y: 0, z: 0.1 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 0.3, y: 0.3, z: 0.3 } },
+                        hasBeenNormalized: false, normalizationFactor: 1,
+                    };
+                });
+                
+                state.assets = await Promise.all(assetPromises);
+                
                 loadingText.textContent = '¡Todos los recursos cargados y guardados en caché!';
                 displayLoadedImages(state.assets);
                 document.getElementById('goto-editor-btn').disabled = false;
                 setTimeout(() => { loadingStatusDiv.classList.add('hidden'); }, 1000);
             } catch (error) {
-                loadingText.textContent = 'Error al cargar los recursos. Revisa la consola.';
+                loadingText.textContent = 'Error al cargar los recursos. Revisa la consola y tu conexión de red.';
                 progressBar.classList.add('bg-red-600');
-                console.error("Asset loading failed:", error);
+                console.error("Fallo en la carga de recursos:", error);
             } finally {
                 document.getElementById('load-from-github-btn').disabled = false;
             }
@@ -312,27 +337,24 @@
             const loadingStatusDiv = document.getElementById('loading-status');
             const loadingText = document.getElementById('loading-text');
             const progressBar = document.getElementById('loading-progress-bar');
-
             progressBar.parentElement.classList.add('hidden');
             loadingStatusDiv.classList.remove('hidden');
             loadingText.textContent = 'Limpiando la caché de la aplicación...';
-
             try {
                 await caches.delete(CACHE_NAME);
                 loadingText.textContent = 'Caché limpiada con éxito. La página se recargará.';
-                setTimeout(() => {
-                    location.reload();
-                }, 2000);
+                setTimeout(() => { location.reload(); }, 2000);
             } catch (error) {
                 loadingText.textContent = 'No se pudo limpiar la caché. Revisa la consola.';
-                console.error('Failed to clear cache:', error);
+                console.error('Falló la limpieza de caché:', error);
             }
         }
         
         function initEditor() {
+            if (editor.renderer) return;
             const canvas = document.getElementById('editor-canvas');
             const container = document.getElementById('editor-container');
-            if (!canvas || !container || editor.renderer) return;
+
             editor.scene = new THREE.Scene();
             editor.scene.background = new THREE.Color(0xeeeeee);
             editor.camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
@@ -344,8 +366,10 @@
             editor.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
             editor.renderer.setSize(container.clientWidth, container.clientHeight);
             editor.renderer.setPixelRatio(window.devicePixelRatio);
+            
             editor.controls = new OrbitControls(editor.camera, editor.renderer.domElement);
             editor.controls.enableDamping = true;
+            
             const animate = () => { requestAnimationFrame(animate); editor.controls.update(); editor.renderer.render(editor.scene, editor.camera); };
             animate();
         }
@@ -374,8 +398,14 @@
         function displayAssetInEditor(assetId) {
             const asset = state.assets.find(a => a.id === assetId);
             if (!asset || !editor.scene) return;
-            if (editor.currentTarget) { editor.scene.remove(editor.currentTarget); if (editor.dragControls) editor.dragControls.dispose(); }
-            if (editor.currentPlane) editor.scene.remove(editor.currentPlane);
+
+            if (editor.currentTarget) {
+                editor.scene.remove(editor.currentTarget);
+                if (editor.dragControls) editor.dragControls.dispose();
+            }
+            if (editor.currentPlane) {
+                editor.scene.remove(editor.currentPlane);
+            }
 
             editor.textureLoader.load(asset.imageDataUrl, (texture) => {
                 const aspect = texture.image.width / texture.image.height;
@@ -396,6 +426,7 @@
                 editor.scene.add(editor.currentTarget);
                 updateModelTransformFromState(asset.transform);
                 updateTransformInputs(asset.transform);
+
                 editor.dragControls = new DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
                 editor.dragControls.addEventListener('dragstart', () => editor.controls.enabled = false);
                 editor.dragControls.addEventListener('dragend', (event) => {
@@ -405,17 +436,22 @@
                 });
             });
         }
-                
+        
         function updateModelTransformFromState(transform) {
             if (!editor.currentTarget) return;
             const asset = state.assets.find(a => a.id === parseInt(document.getElementById('asset-selector').value));
             if (!asset) return;
+            
             const finalScale = transform.scale.x * asset.normalizationFactor;
             editor.currentTarget.position.set(transform.position.x, transform.position.y, transform.position.z);
-            editor.currentTarget.rotation.set(THREE.MathUtils.degToRad(transform.rotation.x), THREE.MathUtils.degToRad(transform.rotation.y), THREE.MathUtils.degToRad(transform.rotation.z));
+            editor.currentTarget.rotation.set(
+                THREE.MathUtils.degToRad(transform.rotation.x),
+                THREE.MathUtils.degToRad(transform.rotation.y),
+                THREE.MathUtils.degToRad(transform.rotation.z)
+            );
             editor.currentTarget.scale.set(finalScale, finalScale, finalScale);
         }
-        
+
         function preloadARAssets() {
             if (state.areAssetsPreloaded || state.assets.length === 0) return;
             const arPreloadContainer = document.getElementById('ar-preload-container');
@@ -443,10 +479,10 @@
                 document.getElementById('start-ar-pc-btn').disabled = false;
                 document.getElementById('start-ar-mobile-btn').disabled = false;
             });
-            assetsEl.addEventListener('timeout', (e) => { 
-                arStatusText.textContent = 'Error: La carga de modelos tardó mucho.'; 
-                arLoader.classList.add('hidden');
-                console.error("Asset loading timed out:", e.detail.src);
+            assetsEl.addEventListener('timeout', (e) => {
+                 arStatusText.textContent = 'Error: La carga de modelos tardó mucho.';
+                 arLoader.classList.add('hidden');
+                console.error("La carga de recursos excedió el tiempo límite:", e.detail.src);
             });
             tempScene.appendChild(assetsEl);
             arPreloadContainer.appendChild(tempScene);
@@ -454,19 +490,27 @@
         
         function setupAndStartAR(shouldEnterFullscreen) {
             if (!state.areAssetsPreloaded) return;
+            
             document.getElementById('ar-preloader').classList.remove('hidden');
             const arSceneContainer = document.getElementById('ar-scene-container');
             arSceneContainer.innerHTML = '';
+            
             const sceneEl = document.createElement('a-scene');
             sceneEl.setAttribute('embedded', '');
             
-            const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
+            const markerUrlList = state.assets.map(a => a.markerDataUrl).join(';');
             
+            // SOLUCIÓN DEFINITIVA: 
+            // 1. Se usa `maxTrackables: 1` que es la propiedad correcta para el seguimiento múltiple en esta versión.
+            // 2. Se añaden `filterMinCF` y `filterBeta` para suavizar el seguimiento del marcador y eliminar vibraciones.
+            const mindARSettings = `imageTargetSrc: ${markerUrlList}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no; filterMinCF: 0.1; filterBeta: 10;`;
+
             sceneEl.setAttribute('mindar-image', mindARSettings);
             sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
             sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
             sceneEl.setAttribute('color-space', 'sRGB');
-            sceneEl.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights');
+            // SOLUCIÓN: Se corrige el renderer para eliminar advertencias y mejorar rendimiento.
+            sceneEl.setAttribute('renderer', 'colorManagement: true');
 
             const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
             if(preloadedAssets) sceneEl.appendChild(preloadedAssets.cloneNode(true)); 
@@ -500,9 +544,7 @@
             sceneEl.addEventListener('arReady', () => {
                 scanningUI.classList.remove('hidden');
                 document.getElementById('ar-preloader').classList.add('hidden');
-                setTimeout(() => { 
-                    if (sceneEl.renderer) sceneEl.renderer.setSize(window.innerWidth, window.innerHeight); 
-                }, 100); 
+                setTimeout(() => { if (sceneEl.renderer) sceneEl.renderer.setSize(window.innerWidth, window.innerHeight); }, 100); 
             });
             sceneEl.addEventListener('targetFound', () => scanningUI.classList.add('hidden'));
             sceneEl.addEventListener('targetLost', () => scanningUI.classList.remove('hidden'));
@@ -518,18 +560,22 @@
             state.isArActive = true;
             
             if (shouldEnterFullscreen) { 
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.warn("Could not enter fullscreen automatically.", err);
+                 document.documentElement.requestFullscreen().catch(err => {
+                    console.warn("No se pudo entrar a pantalla completa automáticamente.", err);
                 });
             }
         }
-
+        
         function stopAR() {
             const arSceneContainer = document.getElementById('ar-scene-container');
             const sceneEl = arSceneContainer.querySelector('a-scene');
             if (sceneEl && sceneEl.hasLoaded) {
-                if(sceneEl.systems['mindar-image-system']) sceneEl.systems['mindar-image-system'].stop();
-                if (sceneEl.parentNode) sceneEl.parentNode.removeChild(sceneEl);
+                if(sceneEl.systems['mindar-image-system']) {
+                    sceneEl.systems['mindar-image-system'].stop();
+                }
+                if (sceneEl.parentNode) {
+                    sceneEl.parentNode.removeChild(sceneEl);
+                }
             }
             arSceneContainer.innerHTML = '';
             document.getElementById('ar-preload-container').innerHTML = '';
@@ -543,22 +589,23 @@
             document.getElementById('scanning-ui').classList.add('hidden');
             
             if (document.fullscreenElement) {
-                document.exitFullscreen().catch(err => console.error("Error exiting fullscreen:", err));
+                document.exitFullscreen().catch(err => console.error("Error al salir de pantalla completa:", err));
             }
-
             state.isArActive = false;
         }
-        
-        function toggleFullScreen() {
+
+        function toggleFullScreen(){
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`));
+                document.documentElement.requestFullscreen().catch(err => console.error(`Error al intentar activar el modo de pantalla completa: ${err.message} (${err.name})`));
             } else {
                 document.exitFullscreen();
             }
         }
 
         function navigateTo(pageId) {
-            if (state.isArActive) stopAR();
+            if (state.isArActive) {
+                stopAR();
+            }
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             state.currentPage = pageId;
@@ -566,20 +613,24 @@
             if (pageId === 'page-editor') {
                 if (!editor.renderer) initEditor();
                 populateEditorSelector();
-                if (state.assets.length > 0) displayAssetInEditor(parseInt(document.getElementById('asset-selector').value) || 0);
+                if (state.assets.length > 0) {
+                    displayAssetInEditor(parseInt(document.getElementById('asset-selector').value) || 0);
+                }
             } else if (pageId === 'page-ar') {
                 document.getElementById('start-ar-pc-btn').disabled = true;
                 document.getElementById('start-ar-mobile-btn').disabled = true;
                 preloadARAssets();
             }
         }
-
+        
         async function loadAssetsFromCacheOnStartup() {
             try {
                 const cache = await caches.open(CACHE_NAME);
                 const keys = await cache.keys();
-                if (keys.length < ASSETS_CONFIG.length * 3) throw new Error("Caché incompleto.");
-
+                if (keys.length < ASSETS_CONFIG.length * 3) {
+                    throw new Error("Caché incompleto.");
+                }
+                
                 const assets = await Promise.all(ASSETS_CONFIG.map(async (assetConfig, index) => {
                     const { name, imageExt } = assetConfig;
                     const urls = {
@@ -587,9 +638,18 @@
                         model: `${GITHUB_BASE_URL}modelss/${name}.glb`,
                         image: `${GITHUB_BASE_URL}imagenes/${name}.${imageExt}`
                     };
-                    const [markerRes, modelRes, imageRes] = await Promise.all([ cache.match(urls.marker), cache.match(urls.model), cache.match(urls.image) ]);
-                    if (!markerRes || !modelRes || !imageRes) throw new Error(`Asset ${name} not found in cache.`);
-                    const [markerBlob, modelBlob, imageBlob] = await Promise.all([ markerRes.blob(), modelRes.blob(), imageRes.blob() ]);
+                    const [markerRes, modelRes, imageRes] = await Promise.all([
+                        cache.match(urls.marker), 
+                        cache.match(urls.model), 
+                        cache.match(urls.image)
+                    ]);
+                    
+                    if (!markerRes || !modelRes || !imageRes) throw new Error(`Recurso ${name} no encontrado en caché.`);
+                    
+                    const [markerBlob, modelBlob, imageBlob] = await Promise.all([
+                        markerRes.blob(), modelRes.blob(), imageRes.blob()
+                    ]);
+                    
                     return {
                         id: index, name,
                         markerDataUrl: URL.createObjectURL(markerBlob),
@@ -602,7 +662,7 @@
                 state.assets = assets;
                 return true;
             } catch (error) {
-                console.warn("Could not load assets from cache on startup:", error.message);
+                console.warn("No se pudieron cargar los recursos desde la caché al iniciar:", error.message);
                 return false;
             }
         }
@@ -623,7 +683,7 @@
             }
         }
 
-        // Asignación de todos los event listeners
+        // --- Asignación de todos los Event Listeners ---
         document.getElementById('load-from-github-btn').addEventListener('click', loadAssetsFromGitHub);
         document.getElementById('clear-cache-btn').addEventListener('click', clearCache);
         document.getElementById('goto-editor-btn').addEventListener('click', () => navigateTo('page-editor'));
@@ -666,5 +726,4 @@
     </script>
 </body>
 </html>
-
 
