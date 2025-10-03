@@ -124,19 +124,16 @@
                 <p class="font-bold">¡Bienvenido!</p>
                 <p>Presiona el botón para descargar los recursos. Los archivos se guardarán en la caché de tu navegador para acelerar futuras cargas.</p>
             </div>                        
-            <!-- SECCIÓN DE BOTONES MODIFICADA -->
             <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
                 <button id="load-from-github-btn" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition duration-300 text-lg shadow-md w-full sm:w-auto flex justify-center items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                     Cargar Recursos
                 </button>
-                <!-- BOTÓN NUEVO PARA LIMPIAR CACHÉ -->
                 <button id="clear-cache-btn" class="bg-red-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-600 transition duration-300 text-lg shadow-md w-full sm:w-auto flex justify-center items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
                     Limpiar Caché
                 </button>
             </div>
-            <!-- Mensaje de estado para la caché -->
             <div id="cache-status" class="text-center mt-4 font-semibold"></div>
 
             <div id="loading-status" class="mt-6 hidden">
@@ -254,7 +251,7 @@
     import { DragControls } from 'three/addons/controls/DragControls.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-        const APP_VERSION = '2.0'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
+        const APP_VERSION = '2.1'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
         const state = {
             assets: [],
             currentPage: 'page-upload',
@@ -452,7 +449,7 @@
             editor.scene = new THREE.Scene();
             editor.scene.background = new THREE.Color(0xeeeeee);
             editor.camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            editor.camera.position.set(0, 0.25, 1.5);                        
+            editor.camera.position.set(0, 0.4, 2.0); // Cámara ajustada                       
             editor.scene.add(new THREE.AmbientLight(0xffffff, 2));
             const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
             directionalLight.position.set(2, 5, 3);
@@ -489,13 +486,29 @@
             document.getElementById('scale').value = transform.scale.x.toFixed(2);
         }
 
+        function getAllMeshes(object) {
+            const meshes = [];
+            object.traverse(child => {
+                if (child.isMesh) {
+                    meshes.push(child);
+                }
+            });
+            return meshes;
+        }
+
         function setupDragControls() {
             if (editor.dragControls) {
                 editor.dragControls.dispose();
             }
             const moveIndividual = document.getElementById('move-individual-toggle').checked;
-            const draggableObjects = moveIndividual ? editor.currentTarget.children.filter(o => o.isObject3D) : [editor.currentTarget];
             
+            const draggableObjects = moveIndividual && editor.currentTarget ? getAllMeshes(editor.currentTarget) : [editor.currentTarget];
+            
+            if (draggableObjects.length === 0 && moveIndividual) {
+                console.warn("Modo individual activado, pero no se encontraron piezas móviles (meshes) en el modelo.");
+                return;
+            }
+
             editor.dragControls = new DragControls(draggableObjects, editor.camera, editor.renderer.domElement);
             
             editor.dragControls.addEventListener('dragstart', () => editor.controls.enabled = false);
