@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Propuesta en Salud con Visor de Modelos AR</title>
+    <title>Propuesta en Salud en Visor con Modelos AR</title>
     <!-- Favicon -->
     <link rel="icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -112,7 +112,7 @@
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
              <div>
-                 <h1 class="text-3xl md:text-4xl font-bold text-center" style="color: #1e3a8a;">Propuesta en Salud en Visor de Modelos AR <span id="version-display" class="text-base align-middle font-normal text-gray-400 ml-2"></span></h1>
+                 <h1 class="text-3xl md:text-4xl font-bold text-center" style="color: #1e3a8a;">Propuesta en Salud en Visor con Modelos AR <span id="version-display" class="text-base align-middle font-normal text-gray-400 ml-2"></span></h1>
                  <p class="text-center text-gray-500">Visualización de modelos 3D con Realidad Aumentada.</p>
              </div>
         </div>
@@ -251,7 +251,7 @@
     import { DragControls } from 'three/addons/controls/DragControls.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-        const APP_VERSION = '1.5'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
+        const APP_VERSION = '1.6'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
         const state = {
             assets: [],
             currentPage: 'page-upload',
@@ -268,15 +268,16 @@
         const CACHE_NAME = `ar-assets-cache-v${APP_VERSION}`; // Cache con versión
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         
+        // MAPA DE CORRECIÓN: Asocia el marcador (.mind) con el modelo (.glb) y la imagen (.png) correctos.
         const ASSET_MAPPING = [
-            { marker: 'cabeza1', model: 'huesosmano' },
-            { marker: 'corazon', model: 'hueso-columna' },
-            { marker: 'dedo-mano', model: 'mano-iz-protesis' },
-            { marker: 'dedo', model: 'protesis-mano-brazo' },
-            { marker: 'hueso-columna', model: 'cabeza1' },
-            { marker: 'huesosmano', model: 'corazon' },
-            { marker: 'mano-iz-protesis', model: 'dedo' },
-            { marker: 'protesis-mano-brazo', model: 'dedo-mano' }
+            { marker: 'cabeza1', model: 'dedo' },
+            { marker: 'corazon', model: 'dedo-mano' },
+            { marker: 'dedo-mano', model: 'hueso-columna' },
+            { marker: 'dedo', model: 'huesosmano' },
+            { marker: 'hueso-columna', model: 'mano-iz-protesis' },
+            { marker: 'huesosmano', model: 'protesis-mano-brazo' },
+            { marker: 'mano-iz-protesis', model: 'cabeza1' },
+            { marker: 'protesis-mano-brazo', model: 'corazon' }
         ];
 
         AFRAME.registerComponent('ar-rotator', {
@@ -759,7 +760,7 @@
         }
 
         document.getElementById('load-from-github-btn').addEventListener('click', loadAssetsFromGitHub);
-        document.getElementById('clear-cache-btn').addEventListener('click', clearCacheAndReload);
+        document.getElementById('clear-cache-btn').addEventListener('click', clearCacheAndReload); 
         document.getElementById('goto-editor-btn').addEventListener('click', () => navigateTo('page-editor'));
         document.getElementById('goto-ar-btn').addEventListener('click', () => navigateTo('page-ar'));
         document.getElementById('back-to-upload-btn').addEventListener('click', () => navigateTo('page-upload'));
@@ -769,10 +770,7 @@
         document.getElementById('stop-ar-btn').addEventListener('click', stopAR);
         document.getElementById('fullscreen-ar-btn').addEventListener('click', toggleFullScreen);
         document.getElementById('back-to-editor-btn-post').addEventListener('click', () => { navigateTo('page-editor'); });
-        
-        document.getElementById('asset-selector').addEventListener('change', (e) => {
-            displayAssetInEditor(parseInt(e.target.value));
-        });                
+        document.getElementById('asset-selector').addEventListener('change', (e) => displayAssetInEditor(parseInt(e.target.value)));                
         
         ['pos-x', 'pos-y', 'pos-z', 'rot-x', 'rot-y', 'rot-z', 'scale'].forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
@@ -801,6 +799,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
