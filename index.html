@@ -251,7 +251,7 @@
     import { DragControls } from 'three/addons/controls/DragControls.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-        const APP_VERSION = '1.0'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
+        const APP_VERSION = '2.3'; 
         const state = {
             assets: [],
             currentPage: 'page-upload',
@@ -591,27 +591,22 @@
 
                 if (!asset.hasBeenNormalized) {
                     const box = new THREE.Box3();
-                    editor.currentTarget.updateMatrixWorld(true);
-                    editor.currentTarget.traverse(child => {
-                        if (child.isMesh) {
-                            child.geometry.computeBoundingBox(); 
-                            const childBox = child.geometry.boundingBox.clone();
-                            childBox.applyMatrix4(child.matrixWorld); 
-                            box.union(childBox);
-                        }
-                    });
-
-                    if (box.isEmpty()) {
-                        box.setFromObject(editor.currentTarget);
-                    }
+                    const center = new THREE.Vector3();
+                    const size = new THREE.Vector3();
                     
-                    const size = box.getSize(new THREE.Vector3());
-                    const center = box.getCenter(new THREE.Vector3());
+                    gltf.scene.updateMatrixWorld(true);
+                    box.setFromObject(gltf.scene);
+                    box.getSize(size);
+                    box.getCenter(center);
+
                     const maxSize = Math.max(size.x, size.y, size.z);
-                    asset.normalizationFactor = maxSize > 0 ? 0.1 / maxSize : 0.1; // Ajuste para que 1.0 = 10cm
-                    editor.currentTarget.position.sub(center); 
+                    asset.normalizationFactor = maxSize > 0 ? 1.0 / maxSize : 1.0;
+                    
+                    gltf.scene.position.sub(center.multiplyScalar(asset.normalizationFactor));
+
                     asset.hasBeenNormalized = true;
                 }
+
                 editor.scene.add(editor.currentTarget);                        
                 updateModelTransformFromState(asset.transform);
                 updateTransformInputs(asset.transform);
@@ -885,8 +880,6 @@
     </script>
 </body>
 </html>
-
-
 
 
 
