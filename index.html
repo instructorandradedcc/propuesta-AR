@@ -251,7 +251,7 @@
     import { DragControls } from 'three/addons/controls/DragControls.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-        const APP_VERSION = '2.3'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
+        const APP_VERSION = '2.2'; // Mantenemos la versión por ahora
         const state = {
             assets: [],
             currentPage: 'page-upload',
@@ -278,6 +278,50 @@
             { marker: 'mano-iz-protesis', model: 'cabeza1' },
             { marker: 'protesis-mano-brazo', model: 'corazon' }
         ];
+
+        AFRAME.registerComponent('ar-zoomer', {
+            schema: {
+                zoomSpeed: { default: 0.1 }
+            },
+            init: function () {
+                this.pinchStartDistance = 0;
+                this.initialScale = 1;
+                const canvas = this.el.sceneEl.canvas;
+
+                const onTouchStart = (e) => {
+                    if (e.touches.length === 2) {
+                        e.preventDefault();
+                        this.pinchStartDistance = getDistance(e.touches[0], e.touches[1]);
+                        this.initialScale = this.el.object3D.scale.x;
+                    }
+                };
+
+                const onTouchMove = (e) => {
+                    if (e.touches.length === 2) {
+                        e.preventDefault();
+                        const currentDistance = getDistance(e.touches[0], e.touches[1]);
+                        const scaleFactor = currentDistance / this.pinchStartDistance;
+                        let newScale = this.initialScale * scaleFactor;
+                        this.el.object3D.scale.set(newScale, newScale, newScale);
+                    }
+                };
+                
+                const onTouchEnd = (e) => {
+                    this.pinchStartDistance = 0;
+                };
+
+                const getDistance = (touch1, touch2) => {
+                    const dx = touch1.clientX - touch2.clientX;
+                    const dy = touch1.clientY - touch2.clientY;
+                    return Math.sqrt(dx * dx + dy * dy);
+                };
+
+                canvas.addEventListener('touchstart', onTouchStart);
+                canvas.addEventListener('touchmove', onTouchMove);
+                canvas.addEventListener('touchend', onTouchEnd);
+            }
+        });
+
 
         AFRAME.registerComponent('ar-rotator', {
             schema: { rotationFactor: { type: 'number', default: 1 } },
@@ -504,7 +548,6 @@
             
             if (draggableObjects.length === 0 && !moveConjunto) {
                  console.warn("Modo individual activado, pero no se encontraron piezas móviles (meshes) en el modelo.");
-                 // Fallback to moving the whole model if no individual pieces are found
                  draggableObjects.push(editor.currentTarget);
             }
 
@@ -646,7 +689,7 @@
                 const finalScale = t.scale.x * asset.normalizationFactor; 
                 return `
                     <a-entity mindar-image-target="targetIndex: ${index}">
-                        <a-gltf-model src="#model-${asset.id}" position="${t.position.x} ${t.position.y} ${t.position.z}" rotation="${t.rotation.x} ${t.rotation.y} ${t.rotation.z}" scale="${finalScale} ${finalScale} ${finalScale}" ar-rotator>
+                        <a-gltf-model src="#model-${asset.id}" position="${t.position.x} ${t.position.y} ${t.position.z}" rotation="${t.rotation.x} ${t.rotation.y} ${t.rotation.z}" scale="${finalScale} ${finalScale} ${finalScale}" ar-rotator ar-zoomer>
                         </a-gltf-model>
                     </a-entity>
                 `;
@@ -842,6 +885,7 @@
     </script>
 </body>
 </html>
+
 
 
 
