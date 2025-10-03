@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Propuesta en Salud en Visor con Modelos AR</title>
+    <title>Propuesta para Salud con realidad aumentada y Visor con Modelos AR</title>
     <!-- Favicon -->
     <link rel="icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon3dAR.ico">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -112,7 +112,7 @@
         <div class="flex justify-center items-center mb-6">
              <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación" class="h-20 w-auto mr-4" onerror="this.onerror=null;this.src='https://placehold.co/120x80/e2e8f0/94a3b8?text=Logo';">
              <div>
-                 <h1 class="text-3xl md:text-4xl font-bold text-center" style="color: #1e3a8a;">Propuesta en Salud en Visor con Modelos AR <span id="version-display" class="text-base align-middle font-normal text-gray-400 ml-2"></span></h1>
+                 <h1 class="text-3xl md:text-4xl font-bold text-center" style="color: #1e3a8a;">Propuesta para Salud con realidad aumentada y Visor con Modelos AR <span id="version-display" class="text-base align-middle font-normal text-gray-400 ml-2"></span></h1>
                  <p class="text-center text-gray-500">Visualización de modelos 3D con Realidad Aumentada.</p>
              </div>
         </div>
@@ -251,7 +251,7 @@
     import { DragControls } from 'three/addons/controls/DragControls.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-        const APP_VERSION = '2.2'; // Mantenemos la versión por ahora
+        const APP_VERSION = '1.0'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
         const state = {
             assets: [],
             currentPage: 'page-upload',
@@ -608,7 +608,7 @@
                     const size = box.getSize(new THREE.Vector3());
                     const center = box.getCenter(new THREE.Vector3());
                     const maxSize = Math.max(size.x, size.y, size.z);
-                    asset.normalizationFactor = maxSize > 0 ? 1.0 / maxSize : 1.0;
+                    asset.normalizationFactor = maxSize > 0 ? 0.1 / maxSize : 0.1; // Ajuste para que 1.0 = 10cm
                     editor.currentTarget.position.sub(center); 
                     asset.hasBeenNormalized = true;
                 }
