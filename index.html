@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -251,7 +251,7 @@
     import { DragControls } from 'three/addons/controls/DragControls.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-        const APP_VERSION = '1.6'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
+        const APP_VERSION = '1.9'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
         const state = {
             assets: [],
             currentPage: 'page-upload',
@@ -349,12 +349,17 @@
         }
 
         async function fetchWithCache(url) {
-            const networkResponse = await fetch(url, { cache: "no-store" });
             const cache = await caches.open(CACHE_NAME);
+            const cachedResponse = await cache.match(url);
+            if (cachedResponse) {
+                return cachedResponse;
+            }
+
+            const networkResponse = await fetch(url);
             if (networkResponse.ok) {
                 await cache.put(url, networkResponse.clone());
             }
-            return networkResponse.ok ? networkResponse : (await cache.match(url) || networkResponse);
+            return networkResponse;
         }                
         
         function displayLoadedImages(assets) {
@@ -578,59 +583,53 @@
             if (!state.areAssetsPreloaded) {
                 document.getElementById('ar-status-text').textContent = 'Error: Modelos 3D no listos.';
                 return;
-            }                        
-            const arPreloader = document.getElementById('ar-preloader');
-            arPreloader.classList.remove('hidden');
+            }
+
+            document.getElementById('ar-preloader').classList.remove('hidden');
             const arSceneContainer = document.getElementById('ar-scene-container');
-            arSceneContainer.innerHTML = '';                        
-            const sceneEl = document.createElement('a-scene');
-            sceneEl.setAttribute('embedded', '');
-            const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 1; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;`;
-            sceneEl.setAttribute('mindar-image', mindARSettings);
-            sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
-            sceneEl.setAttribute('device-orientation-permission-ui', 'enabled: false');
-            sceneEl.setAttribute('color-space', 'sRGB');
-            sceneEl.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights');
-            const preloadedAssets = document.querySelector('#ar-preload-container a-assets');
-            if(preloadedAssets) {
-                sceneEl.appendChild(preloadedAssets.cloneNode(true)); 
-               }
-            const cameraEl = document.createElement('a-camera');
-            cameraEl.setAttribute('position', '0 0 0');
-            cameraEl.setAttribute('look-controls', 'enabled: false');
-            cameraEl.setAttribute('fov', '75'); 
-            sceneEl.appendChild(cameraEl);
-            state.assets.forEach((asset, index) => {
-                const targetEl = document.createElement('a-entity');
-                targetEl.setAttribute('mindar-image-target', `targetIndex: ${index}`);
+            arSceneContainer.innerHTML = ''; // Limpiar contenedor
+
+            // Construir los assets como un string
+            const assetsHTML = state.assets.map(asset => 
+                `<a-asset-item id="model-${asset.id}" src="${asset.modelDataUrl}" response-type="arraybuffer"></a-asset-item>`
+            ).join('');
+
+            // Construir las entidades de los marcadores como un string
+            const targetsHTML = state.assets.map((asset, index) => {
                 const t = asset.transform;
                 const finalScale = t.scale.x * asset.normalizationFactor;
-                const modelEntity = document.createElement('a-gltf-model');
-                modelEntity.setAttribute('src', `#model-${asset.id}`);
-                modelEntity.setAttribute('position', `${t.position.x} ${t.position.y} ${t.position.z}`);
-                modelEntity.setAttribute('rotation', `${t.rotation.x} ${t.rotation.y} ${t.rotation.z}`);
-                modelEntity.setAttribute('scale', `${finalScale} ${finalScale} ${finalScale}`);
-                modelEntity.setAttribute('ar-rotator', '');
-                targetEl.appendChild(modelEntity);
-                sceneEl.appendChild(targetEl);
-            });
-            sceneEl.addEventListener('loaded', () => {
-                const mindarSystem = sceneEl.systems['mindar-image-system'];
-                mindarSystem.start(); 
-            });
+                return `
+                    <a-entity mindar-image-target="targetIndex: ${index}">
+                        <a-gltf-model src="#model-${asset.id}" position="${t.position.x} ${t.position.y} ${t.position.z}" rotation="${t.rotation.x} ${t.rotation.y} ${t.rotation.z}" scale="${finalScale} ${finalScale} ${finalScale}" ar-rotator>
+                        </a-gltf-model>
+                    </a-entity>
+                `;
+            }).join('');
+
+            // Construir la escena completa como un string
+            const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 1; autoStart: true; uiLoading: no; uiError: no; uiScanning: no; filterMinCF: 0.001; filterBeta: 10;`;
+            
+            const sceneHTML = `
+                <a-scene id="ar-scene" embedded vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" mindar-image="${mindARSettings}" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights">
+                    <a-assets>${assetsHTML}</a-assets>
+                    <a-camera position="0 0 0" look-controls="enabled: false" fov="75"></a-camera>
+                    ${targetsHTML}
+                </a-scene>
+            `;
+
+            arSceneContainer.innerHTML = sceneHTML;
+
+            const sceneEl = document.getElementById('ar-scene');
             const scanningUI = document.getElementById('scanning-ui');
+
             sceneEl.addEventListener('arReady', () => {
                 scanningUI.classList.remove('hidden');
-                arPreloader.classList.add('hidden'); 
-                setTimeout(() => {
-                    if (sceneEl.renderer) {
-                        sceneEl.renderer.setSize(window.innerWidth, window.innerHeight);
-                    }
-                }, 100); 
+                document.getElementById('ar-preloader').classList.add('hidden');
             });
             sceneEl.addEventListener('targetFound', () => scanningUI.classList.add('hidden'));
-            sceneEl.addEventListener('targetLost', () => scanningUI.classList.remove('hidden'));                        
-            arSceneContainer.appendChild(sceneEl);
+            sceneEl.addEventListener('targetLost', () => scanningUI.classList.remove('hidden'));
+
+            // Activar UI de AR
             const appContainer = document.getElementById('app');
             document.documentElement.classList.add('ar-active');
             document.body.classList.add('ar-active');
@@ -640,6 +639,7 @@
             document.getElementById('ar-ui-container').classList.add('hidden');
             document.getElementById('ar-active-controls').classList.remove('hidden');
             state.isArActive = true;                        
+            
             if (shouldEnterFullscreen) { 
                 document.documentElement.requestFullscreen().catch(err => {
                     console.warn("No se pudo entrar en pantalla completa automáticamente.", err);
@@ -647,19 +647,18 @@
             }
         }
 
+
         function stopAR() {
             const arSceneContainer = document.getElementById('ar-scene-container');
             const sceneEl = arSceneContainer.querySelector('a-scene');
-            if (sceneEl && sceneEl.hasLoaded) {
-                if(sceneEl.systems['mindar-image-system']) { 
-                    sceneEl.systems['mindar-image-system'].stop();
-                }
-                if (sceneEl.parentNode) {
-                    sceneEl.parentNode.removeChild(sceneEl);
-                }
-            }                        
+            if (sceneEl && sceneEl.systems['mindar-image-system']) { 
+                sceneEl.systems['mindar-image-system'].stop();
+            }
+            if (sceneEl && sceneEl.parentNode) {
+                sceneEl.parentNode.removeChild(sceneEl);
+            }
             arSceneContainer.innerHTML = '';
-            document.getElementById('ar-preload-container').innerHTML = '';
+            
             state.areAssetsPreloaded = false; 
             const appContainer = document.getElementById('app');
             document.documentElement.classList.remove('ar-active');
