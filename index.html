@@ -184,7 +184,6 @@
                     </div>
                     <h3 class="font-semibold mt-4">Escala</h3>
                     <input type="number" id="scale" class="w-full p-1 border rounded" step="0.1" value="1">
-                    <p class="text-xs text-gray-500 mt-1">Define el tamaño en la vida real (1.0 = 10cm).</p>
                 </div>
                 <div class="md:w-2/3">
                     <div id="editor-container"><canvas id="editor-canvas"></canvas></div>
@@ -269,9 +268,6 @@
         const CACHE_NAME = `ar-assets-cache-v${APP_VERSION}`; // Cache con versión
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         
-        // Factor de conversión: 1.0 en la UI = 10cm (0.1 metros) en el mundo real.
-        const SCALE_UNIT_TO_METERS = 0.1; 
-
         const ASSET_MAPPING = [
             { marker: 'cabeza1', model: 'huesosmano' },
             { marker: 'corazon', model: 'hueso-columna' },
@@ -531,8 +527,7 @@
             if (!editor.currentTarget) return;
             const asset = state.assets.find(a => a.id === parseInt(document.getElementById('asset-selector').value));
             if (!asset) return;
-            // Lógica de escala corregida
-            const finalScale = transform.scale.x * SCALE_UNIT_TO_METERS * asset.normalizationFactor;
+            const finalScale = transform.scale.x * asset.normalizationFactor;
             editor.currentTarget.position.set(transform.position.x, transform.position.y, transform.position.z);
             editor.currentTarget.rotation.set(
                 THREE.MathUtils.degToRad(transform.rotation.x),
@@ -608,8 +603,7 @@
                 const targetEl = document.createElement('a-entity');
                 targetEl.setAttribute('mindar-image-target', `targetIndex: ${index}`);
                 const t = asset.transform;
-                // Lógica de escala corregida para la escena AR
-                const finalScale = t.scale.x * SCALE_UNIT_TO_METERS * asset.normalizationFactor;
+                const finalScale = t.scale.x * asset.normalizationFactor;
                 const modelEntity = document.createElement('a-gltf-model');
                 modelEntity.setAttribute('src', `#model-${asset.id}`);
                 modelEntity.setAttribute('position', `${t.position.x} ${t.position.y} ${t.position.z}`);
