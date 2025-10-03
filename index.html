@@ -168,20 +168,6 @@
                 <div class="md:w-1/3">
                     <label for="asset-selector" class="block mb-2 font-medium text-gray-700">Seleccionar Recurso:</label>
                     <select id="asset-selector" class="w-full p-2 border rounded mb-4"></select>
-                    
-                    <!-- BOTÓN DE GEMINI -->
-                    <button id="gemini-info-btn" class="mt-2 w-full bg-purple-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-600 transition duration-300 flex items-center justify-center gap-2">
-                        ✨ Obtener Información
-                    </button>
-                    <!-- CONTENEDOR DE INFORMACIÓN DE GEMINI -->
-                    <div id="gemini-info-container" class="mt-4 p-4 border rounded bg-gray-50 hidden">
-                        <div id="gemini-loading" class="flex items-center justify-center hidden">
-                             <div class="loader" style="width: 24px; height: 24px; border-width: 3px;"></div>
-                             <p class="ml-3 text-gray-600">Generando información...</p>
-                        </div>
-                        <p id="gemini-output" class="text-gray-800 text-sm"></p>
-                        <p id="gemini-error" class="text-red-600 text-sm hidden"></p>
-                    </div>
 
                     <h3 class="font-semibold mt-4">Posición (X, Y, Z)</h3>
                     <div class="grid grid-cols-3 gap-2">
@@ -198,6 +184,7 @@
                     </div>
                     <h3 class="font-semibold mt-4">Escala</h3>
                     <input type="number" id="scale" class="w-full p-1 border rounded" step="0.1" value="1">
+                    <p class="text-xs text-gray-500 mt-1">Define el tamaño en la vida real (1.0 = 10cm).</p>
                 </div>
                 <div class="md:w-2/3">
                     <div id="editor-container"><canvas id="editor-canvas"></canvas></div>
@@ -265,7 +252,7 @@
     import { DragControls } from 'three/addons/controls/DragControls.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-        const APP_VERSION = '1.4'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
+        const APP_VERSION = '1.5'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
         const state = {
             assets: [],
             currentPage: 'page-upload',
@@ -282,6 +269,9 @@
         const CACHE_NAME = `ar-assets-cache-v${APP_VERSION}`; // Cache con versión
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         
+        // Factor de conversión: 1.0 en la UI = 10cm (0.1 metros) en el mundo real.
+        const SCALE_UNIT_TO_METERS = 0.1; 
+
         const ASSET_MAPPING = [
             { marker: 'cabeza1', model: 'huesosmano' },
             { marker: 'corazon', model: 'hueso-columna' },
@@ -541,7 +531,8 @@
             if (!editor.currentTarget) return;
             const asset = state.assets.find(a => a.id === parseInt(document.getElementById('asset-selector').value));
             if (!asset) return;
-            const finalScale = transform.scale.x * asset.normalizationFactor;
+            // Lógica de escala corregida
+            const finalScale = transform.scale.x * SCALE_UNIT_TO_METERS * asset.normalizationFactor;
             editor.currentTarget.position.set(transform.position.x, transform.position.y, transform.position.z);
             editor.currentTarget.rotation.set(
                 THREE.MathUtils.degToRad(transform.rotation.x),
@@ -617,7 +608,8 @@
                 const targetEl = document.createElement('a-entity');
                 targetEl.setAttribute('mindar-image-target', `targetIndex: ${index}`);
                 const t = asset.transform;
-                const finalScale = t.scale.x * asset.normalizationFactor;
+                // Lógica de escala corregida para la escena AR
+                const finalScale = t.scale.x * SCALE_UNIT_TO_METERS * asset.normalizationFactor;
                 const modelEntity = document.createElement('a-gltf-model');
                 modelEntity.setAttribute('src', `#model-${asset.id}`);
                 modelEntity.setAttribute('position', `${t.position.x} ${t.position.y} ${t.position.z}`);
@@ -757,59 +749,6 @@
             }
         }                
 
-        // FUNCIÓN PARA LLAMAR A LA API DE GEMINI
-        async function getGeminiInfo() {
-            const assetId = parseInt(document.getElementById('asset-selector').value);
-            const asset = state.assets.find(a => a.id === assetId);
-            if (!asset) return;
-
-            const container = document.getElementById('gemini-info-container');
-            const loadingEl = document.getElementById('gemini-loading');
-            const outputEl = document.getElementById('gemini-output');
-            const errorEl = document.getElementById('gemini-error');
-            
-            container.classList.remove('hidden');
-            loadingEl.classList.remove('hidden');
-            outputEl.classList.add('hidden');
-            errorEl.classList.add('hidden');
-
-            const assetName = asset.name.replace(/-/g, ' ');
-            const userQuery = `Explica brevemente la función principal de '${assetName}' en el cuerpo humano. Responde en un párrafo conciso y fácil de entender en español.`;
-            const apiKey = ""; // Canvas se encarga de la API Key
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: userQuery }] }]
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (text) {
-                    outputEl.textContent = text;
-                    outputEl.classList.remove('hidden');
-                } else {
-                    throw new Error("No se recibió texto en la respuesta de la API.");
-                }
-
-            } catch (error) {
-                console.error("Error al llamar a la API de Gemini:", error);
-                errorEl.textContent = "No se pudo generar la información. Inténtalo de nuevo.";
-                errorEl.classList.remove('hidden');
-            } finally {
-                loadingEl.classList.add('hidden');
-            }
-        }
-
         async function initializeApp() {
             document.getElementById('version-display').textContent = `v${APP_VERSION}`;
             const successfullyLoadedFromCache = await loadAssetsFromCacheOnStartup();
@@ -827,7 +766,6 @@
 
         document.getElementById('load-from-github-btn').addEventListener('click', loadAssetsFromGitHub);
         document.getElementById('clear-cache-btn').addEventListener('click', clearCacheAndReload);
-        document.getElementById('gemini-info-btn').addEventListener('click', getGeminiInfo); // <-- Listener para el botón de Gemini
         document.getElementById('goto-editor-btn').addEventListener('click', () => navigateTo('page-editor'));
         document.getElementById('goto-ar-btn').addEventListener('click', () => navigateTo('page-ar'));
         document.getElementById('back-to-upload-btn').addEventListener('click', () => navigateTo('page-upload'));
@@ -840,8 +778,6 @@
         
         document.getElementById('asset-selector').addEventListener('change', (e) => {
             displayAssetInEditor(parseInt(e.target.value));
-            // Ocultar la info de Gemini al cambiar de modelo
-            document.getElementById('gemini-info-container').classList.add('hidden'); 
         });                
         
         ['pos-x', 'pos-y', 'pos-z', 'rot-x', 'rot-y', 'rot-z', 'scale'].forEach(id => {
@@ -871,6 +807,5 @@
     </script>
 </body>
 </html>
-
 
 
