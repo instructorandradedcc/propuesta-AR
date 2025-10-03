@@ -251,7 +251,7 @@
     import { DragControls } from 'three/addons/controls/DragControls.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-        const APP_VERSION = '2.1'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
+        const APP_VERSION = '2.2'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
         const state = {
             assets: [],
             currentPage: 'page-upload',
@@ -267,9 +267,7 @@
         };                
         const CACHE_NAME = `ar-assets-cache-v${APP_VERSION}`; // Cache con versión
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
-        const SCALE_UNIT_TO_METERS = 0.1; // 1.0 en la UI = 10cm
         
-        // MAPA DE CORRECIÓN: Asocia el marcador (.mind) con el modelo (.glb) y la imagen (.png) correctos.
         const ASSET_MAPPING = [
             { marker: 'cabeza1', model: 'dedo' },
             { marker: 'corazon', model: 'dedo-mano' },
@@ -449,7 +447,7 @@
             editor.scene = new THREE.Scene();
             editor.scene.background = new THREE.Color(0xeeeeee);
             editor.camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            editor.camera.position.set(0, 0.4, 2.0); // Cámara ajustada                       
+            editor.camera.position.set(0, 0.5, 3.5); // Cámara ajustada para mejor visualización
             editor.scene.add(new THREE.AmbientLight(0xffffff, 2));
             const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
             directionalLight.position.set(2, 5, 3);
@@ -485,7 +483,7 @@
             document.getElementById('rot-z').value = Math.round(transform.rotation.z);
             document.getElementById('scale').value = transform.scale.x.toFixed(2);
         }
-
+        
         function getAllMeshes(object) {
             const meshes = [];
             object.traverse(child => {
@@ -567,7 +565,7 @@
             if (!editor.currentTarget) return;
             const asset = state.assets.find(a => a.id === parseInt(document.getElementById('asset-selector').value));
             if (!asset) return;
-            const finalScale = (transform.scale.x * SCALE_UNIT_TO_METERS) * asset.normalizationFactor;
+            const finalScale = transform.scale.x * asset.normalizationFactor;
             editor.currentTarget.position.set(transform.position.x, transform.position.y, transform.position.z);
             editor.currentTarget.rotation.set(
                 THREE.MathUtils.degToRad(transform.rotation.x),
@@ -621,7 +619,7 @@
 
             document.getElementById('ar-preloader').classList.remove('hidden');
             const arSceneContainer = document.getElementById('ar-scene-container');
-            arSceneContainer.innerHTML = ''; // Limpiar contenedor
+            arSceneContainer.innerHTML = ''; 
 
             const assetsHTML = state.assets.map(asset => 
                 `<a-asset-item id="model-${asset.id}" src="${asset.modelDataUrl}" response-type="arraybuffer"></a-asset-item>`
@@ -629,7 +627,7 @@
 
             const targetsHTML = state.assets.map((asset, index) => {
                 const t = asset.transform;
-                const finalScale = (t.scale.x * SCALE_UNIT_TO_METERS) * asset.normalizationFactor;
+                const finalScale = t.scale.x * asset.normalizationFactor; 
                 return `
                     <a-entity mindar-image-target="targetIndex: ${index}">
                         <a-gltf-model src="#model-${asset.id}" position="${t.position.x} ${t.position.y} ${t.position.z}" rotation="${t.rotation.x} ${t.rotation.y} ${t.rotation.z}" scale="${finalScale} ${finalScale} ${finalScale}" ar-rotator>
@@ -828,8 +826,6 @@
     </script>
 </body>
 </html>
-
-
 
 
 
