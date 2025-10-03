@@ -168,6 +168,8 @@
                 <div class="md:w-1/3">
                     <label for="asset-selector" class="block mb-2 font-medium text-gray-700">Seleccionar Recurso:</label>
                     <select id="asset-selector" class="w-full p-2 border rounded mb-4"></select>
+                    
+                    <div class="mt-4"><input type="checkbox" id="move-individual-toggle" class="mr-2"><label for="move-individual-toggle">Mover piezas individualmente</label></div>
 
                     <h3 class="font-semibold mt-4">Posición (X, Y, Z)</h3>
                     <div class="grid grid-cols-3 gap-2">
@@ -184,6 +186,7 @@
                     </div>
                     <h3 class="font-semibold mt-4">Escala</h3>
                     <input type="number" id="scale" class="w-full p-1 border rounded" step="0.1" value="1">
+                    <p class="text-xs text-gray-500 mt-1">Define el tamaño (1.0 = 10cm).</p>
                 </div>
                 <div class="md:w-2/3">
                     <div id="editor-container"><canvas id="editor-canvas"></canvas></div>
@@ -251,7 +254,7 @@
     import { DragControls } from 'three/addons/controls/DragControls.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-        const APP_VERSION = '1.9'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
+        const APP_VERSION = '2.0'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
         const state = {
             assets: [],
             currentPage: 'page-upload',
@@ -267,6 +270,7 @@
         };                
         const CACHE_NAME = `ar-assets-cache-v${APP_VERSION}`; // Cache con versión
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
+        const SCALE_UNIT_TO_METERS = 0.1; // 1.0 en la UI = 10cm
         
         // MAPA DE CORRECIÓN: Asocia el marcador (.mind) con el modelo (.glb) y la imagen (.png) correctos.
         const ASSET_MAPPING = [
@@ -485,6 +489,30 @@
             document.getElementById('scale').value = transform.scale.x.toFixed(2);
         }
 
+        function setupDragControls() {
+            if (editor.dragControls) {
+                editor.dragControls.dispose();
+            }
+            const moveIndividual = document.getElementById('move-individual-toggle').checked;
+            const draggableObjects = moveIndividual ? editor.currentTarget.children.filter(o => o.isObject3D) : [editor.currentTarget];
+            
+            editor.dragControls = new DragControls(draggableObjects, editor.camera, editor.renderer.domElement);
+            
+            editor.dragControls.addEventListener('dragstart', () => editor.controls.enabled = false);
+            editor.dragControls.addEventListener('dragend', (event) => {
+                editor.controls.enabled = true;
+                if (!moveIndividual) {
+                    const assetId = parseInt(document.getElementById('asset-selector').value);
+                    const asset = state.assets.find(a => a.id === assetId);
+                    if (asset) {
+                       const { x, y, z } = event.object.position;
+                       Object.assign(asset.transform.position, { x, y, z });
+                       updateTransformInputs(asset.transform);
+                    }
+                }
+            });
+        }
+
         function displayAssetInEditor(assetId) {
             const asset = state.assets.find(a => a.id === assetId);
             if (!asset || !editor.scene) return;
@@ -518,14 +546,7 @@
                 updateModelTransformFromState(asset.transform);
                 updateTransformInputs(asset.transform);
 
-                editor.dragControls = new DragControls([editor.currentTarget], editor.camera, editor.renderer.domElement);
-                editor.dragControls.addEventListener('dragstart', () => editor.controls.enabled = false);
-                editor.dragControls.addEventListener('dragend', (event) => {
-                    editor.controls.enabled = true;
-                    const { x, y, z } = event.object.position;
-                    Object.assign(asset.transform.position, { x, y, z });
-                    updateTransformInputs(asset.transform);
-                });
+                setupDragControls();
             });
         }                
 
@@ -533,7 +554,7 @@
             if (!editor.currentTarget) return;
             const asset = state.assets.find(a => a.id === parseInt(document.getElementById('asset-selector').value));
             if (!asset) return;
-            const finalScale = transform.scale.x * asset.normalizationFactor;
+            const finalScale = (transform.scale.x * SCALE_UNIT_TO_METERS) * asset.normalizationFactor;
             editor.currentTarget.position.set(transform.position.x, transform.position.y, transform.position.z);
             editor.currentTarget.rotation.set(
                 THREE.MathUtils.degToRad(transform.rotation.x),
@@ -589,15 +610,13 @@
             const arSceneContainer = document.getElementById('ar-scene-container');
             arSceneContainer.innerHTML = ''; // Limpiar contenedor
 
-            // Construir los assets como un string
             const assetsHTML = state.assets.map(asset => 
                 `<a-asset-item id="model-${asset.id}" src="${asset.modelDataUrl}" response-type="arraybuffer"></a-asset-item>`
             ).join('');
 
-            // Construir las entidades de los marcadores como un string
             const targetsHTML = state.assets.map((asset, index) => {
                 const t = asset.transform;
-                const finalScale = t.scale.x * asset.normalizationFactor;
+                const finalScale = (t.scale.x * SCALE_UNIT_TO_METERS) * asset.normalizationFactor;
                 return `
                     <a-entity mindar-image-target="targetIndex: ${index}">
                         <a-gltf-model src="#model-${asset.id}" position="${t.position.x} ${t.position.y} ${t.position.z}" rotation="${t.rotation.x} ${t.rotation.y} ${t.rotation.z}" scale="${finalScale} ${finalScale} ${finalScale}" ar-rotator>
@@ -606,7 +625,6 @@
                 `;
             }).join('');
 
-            // Construir la escena completa como un string
             const mindARSettings = `imageTargetSrc: ${state.assets.map(a => a.markerDataUrl).join(';')}; maxTrackables: 1; autoStart: true; uiLoading: no; uiError: no; uiScanning: no; filterMinCF: 0.001; filterBeta: 10;`;
             
             const sceneHTML = `
@@ -629,7 +647,6 @@
             sceneEl.addEventListener('targetFound', () => scanningUI.classList.add('hidden'));
             sceneEl.addEventListener('targetLost', () => scanningUI.classList.remove('hidden'));
 
-            // Activar UI de AR
             const appContainer = document.getElementById('app');
             document.documentElement.classList.add('ar-active');
             document.body.classList.add('ar-active');
@@ -646,7 +663,6 @@
                 });
             }
         }
-
 
         function stopAR() {
             const arSceneContainer = document.getElementById('ar-scene-container');
@@ -770,6 +786,7 @@
         document.getElementById('fullscreen-ar-btn').addEventListener('click', toggleFullScreen);
         document.getElementById('back-to-editor-btn-post').addEventListener('click', () => { navigateTo('page-editor'); });
         document.getElementById('asset-selector').addEventListener('change', (e) => displayAssetInEditor(parseInt(e.target.value)));                
+        document.getElementById('move-individual-toggle').addEventListener('change', setupDragControls);
         
         ['pos-x', 'pos-y', 'pos-z', 'rot-x', 'rot-y', 'rot-z', 'scale'].forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
