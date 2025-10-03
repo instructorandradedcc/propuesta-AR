@@ -166,7 +166,7 @@
                     <label for="asset-selector" class="block mb-2 font-medium text-gray-700">Seleccionar Recurso:</label>
                     <select id="asset-selector" class="w-full p-2 border rounded mb-4"></select>
                     
-                    <div class="mt-4"><input type="checkbox" id="move-individual-toggle" class="mr-2"><label for="move-individual-toggle">Mover piezas individualmente</label></div>
+                    <div class="mt-4"><input type="checkbox" id="move-conjunto-toggle" class="mr-2" checked><label for="move-conjunto-toggle">Mover en conjunto</label></div>
 
                     <h3 class="font-semibold mt-4">Posición (X, Y, Z)</h3>
                     <div class="grid grid-cols-3 gap-2">
@@ -251,7 +251,7 @@
     import { DragControls } from 'three/addons/controls/DragControls.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-        const APP_VERSION = '2.2'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
+        const APP_VERSION = '2.3'; // <-- NÚMERO DE VERSIÓN ACTUALIZADO
         const state = {
             assets: [],
             currentPage: 'page-upload',
@@ -265,7 +265,7 @@
             currentTarget: null,
             currentPlane: null,
         };                
-        const CACHE_NAME = `ar-assets-cache-v${APP_VERSION}`; // Cache con versión
+        const CACHE_NAME = `ar-assets-cache-v${APP_VERSION}`;
         const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/';
         
         const ASSET_MAPPING = [
@@ -447,7 +447,7 @@
             editor.scene = new THREE.Scene();
             editor.scene.background = new THREE.Color(0xeeeeee);
             editor.camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            editor.camera.position.set(0, 0.5, 3.5); // Cámara ajustada para mejor visualización
+            editor.camera.position.set(0, 0.5, 3.5); // Cámara ajustada
             editor.scene.add(new THREE.AmbientLight(0xffffff, 2));
             const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
             directionalLight.position.set(2, 5, 3);
@@ -498,13 +498,14 @@
             if (editor.dragControls) {
                 editor.dragControls.dispose();
             }
-            const moveIndividual = document.getElementById('move-individual-toggle').checked;
+            const moveConjunto = document.getElementById('move-conjunto-toggle').checked;
             
-            const draggableObjects = moveIndividual && editor.currentTarget ? getAllMeshes(editor.currentTarget) : [editor.currentTarget];
+            const draggableObjects = moveConjunto || !editor.currentTarget ? [editor.currentTarget] : getAllMeshes(editor.currentTarget);
             
-            if (draggableObjects.length === 0 && moveIndividual) {
-                console.warn("Modo individual activado, pero no se encontraron piezas móviles (meshes) en el modelo.");
-                return;
+            if (draggableObjects.length === 0 && !moveConjunto) {
+                 console.warn("Modo individual activado, pero no se encontraron piezas móviles (meshes) en el modelo.");
+                 // Fallback to moving the whole model if no individual pieces are found
+                 draggableObjects.push(editor.currentTarget);
             }
 
             editor.dragControls = new DragControls(draggableObjects, editor.camera, editor.renderer.domElement);
@@ -512,7 +513,7 @@
             editor.dragControls.addEventListener('dragstart', () => editor.controls.enabled = false);
             editor.dragControls.addEventListener('dragend', (event) => {
                 editor.controls.enabled = true;
-                if (!moveIndividual) {
+                if (moveConjunto) {
                     const assetId = parseInt(document.getElementById('asset-selector').value);
                     const asset = state.assets.find(a => a.id === assetId);
                     if (asset) {
@@ -546,11 +547,26 @@
                 editor.currentTarget = gltf.scene;
 
                 if (!asset.hasBeenNormalized) {
-                    const box = new THREE.Box3().setFromObject(editor.currentTarget);
+                    const box = new THREE.Box3();
+                    editor.currentTarget.updateMatrixWorld(true);
+                    editor.currentTarget.traverse(child => {
+                        if (child.isMesh) {
+                            child.geometry.computeBoundingBox(); 
+                            const childBox = child.geometry.boundingBox.clone();
+                            childBox.applyMatrix4(child.matrixWorld); 
+                            box.union(childBox);
+                        }
+                    });
+
+                    if (box.isEmpty()) {
+                        box.setFromObject(editor.currentTarget);
+                    }
+                    
                     const size = box.getSize(new THREE.Vector3());
                     const center = box.getCenter(new THREE.Vector3());
-                    asset.normalizationFactor = 1.0 / Math.max(size.x, size.y, size.z);
-                    editor.currentTarget.position.sub(center);
+                    const maxSize = Math.max(size.x, size.y, size.z);
+                    asset.normalizationFactor = maxSize > 0 ? 1.0 / maxSize : 1.0;
+                    editor.currentTarget.position.sub(center); 
                     asset.hasBeenNormalized = true;
                 }
                 editor.scene.add(editor.currentTarget);                        
@@ -797,7 +813,7 @@
         document.getElementById('fullscreen-ar-btn').addEventListener('click', toggleFullScreen);
         document.getElementById('back-to-editor-btn-post').addEventListener('click', () => { navigateTo('page-editor'); });
         document.getElementById('asset-selector').addEventListener('change', (e) => displayAssetInEditor(parseInt(e.target.value)));                
-        document.getElementById('move-individual-toggle').addEventListener('change', setupDragControls);
+        document.getElementById('move-conjunto-toggle').addEventListener('change', setupDragControls);
         
         ['pos-x', 'pos-y', 'pos-z', 'rot-x', 'rot-y', 'rot-z', 'scale'].forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
@@ -826,6 +842,7 @@
     </script>
 </body>
 </html>
+
 
 
 
