@@ -1,9 +1,14 @@
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Propuesta Salud AR - Descarga la App</title>
+    <title>Propuesta Salud AR - Inicio y Galería</title>
     
     <!-- Tailwind CSS para un diseño moderno y responsivo -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,49 +22,321 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Usar la fuente Inter como predeterminada */
+        /* Estilos Generales */
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #0a192f; /* Un azul marino oscuro más profesional */
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            cursor: pointer;
+        }
+        .nav-link:hover {
+            color: #64ffda; /* Color cian para resaltar */
+        }
+        .nav-link.active {
+            color: #64ffda;
+            border-bottom: 2px solid #64ffda;
+        }
+        /* Estilos para el visor de imágenes */
+        #image-viewer {
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+            pointer-events: none;
+        }
+        #image-viewer.open {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: all;
+        }
+        #viewer-img {
+            cursor: grab;
+            transition: transform 0.2s ease-out;
+        }
+        #viewer-img.dragging {
+            cursor: grabbing;
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+<body class="bg-gray-900 text-gray-300">
 
-    <div class="max-w-2xl w-full mx-auto p-8 text-center bg-gray-800 rounded-2xl shadow-lg m-4">
-        
-        <!-- Logo de la fundación -->
-        <header class="mb-8">
-            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo de la Fundación" class="w-32 h-32 mx-auto rounded-full object-cover shadow-md">
-        </header>
+    <!-- Encabezado de Navegación -->
+    <nav class="bg-gray-900/80 backdrop-blur-sm shadow-md fixed top-0 w-full z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo" class="h-10 w-10 rounded-full">
+                    <span class="text-white font-semibold text-xl ml-3">Propuesta Salud AR</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a id="nav-inicio" class="nav-link px-3 py-2 text-sm font-medium">Inicio</a>
+                        <a id="nav-galeria" class="nav-link px-3 py-2 text-sm font-medium">Galería de Prototipos</a>
+                    </div>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" id="mobile-menu-button" class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                        <span class="sr-only">Abrir menú principal</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a id="mobile-nav-inicio" class="text-cyan-400 bg-gray-900 block px-3 py-2 rounded-md text-base font-medium">Inicio</a>
+                <a id="mobile-nav-galeria" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Galería de Prototipos</a>
+            </div>
+        </div>
+    </nav>
 
-        <main>
-            <!-- Título principal -->
-            <h1 class="text-4xl font-bold text-cyan-400 mb-4">¡Estamos mejorando para ti!</h1>
-            
-            <!-- Mensaje para los usuarios -->
-            <p class="text-lg text-gray-300 mb-8 leading-relaxed">
-                Lo sentimos mucho, estamos mejorando la aplicación y generando nuevas versiones para celular.
-                Puedes seguir disfrutando de nuestro prototipo de realidad aumentada descargando la APK directamente en tu dispositivo.
-            </p>
-            
-            <!-- Botón de descarga del APK -->
-            <a href="https://github.com/instructorandradedcc/propuesta-AR/raw/main/Propuesta_Salud_AR_v1.0.0.apk" 
-               class="inline-block bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-4 px-8 rounded-lg text-xl transition-transform duration-300 ease-in-out transform hover:scale-105 shadow-lg focus:outline-none focus:ring-4 focus:ring-cyan-300"
-               download>
-                Descargar APK
-            </a>
-            
-            <!-- Nota sobre la instalación -->
-            <p class="text-sm text-gray-500 mt-6">
-                Recuerda que para instalar la APK, es posible que necesites habilitar la opción "Instalar desde fuentes desconocidas" en los ajustes de tu celular.
-            </p>
-        </main>
-        
+    <!-- SECCIÓN DE INICIO (APK) -->
+    <section id="home-section" class="flex items-center justify-center min-h-screen pt-16">
+        <div class="max-w-2xl w-full mx-auto p-8 text-center bg-gray-800 rounded-2xl shadow-lg m-4">
+            <header class="mb-8">
+                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo de la Fundación" class="w-32 h-32 mx-auto rounded-full object-cover shadow-md border-4 border-cyan-500">
+            </header>
+            <main>
+                <h1 class="text-4xl font-bold text-cyan-400 mb-4">¡Estamos mejorando para ti!</h1>
+                <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+                    Puedes seguir disfrutando de nuestro prototipo de realidad aumentada descargando la APK directamente en tu dispositivo.
+                </p>
+                <a href="https://github.com/instructorandradedcc/propuesta-AR/raw/main/Propuesta_Salud_AR_v1.0.0.apk" 
+                   class="inline-block bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-4 px-8 rounded-lg text-xl transition-transform duration-300 transform hover:scale-105 shadow-lg"
+                   download>
+                    Descargar APK
+                </a>
+                <p class="text-md text-gray-400 mt-8">
+                    Una vez descargada, puedes probar la aplicación con los marcadores que encontrarás en la 
+                    <a id="link-a-galeria" class="text-cyan-400 hover:underline font-semibold cursor-pointer">siguiente página</a>.
+                </p>
+                <p class="text-sm text-gray-500 mt-6">
+                    Recuerda habilitar "Instalar desde fuentes desconocidas" en los ajustes de tu celular.
+                </p>
+                <div class="mt-10">
+                    <button id="btn-siguiente-pagina"
+                       class="inline-block bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-transform duration-300 transform hover:scale-105 shadow-lg">
+                        Siguiente Página &rarr;
+                    </button>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE GALERÍA -->
+    <section id="gallery-section" class="hidden container mx-auto px-4 py-24">
+        <h1 class="text-4xl font-bold text-center text-cyan-400 mb-4">Galería de Marcadores AR</h1>
+        <p class="text-center text-lg text-gray-400 mb-12">Haz clic en cualquier imagen para verla en detalle. Puedes usar estos marcadores para probar la aplicación.</p>
+        <div id="image-gallery" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Las imágenes se insertarán aquí con JS -->
+        </div>
+    </section>
+
+    <!-- Visor de Imágenes a Pantalla Completa -->
+    <div id="image-viewer" class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+        <button id="close-viewer" class="absolute top-5 right-5 text-white text-4xl hover:text-cyan-400 transition">&times;</button>
+        <button id="prev-img" class="absolute left-5 text-white text-5xl hover:text-cyan-400 transition">&#8249;</button>
+        <button id="next-img" class="absolute right-5 text-white text-5xl hover:text-cyan-400 transition">&#8250;</button>
+        <div class="w-full h-full flex items-center justify-center overflow-hidden">
+             <img id="viewer-img" src="" alt="Vista ampliada" class="max-w-[90%] max-h-[90%] object-contain">
+        </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- MANEJO DE VISTAS (PÁGINAS) ---
+            const homeSection = document.getElementById('home-section');
+            const gallerySection = document.getElementById('gallery-section');
+            const navInicio = document.getElementById('nav-inicio');
+            const navGaleria = document.getElementById('nav-galeria');
+            const mobileNavInicio = document.getElementById('mobile-nav-inicio');
+            const mobileNavGaleria = document.getElementById('mobile-nav-galeria');
+
+            function showHome() {
+                homeSection.classList.remove('hidden');
+                gallerySection.classList.add('hidden');
+                navInicio.classList.add('active');
+                navGaleria.classList.remove('active');
+                mobileNavInicio.classList.add('text-cyan-400', 'bg-gray-900');
+                mobileNavGaleria.classList.remove('text-cyan-400', 'bg-gray-900');
+                window.scrollTo(0, 0);
+            }
+
+            function showGallery() {
+                homeSection.classList.add('hidden');
+                gallerySection.classList.remove('hidden');
+                navInicio.classList.remove('active');
+                navGaleria.classList.add('active');
+                mobileNavInicio.classList.remove('text-cyan-400', 'bg-gray-900');
+                mobileNavGaleria.classList.add('text-cyan-400', 'bg-gray-900');
+                window.scrollTo(0, 0);
+            }
+            
+            // Estado inicial
+            showHome();
+
+            // Eventos de navegación
+            navInicio.addEventListener('click', showHome);
+            navGaleria.addEventListener('click', showGallery);
+            mobileNavInicio.addEventListener('click', showHome);
+            mobileNavGaleria.addEventListener('click', showGallery);
+            document.getElementById('link-a-galeria').addEventListener('click', showGallery);
+            document.getElementById('btn-siguiente-pagina').addEventListener('click', showGallery);
+
+            // --- LÓGICA DE LA GALERÍA ---
+            const imageUrls = [
+                'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/cabeza1.png',
+                'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/corazon.png',
+                'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/dedo-mano.png',
+                'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/dedo.png',
+                'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/hueso-columna.png',
+                'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/huesosmano.png',
+                'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/mano-iz-protesis.png',
+                'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/protesis-mano-brazo.png'
+            ];
+
+            const gallery = document.getElementById('image-gallery');
+            const imageViewer = document.getElementById('image-viewer');
+            const viewerImg = document.getElementById('viewer-img');
+            
+            let currentIndex = 0;
+            let galleryPopulated = false;
+
+            function populateGallery() {
+                if(galleryPopulated) return;
+                imageUrls.forEach((url, index) => {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 cursor-pointer';
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = `Imagen de galería ${index + 1}`;
+                    img.className = 'w-full h-48 object-cover';
+                    img.dataset.index = index;
+                    galleryItem.appendChild(img);
+                    gallery.appendChild(galleryItem);
+                });
+                galleryPopulated = true;
+            }
+            
+            // Poblar la galería la primera vez que se muestra
+            if (!gallerySection.classList.contains('hidden')) {
+                populateGallery();
+            } else {
+                navGaleria.addEventListener('click', populateGallery, { once: true });
+                mobileNavGaleria.addEventListener('click', populateGallery, { once: true });
+                document.getElementById('link-a-galeria').addEventListener('click', populateGallery, { once: true });
+                document.getElementById('btn-siguiente-pagina').addEventListener('click', populateGallery, { once: true });
+            }
+
+            // --- Funcionalidad del Visor ---
+            const openViewer = (index) => {
+                currentIndex = parseInt(index);
+                viewerImg.src = imageUrls[currentIndex];
+                resetZoom();
+                imageViewer.classList.add('open');
+            };
+
+            const closeViewer = () => imageViewer.classList.remove('open');
+            const showPrevImage = () => {
+                currentIndex = (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+                viewerImg.src = imageUrls[currentIndex];
+                resetZoom();
+            };
+            const showNextImage = () => {
+                currentIndex = (currentIndex + 1) % imageUrls.length;
+                viewerImg.src = imageUrls[currentIndex];
+                resetZoom();
+            };
+            
+            // Event Listeners del Visor
+            gallery.addEventListener('click', (e) => e.target.tagName === 'IMG' && openViewer(e.target.dataset.index));
+            document.getElementById('close-viewer').addEventListener('click', closeViewer);
+            document.getElementById('prev-img').addEventListener('click', showPrevImage);
+            document.getElementById('next-img').addEventListener('click', showNextImage);
+            document.addEventListener('keydown', (e) => {
+                if (imageViewer.classList.contains('open')) {
+                    if (e.key === 'Escape') closeViewer();
+                    if (e.key === 'ArrowLeft') showPrevImage();
+                    if (e.key === 'ArrowRight') showNextImage();
+                }
+            });
+            imageViewer.addEventListener('click', (e) => e.target === imageViewer && closeViewer());
+
+            // --- Funcionalidad de Zoom y Arrastre ---
+            let scale = 1, panning = false, pointX = 0, pointY = 0, start = { x: 0, y: 0 }, isRightClickDown = false;
+            const setTransform = () => viewerImg.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+            const resetZoom = () => { scale = 1; pointX = 0; pointY = 0; setTransform(); };
+            viewerImg.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                if (e.button === 2) { isRightClickDown = true; viewerImg.style.cursor = 'ns-resize'; } 
+                else { panning = true; start = { x: e.clientX - pointX, y: e.clientY - pointY }; viewerImg.classList.add('dragging'); }
+            });
+            viewerImg.addEventListener('mouseup', (e) => {
+                if(e.button === 2) { isRightClickDown = false; viewerImg.style.cursor = 'grab'; }
+                panning = false; viewerImg.classList.remove('dragging');
+            });
+            viewerImg.addEventListener('mousemove', (e) => {
+                e.preventDefault();
+                if (panning) { pointX = e.clientX - start.x; pointY = e.clientY - start.y; setTransform(); }
+            });
+            viewerImg.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                if (isRightClickDown || e.ctrlKey) {
+                    const xs = (e.clientX - pointX) / scale, ys = (e.clientY - pointY) / scale;
+                    scale *= (e.deltaY > 0) ? 0.9 : 1.1;
+                    pointX = e.clientX - xs * scale;
+                    pointY = e.clientY - ys * scale;
+                    setTransform();
+                }
+            });
+            viewerImg.addEventListener('contextmenu', e => e.preventDefault());
+
+            // --- Funcionalidad Táctil (Swipe y Pinch-to-Zoom) ---
+            let initialDistance = null, touchStartX = 0;
+            const getDistance = (t) => Math.hypot(t[0].pageX - t[1].pageX, t[0].pageY - t[1].pageY);
+            viewerImg.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) initialDistance = getDistance(e.touches);
+                else if (e.touches.length === 1) {
+                    touchStartX = e.touches[0].clientX;
+                    start = { x: e.touches[0].clientX - pointX, y: e.touches[0].clientY - pointY };
+                    panning = true;
+                }
+            });
+            viewerImg.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (e.touches.length === 2 && initialDistance) {
+                    scale *= getDistance(e.touches) / initialDistance;
+                    initialDistance = getDistance(e.touches);
+                    setTransform();
+                } else if (e.touches.length === 1 && panning) {
+                    pointX = e.touches[0].clientX - start.x;
+                    pointY = e.touches[0].clientY - start.y;
+                    setTransform();
+                }
+            });
+            viewerImg.addEventListener('touchend', (e) => {
+                if (e.touches.length < 2) initialDistance = null;
+                if (e.touches.length < 1) {
+                    panning = false;
+                    const swipeDist = e.changedTouches[0].clientX - touchStartX;
+                    if (Math.abs(swipeDist) > 50) swipeDist > 0 ? showPrevImage() : showNextImage();
+                }
+            });
+
+            // --- MENÚ MÓVIL ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const icons = mobileMenuButton.querySelectorAll('svg');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                icons.forEach(icon => icon.classList.toggle('hidden'));
+            });
+        });
+    </script>
 </body>
 </html>
-
-
-
 
