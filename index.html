@@ -60,6 +60,24 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        #image-viewer {
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s ease-in-out;
+            pointer-events: none;
+        }
+        #image-viewer.open {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: all;
+        }
+        #viewer-img {
+            cursor: grab;
+            transition: transform 0.2s ease-out;
+        }
+        #viewer-img.dragging {
+            cursor: grabbing;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -75,13 +93,13 @@
                 <nav class="hidden md:flex items-baseline space-x-8">
                     <a href="#inicio" class="nav-link text-sm font-medium">Inicio</a>
                     <a href="#servicios" class="nav-link text-sm font-medium">Servicios</a>
-                    <a href="demo.html" target="_blank" class="nav-link text-sm font-medium">Demo</a>
+                    <a href="#demo" class="nav-link text-sm font-medium">Demo</a>
                     <a href="#arquitectura" class="nav-link text-sm font-medium">Arquitectura</a>
                     <a href="#contacto" class="nav-link text-sm font-medium">Contacto</a>
                 </nav>
                 <div class="flex md:hidden">
                     <button type="button" id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white focus:outline-none">
-                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 a 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
                         <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
@@ -92,7 +110,7 @@
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="#inicio" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Inicio</a>
                 <a href="#servicios" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Servicios</a>
-                <a href="demo.html" target="_blank" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Demo</a>
+                <a href="#demo" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Demo</a>
                 <a href="#arquitectura" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Arquitectura</a>
                 <a href="#contacto" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Contacto</a>
             </div>
@@ -116,7 +134,7 @@
                     <a href="#servicios" class="inline-block bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg transition-transform duration-300 transform hover:scale-105 shadow-lg">
                         Nuestros Servicios
                     </a>
-                    <a href="demo.html" target="_blank" class="inline-block bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform duration-300 transform hover:scale-105 shadow-lg">
+                    <a href="#demo" class="inline-block bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform duration-300 transform hover:scale-105 shadow-lg">
                         Probar Demo
                     </a>
                 </div>
@@ -167,6 +185,42 @@
                         <div class="flex-1 glass-card p-6 rounded-lg border-2 border-cyan-400">
                             <h4 class="text-xl font-semibold text-cyan-400">Servicio Premium</h4>
                             <p class="mt-2 text-gray-400">La experiencia inmersiva definitiva. Creamos soluciones para gafas de Realidad Aumentada, ofreciendo una interacción y visualización superiores.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== Sección Demo (Re-integrada) ===== -->
+        <section id="demo" class="py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-white">Pruebe Nuestro Prototipo</h2>
+                    <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Siga estos pasos para experimentar una muestra de lo que podemos crear para usted.</p>
+                </div>
+
+                <div class="bg-slate-900 rounded-xl shadow-lg p-8 md:p-12">
+                    <div class="grid md:grid-cols-2 gap-12 items-center">
+                        <div class="text-center md:text-left">
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo de la Fundación" class="w-24 h-24 sm:w-32 sm:h-32 mx-auto md:mx-0 rounded-full object-cover shadow-md border-4 border-cyan-500 mb-6">
+                            <h3 class="text-3xl font-bold text-cyan-400 mb-2">1. Descargue la App</h3>
+                            <p class="text-gray-300 mb-6">
+                               Instale la aplicación de muestra en su dispositivo Android para poder interactuar con los marcadores.
+                               <br><span class="text-sm text-gray-500">Es posible que deba habilitar la opción "Instalar desde fuentes desconocidas" en los ajustes de seguridad de su dispositivo.</span>
+                            </p>
+                            <a href="https://github.com/instructorandradedcc/propuesta-AR/raw/main/Propuesta_Salud_AR_v1.0.0.apk"
+                               class="inline-block bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg transition-transform duration-300 transform hover:scale-105 shadow-lg"
+                               download>
+                                Descargar APK
+                            </a>
+                        </div>
+
+                        <div>
+                            <h3 class="text-3xl font-bold text-cyan-400 mb-2 text-center md:text-left">2. Use los Marcadores</h3>
+                            <p class="text-gray-400 mb-6 text-center md:text-left">Abra la aplicación y apunte la cámara de su dispositivo hacia cualquiera de las siguientes imágenes en su pantalla. Haga clic en una imagen para verla en grande y escanearla mejor.</p>
+                            <div id="image-gallery" class="grid grid-cols-3 md:grid-cols-4 gap-4">
+                                <!-- Las imágenes se insertarán aquí con JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -228,6 +282,16 @@
         </div>
     </footer>
     
+    <!-- ===== Visor de Imágenes (Modal) ===== -->
+    <div id="image-viewer" class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+        <button id="close-viewer" class="absolute top-5 right-5 text-white text-5xl hover:text-cyan-400 transition">&times;</button>
+        <button id="prev-img" class="absolute left-5 top-1/2 -translate-y-1/2 text-white text-5xl hover:text-cyan-400 transition">&#8249;</button>
+        <button id="next-img" class="absolute right-5 top-1/2 -translate-y-1/2 text-white text-5xl hover:text-cyan-400 transition">&#8250;</button>
+        <div class="w-full h-full flex items-center justify-center overflow-hidden p-10">
+             <img id="viewer-img" src="" alt="Vista ampliada" class="max-w-full max-h-full object-contain rounded-lg">
+        </div>
+    </div>
+    
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // --- LÓGICA DE NAVEGACIÓN Y MENÚ MÓVIL ---
@@ -284,9 +348,158 @@
         sections.forEach(section => {
             observer.observe(section);
         });
+
+        // --- LÓGICA DE LA GALERÍA Y VISOR DE IMÁGENES ---
+        const imageUrls = [
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/cabeza1.png',
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/corazon.png',
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/dedo-mano.png',
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/dedo.png',
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/hueso-columna.png',
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/huesosmano.png',
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/mano-iz-protesis.png',
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/protesis-mano-brazo.png'
+        ];
+
+        const gallery = document.getElementById('image-gallery');
+        const imageViewer = document.getElementById('image-viewer');
+        const viewerImg = document.getElementById('viewer-img');
+        let currentIndex = 0;
+
+        // Poblar la galería
+        imageUrls.forEach((url, index) => {
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'aspect-square bg-slate-800 rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 cursor-pointer';
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = `Marcador AR ${index + 1}`;
+            img.className = 'w-full h-full object-cover';
+            img.dataset.index = index;
+            galleryItem.appendChild(img);
+            gallery.appendChild(galleryItem);
+        });
+
+        // Funciones del visor
+        const openViewer = (index) => {
+            currentIndex = parseInt(index);
+            updateViewerImage();
+            imageViewer.classList.add('open');
+            document.body.style.overflow = 'hidden'; // Evitar scroll de fondo
+        };
+        const closeViewer = () => {
+            imageViewer.classList.remove('open');
+            document.body.style.overflow = '';
+        };
+        const showPrevImage = () => {
+            currentIndex = (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+            updateViewerImage();
+        };
+        const showNextImage = () => {
+            currentIndex = (currentIndex + 1) % imageUrls.length;
+            updateViewerImage();
+        };
+        const updateViewerImage = () => {
+             viewerImg.src = imageUrls[currentIndex];
+             resetZoom();
+        };
+        
+        // Eventos del visor
+        gallery.addEventListener('click', (e) => {
+            if (e.target.tagName === 'IMG') {
+                openViewer(e.target.dataset.index);
+            }
+        });
+        document.getElementById('close-viewer').addEventListener('click', closeViewer);
+        document.getElementById('prev-img').addEventListener('click', showPrevImage);
+        document.getElementById('next-img').addEventListener('click', showNextImage);
+        document.addEventListener('keydown', (e) => {
+            if (imageViewer.classList.contains('open')) {
+                if (e.key === 'Escape') closeViewer();
+                if (e.key === 'ArrowLeft') showPrevImage();
+                if (e.key === 'ArrowRight') showNextImage();
+            }
+        });
+        imageViewer.addEventListener('click', (e) => {
+            if (e.target === imageViewer) closeViewer();
+        });
+
+        // --- Funcionalidad de Zoom y Arrastre para el visor ---
+        let scale = 1, panning = false, pointX = 0, pointY = 0, start = { x: 0, y: 0 };
+        const setTransform = () => {
+            viewerImg.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+        };
+        const resetZoom = () => { scale = 1; pointX = 0; pointY = 0; setTransform(); };
+        
+        viewerImg.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            panning = true;
+            start = { x: e.clientX - pointX, y: e.clientY - pointY };
+            viewerImg.classList.add('dragging');
+        });
+        viewerImg.addEventListener('mouseup', () => {
+            panning = false;
+            viewerImg.classList.remove('dragging');
+        });
+        viewerImg.addEventListener('mousemove', (e) => {
+            if (panning) {
+                pointX = e.clientX - start.x;
+                pointY = e.clientY - start.y;
+                setTransform();
+            }
+        });
+        viewerImg.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const xs = (e.clientX - pointX) / scale;
+            const ys = (e.clientY - pointY) / scale;
+            const delta = (e.deltaY > 0) ? 0.9 : 1.1;
+            scale *= delta;
+            pointX = e.clientX - xs * scale;
+            pointY = e.clientY - ys * scale;
+            setTransform();
+        });
+
+        // Funcionalidad Táctil (Swipe y Pinch-to-Zoom)
+        let initialDistance = null, touchStartX = 0;
+        const getDistance = (touches) => Math.hypot(touches[0].pageX - touches[1].pageX, touches[0].pageY - touches[1].pageY);
+
+        viewerImg.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                initialDistance = getDistance(e.touches);
+            } else if (e.touches.length === 1) {
+                touchStartX = e.touches[0].clientX;
+                start = { x: e.touches[0].clientX - pointX, y: e.touches[0].clientY - pointY };
+                panning = true;
+            }
+        });
+
+        viewerImg.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (e.touches.length === 2 && initialDistance) {
+                const newDist = getDistance(e.touches);
+                scale *= newDist / initialDistance;
+                initialDistance = newDist;
+                setTransform();
+            } else if (e.touches.length === 1 && panning) {
+                pointX = e.touches[0].clientX - start.x;
+                pointY = e.touches[0].clientY - start.y;
+                setTransform();
+            }
+        });
+
+        viewerImg.addEventListener('touchend', (e) => {
+            initialDistance = null;
+            if (panning) {
+                panning = false;
+                if(e.changedTouches.length === 1) {
+                    const swipeDist = e.changedTouches[0].clientX - touchStartX;
+                    if (Math.abs(swipeDist) > 50) {
+                        swipeDist > 0 ? showPrevImage() : showNextImage();
+                    }
+                }
+            }
+        });
     });
     </script>
 </body>
 </html>
-
 
