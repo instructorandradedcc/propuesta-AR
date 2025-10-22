@@ -45,12 +45,15 @@
         .nav-link.active::after {
             width: 100%;
         }
+        /* ===== SOLUCIÓN CORREGIDA ===== */
         .hero-video {
             position: absolute;
-            top: 0;
+            /* Se ajusta la posición superior para que comience debajo del header (h-20 = 5rem) */
+            top: 5rem; 
             left: 0;
             width: 100%;
-            height: 100%;
+            /* Se ajusta la altura para que ocupe el 100% del viewport menos la altura del header */
+            height: calc(100vh - 5rem);
             object-fit: cover;
             z-index: -1;
             filter: brightness(0.3);
@@ -121,14 +124,14 @@
         <!-- VISTA PRINCIPAL (CONTENEDOR) -->
         <div id="view-main">
             <!-- ===== Sección Héroe (Inicio) ===== -->
-            <!-- Modificado: el video ahora comienza debajo de la barra de navegación -->
-            <section id="inicio" class="relative min-h-screen text-center overflow-hidden pt-20">
+            <!-- Se elimina pt-20 de aquí, ya que el ajuste se hace directamente en el CSS del video -->
+            <section id="inicio" class="relative min-h-screen text-center overflow-hidden">
                  <video autoplay muted loop playsinline class="hero-video">
                     <!-- Video actualizado con el recurso de GitHub -->
                     <source src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/Animaci%C3%B3n_de_Realidad_Aumentada_Futurista.mp4" type="video/mp4">
                 </video>
-                <!-- Este div interno ahora centra el contenido -->
-                <div class="z-10 px-4 min-h-screen flex flex-col items-center justify-center text-center">
+                <!-- Este div interno ahora centra el contenido y aplica el padding-top -->
+                <div class="z-10 px-4 min-h-screen flex flex-col items-center justify-center pt-20 text-center">
                     <div> <!-- Contenedor extra para el contenido -->
                         <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-4">
                             Transformando la Realidad <br/> con <span class="text-cyan-400">Tecnología Inmersiva</span>
