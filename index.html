@@ -48,12 +48,12 @@
         /* ===== SOLUCIÓN CORREGIDA ===== */
         .hero-video {
             position: absolute;
-            /* Se ajusta la posición superior para que comience debajo del header (h-20 = 5rem) */
-            top: 5rem; 
+            /* Se aumenta la posición superior para dejar un margen debajo del header */
+            top: 6rem; /* Era 5rem, ahora es 6rem para bajarlo más */
             left: 0;
             width: 100%;
-            /* Se ajusta la altura para que ocupe el 100% del viewport menos la altura del header */
-            height: calc(100vh - 5rem);
+            /* Se ajusta la altura para que ocupe el 100% del viewport menos el nuevo espacio superior */
+            height: calc(100vh - 6rem); /* Era calc(100vh - 5rem) */
             object-fit: cover;
             z-index: -1;
             filter: brightness(0.3);
@@ -124,7 +124,6 @@
         <!-- VISTA PRINCIPAL (CONTENEDOR) -->
         <div id="view-main">
             <!-- ===== Sección Héroe (Inicio) ===== -->
-            <!-- Se elimina pt-20 de aquí, ya que el ajuste se hace directamente en el CSS del video -->
             <section id="inicio" class="relative min-h-screen text-center overflow-hidden">
                  <video autoplay muted loop playsinline class="hero-video">
                     <!-- Video actualizado con el recurso de GitHub -->
@@ -517,5 +516,4 @@ img.src = url;
     </script>
 </body>
 </html>
-
 
