@@ -124,7 +124,8 @@
             <!-- ===== Sección Héroe (Inicio) ===== -->
             <section id="inicio" class="relative min-h-screen flex items-center justify-center text-center overflow-hidden">
                  <video autoplay muted loop playsinline class="hero-video">
-                    <source src="https://assets.mixkit.co/videos/preview/mixkit-futuristic-circuit-board-and-data-processing-3D-animation-3170-large.mp4" type="video/mp4">
+                    <!-- Video actualizado con el recurso de GitHub -->
+                    <source src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/Animaci%C3%B3n_de_Realidad_Aumentada_Futurista.mp4" type="video/mp4">
                 </video>
                 <div class="z-10 px-4">
                     <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-4">
@@ -200,9 +201,22 @@
                         <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Convierta los materiales de estudio en experiencias vivas, interactivas e inolvidables.</p>
                         <button data-view="view-main" data-scroll="#servicios" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a Servicios</button>
                     </div>
+                    
+                    <!-- Video Destacado Educación -->
+                    <div class="mb-16">
+                        <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Video de Muestra: Sistema Solar AR</h2>
+                        <div class="aspect-video bg-slate-800 rounded-lg overflow-hidden shadow-lg">
+                            <video controls muted loop class="w-full h-full object-cover">
+                                <source src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/educacion/solar-AR.mp4" type="video/mp4">
+                                Su navegador no soporta el tag de video.
+                            </video>
+                        </div>
+                    </div>
+
+                    <!-- Galería Educación -->
                     <div class="space-y-12">
-                        <h2 class="text-3xl font-bold text-cyan-400 mb-4">Galería de Ejemplos Educativos</h2>
-                        <p class="text-lg text-gray-300 mb-6">Explore cómo la Realidad Aumentada puede transformar el aprendizaje en diversas materias. Haga clic en una imagen para verla en detalle.</p>
+                        <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Galería de Ejemplos Educativos</h2>
+                        <p class="text-lg text-gray-300 mb-6 text-center">Explore cómo la Realidad Aumentada puede transformar el aprendizaje. Haga clic en una imagen para verla.</p>
                         <div id="education-gallery" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
                     </div>
                 </div>
@@ -218,9 +232,22 @@
                         <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Cree campañas de marketing y materiales que sus clientes no solo verán, sino que experimentarán.</p>
                         <button data-view="view-main" data-scroll="#servicios" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a Servicios</button>
                     </div>
+
+                    <!-- Video Destacado Empresas -->
+                    <div class="mb-16">
+                        <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Marketing Interactivo</h2>
+                         <div class="aspect-video bg-slate-800 rounded-lg overflow-hidden shadow-lg">
+                            <video controls muted loop class="w-full h-full object-cover">
+                                <source src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/Animaci%C3%B3n_de_Hombre_y_Luna_M%C3%A1gica.mp4" type="video/mp4">
+                                Su navegador no soporta el tag de video.
+                            </video>
+                        </div>
+                    </div>
+
+                    <!-- Galería Empresas -->
                     <div class="space-y-12">
-                        <h2 class="text-3xl font-bold text-cyan-400 mb-4">Galería de Ejemplos Comerciales</h2>
-                        <p class="text-lg text-gray-300 mb-6">Vea cómo la AR puede dar vida a productos, empaques y publicidad. Haga clic en una imagen para verla en detalle.</p>
+                        <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Galería de Ejemplos Comerciales</h2>
+                        <p class="text-lg text-gray-300 mb-6 text-center">Vea cómo la AR puede dar vida a productos, empaques y publicidad. Haga clic en una imagen para verla.</p>
                         <div id="empresas-gallery" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
                     </div>
                 </div>
@@ -256,8 +283,16 @@
     </main>
 
     <footer class="bg-slate-900 border-t border-slate-800">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
-            <p>&copy; 2024 Propuesta AR. Todos los derechos reservados.</p>
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-gray-500">
+            <div class="flex flex-col sm:flex-row justify-between items-center">
+                <p class="mb-4 sm:mb-0">&copy; 2024 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v1.02</span></p>
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="hover:text-cyan-400 transition-colors">
+                        <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/insragram.png" alt="Instagram" class="h-6 w-6 opacity-75 hover:opacity-100">
+                    </a>
+                    <!-- Aquí se pueden agregar más redes sociales -->
+                </div>
+            </div>
         </div>
     </footer>
     
@@ -290,7 +325,10 @@
             window.scrollTo({ top: 0, behavior: 'instant' });
 
             if (targetViewId === 'view-main' && scrollTargetSelector) {
-                setTimeout(() => document.querySelector(scrollTargetSelector)?.scrollIntoView({ behavior: 'smooth' }), 0);
+                setTimeout(() => {
+                    const el = document.querySelector(scrollTargetSelector);
+                    if(el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 0);
             }
             updateActiveNav(targetViewId, scrollTargetSelector);
         }
@@ -315,7 +353,11 @@
                 link.classList.remove('active');
                 const linkView = link.dataset.view;
                 const linkScroll = link.dataset.scroll;
-                if (linkView === activeView || (activeView === 'view-main' && linkScroll === scrollTarget)) {
+                if (linkView === activeView && !linkScroll) { // Para enlaces directos a vistas (ej. Demo)
+                    link.classList.add('active');
+                } else if (activeView === 'view-main' && linkScroll === scrollTarget) { // Para anclas en la vista principal
+                     link.classList.add('active');
+                } else if (activeView === 'view-main' && !scrollTarget && linkScroll === '#inicio') { // Default a Inicio
                     link.classList.add('active');
                 }
             });
@@ -323,20 +365,31 @@
         
         const observer = new IntersectionObserver((entries) => {
             if (views['view-main'].classList.contains('hidden')) return;
-            let intersectingSectionId = null;
+            
+            let intersectingSection = null;
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    intersectingSectionId = `#${entry.target.getAttribute('id')}`;
+                    intersectingSection = entry.target;
                 }
             });
-            headerNavLinks.forEach(link => {
-                 link.classList.remove('active');
-                 if (link.dataset.scroll === intersectingSectionId) {
-                     link.classList.add('active');
-                 } else if (link.dataset.view === 'view-demo' && views['view-demo'].classList.contains('hidden') === false){
-                     link.classList.add('active');
-                 }
-            });
+
+            if (intersectingSection) {
+                 const id = intersectingSection.getAttribute('id');
+                 headerNavLinks.forEach(link => {
+                     link.classList.remove('active');
+                     if (link.dataset.scroll === `#${id}`) {
+                         link.classList.add('active');
+                     }
+                });
+            } else if (window.scrollY === 0) {
+                 headerNavLinks.forEach(link => {
+                     link.classList.remove('active');
+                     if (link.dataset.scroll === '#inicio') {
+                         link.classList.add('active');
+                     }
+                 });
+            }
+
         }, { rootMargin: '-40% 0px -60% 0px' });
         mainContentSections.forEach(section => observer.observe(section));
 
@@ -407,9 +460,30 @@
         }
 
         // --- INICIALIZAR LAS TRES GALERÍAS ---
+        const baseUrl = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/';
+        
         const demoImages = [ 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/cabeza1.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/corazon.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/dedo-mano.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/dedo.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/hueso-columna.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/huesosmano.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/mano-iz-protesis.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/protesis-mano-brazo.png' ];
-        const educationImages = [ 'https://placehold.co/400x400/0891b2/ffffff?text=Sistema+Solar', 'https://placehold.co/400x400/0891b2/ffffff?text=Célula+3D', 'https://placehold.co/400x400/0891b2/ffffff?text=Pirámides', 'https://placehold.co/400x400/0891b2/ffffff?text=Volcanes', 'https://placehold.co/400x400/0891b2/ffffff?text=Moléculas', 'https://placehold.co/400x400/0891b2/ffffff?text=Dinosaurio' ];
-        const empresasImages = [ 'https://placehold.co/400x400/be185d/ffffff?text=Mueble+AR', 'https://placehold.co/400x400/be185d/ffffff?text=Catálogo', 'https://placehold.co/400x400/be185d/ffffff?text=Empaque', 'https://placehold.co/400x400/be185d/ffffff?text=Tarjeta' ];
+        
+        const educationImages = [ 
+            baseUrl + 'educacion/SOL-OLMER.png',
+            baseUrl + 'educacion/celulas-olmer-01.png',
+            baseUrl + 'educacion/dinosaurios-olmer.png',
+            baseUrl + 'educacion/moleculas.png',
+            baseUrl + 'educacion/piramides-olmer.png',
+            baseUrl + 'educacion/volvan-olmler.png',
+            baseUrl + 'adn-cel-olmer.png'
+        ];
+        
+        const empresasImages = [ 
+            baseUrl + 'empresas/catalogo%201%20o%20mueble.png',
+            baseUrl + 'empresas/catalogo1.png',
+            baseUrl + 'empresas/catalogo2.png',
+            baseUrl + 'empresas/empaques.png',
+            baseUrl + 'empresas/magia-para-empresas.png',
+            baseUrl + 'empresas/muebles-AR.png',
+            baseUrl + 'empresas/targetas.png',
+            baseUrl + 'AR-OLMER.png'
+        ];
 
         setupInteractiveGallery('demo-gallery', 'demo-viewer', demoImages);
         setupInteractiveGallery('education-gallery', 'education-viewer', educationImages);
