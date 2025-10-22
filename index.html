@@ -16,8 +16,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Model Viewer para 3D -->
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <!-- Google Model Viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 
     <!-- Estilos personalizados -->
     <style>
@@ -85,6 +85,15 @@
         .viewer-img-content.dragging {
             cursor: grabbing;
         }
+
+        /* Estilo para los visores 3D */
+        model-viewer {
+            width: 100%;
+            height: 300px; /* Altura fija para cada visor */
+            background-color: #1e293b; /* Un fondo de slate más oscuro */
+            border-radius: 0.5rem; /* 8px */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -101,8 +110,9 @@
                     <a data-view="view-main" data-scroll="#inicio" class="nav-link text-sm font-medium">Inicio</a>
                     <a data-view="view-main" data-scroll="#servicios" class="nav-link text-sm font-medium">Servicios</a>
                     <a data-view="view-demo" class="nav-link text-sm font-medium">Demo</a>
+                    <!-- NUEVO ENLACE DE NAVEGACIÓN -->
+                    <a data-view="view-ingenieria" class="nav-link text-sm font-medium">Ingeniería</a>
                     <a data-view="view-main" data-scroll="#arquitectura" class="nav-link text-sm font-medium">Arquitectura</a>
-                    <a data-view="view-main" data-scroll="#ingenieria" class="nav-link text-sm font-medium">Ingeniería</a>
                     <a data-view="view-main" data-scroll="#contacto" class="nav-link text-sm font-medium">Contacto</a>
                 </nav>
                 <div class="flex md:hidden">
@@ -119,8 +129,9 @@
                 <a data-view="view-main" data-scroll="#inicio" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Inicio</a>
                 <a data-view="view-main" data-scroll="#servicios" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Servicios</a>
                 <a data-view="view-demo" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Demo</a>
+                <!-- NUEVO ENLACE DE NAVEGACIÓN MÓVIL -->
+                <a data-view="view-ingenieria" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Ingeniería</a>
                 <a data-view="view-main" data-scroll="#arquitectura" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Arquitectura</a>
-                <a data-view="view-main" data-scroll="#ingenieria" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Ingeniería</a>
                 <a data-view="view-main" data-scroll="#contacto" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Contacto</a>
             </div>
         </div>
@@ -143,7 +154,7 @@
                             Transformando la Realidad <br/> con <span class="text-cyan-400">Tecnología Inmersiva</span>
                         </h1>
                         <p class="max-w-3xl mx-auto text-lg md:text-xl text-gray-300 mb-8">
-                            Diseñamos experiencias de Realidad Aumentada a medida que revolucionan la educación, la publicidad y la industria.
+                            Diseñamos experiencias de Realidad Aumentada a medida que revolucionan la educación, la ingeniería, la publicidad y la industria.
                         </p>
                         <div class="space-x-4">
                             <a data-scroll="#servicios" href="#" class="inline-block bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg transition-transform duration-300 transform hover:scale-105 shadow-lg">
@@ -157,25 +168,37 @@
                 </div>
             </section>
 
-            <!-- ===== SERVICIOS ===== -->
-            <section id="servicios" class="py-24 bg-slate-900">
+            <!-- ===== SECCIÓN DE BANNERS DE INSTAGRAM REINTEGRADA ===== -->
+            <section id="instagram-banners" class="py-16 bg-slate-800/50">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="text-center mb-16">
-                        <h2 class="text-4xl font-bold text-white">Soluciones de Realidad Aumentada a Medida</h2>
-                        <p class="mt-4 text-lg text-gray-400">Creamos el futuro interactivo para su sector.</p>
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold text-white">Explora Nuestras Soluciones</h2>
+                        <p class="mt-2 text-lg text-gray-400">Descubre cómo estamos transformando cada sector.</p>
                     </div>
-                    <div class="grid md:grid-cols-3 gap-10">
-                        <a data-view="view-educacion" href="#" class="block glass-card rounded-xl p-8 transform hover:-translate-y-2 transition-transform duration-300">
-                            <h3 class="text-2xl font-bold text-white mb-4">AR para Educación</h3>
-                            <p class="text-gray-300">Transformamos libros y materiales de estudio en experiencias 3D interactivas. Fomentamos un aprendizaje inmersivo y memorable. Haga clic para ver ejemplos.</p>
+                    <!-- ACTUALIZADO A 3 COLUMNAS -->
+                    <div class="grid md:grid-cols-3 gap-8 items-center">
+                        <!-- Banner 1: Educación -->
+                        <a href="#" data-view="view-educacion" class="block group relative overflow-hidden rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300">
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para-educacion.png" alt="AR para Educación" class="w-full h-auto object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span class="text-white text-2xl font-bold">Ver Soluciones de Educación</span>
+                            </div>
                         </a>
-                        <a data-view="view-empresas" href="#" class="block glass-card rounded-xl p-8 transform hover:-translate-y-2 transition-transform duration-300">
-                            <h3 class="text-2xl font-bold text-white mb-4">AR para Empresas</h3>
-                            <p class="text-gray-300">Revolucione su marketing con tarjetas, folletos y pancartas interactivas. Capture la atención de sus clientes. Haga clic para ver ejemplos.</p>
+
+                        <!-- Banner 2: Empresas -->
+                        <a href="#" data-view="view-empresas" class="block group relative overflow-hidden rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300">
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para-empresas.png" alt="AR para Empresas" class="w-full h-auto object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span class="text-white text-2xl font-bold">Ver Soluciones de Empresas</span>
+                            </div>
                         </a>
-                        <a data-view="view-ingenieria" href="#" class="block glass-card rounded-xl p-8 transform hover:-translate-y-2 transition-transform duration-300">
-                            <h3 class="text-2xl font-bold text-white mb-4">AR para Ingeniería</h3>
-                            <p class="text-gray-300">Visualice y analice modelos 3D complejos en tu entorno. Optimiza el diseño y el prototipado de tus proyectos. Haga clic para ver ejemplos.</p>
+                        
+                        <!-- NUEVO BANNER 3: Ingeniería -->
+                        <a href="#" data-view="view-ingenieria" class="block group relative overflow-hidden rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300">
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para-inegnieria.png" alt="AR para Ingeniería" class="w-full h-auto object-cover"> <!-- Corregido a 'inegnieria' como en el repo -->
+                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span class="text-white text-2xl font-bold">Ver Soluciones de Ingeniería</span>
+                            </div>
                         </a>
                     </div>
                 </div>
@@ -186,37 +209,6 @@
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 class="text-4xl font-bold text-white">AR e IA para Arquitectura</h2>
                     <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Próximamente: una plataforma revolucionaria para visualizar proyectos sobre el terreno y realizar seguimiento de obras en tiempo real.</p>
-                </div>
-            </section>
-
-            <!-- ===== INGENIERÍA ===== -->
-            <section id="ingenieria" class="py-24">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 class="text-4xl font-bold text-white">AR para Ingeniería</h2>
-                    <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Potencia tus proyectos con visualización 3D inmersiva. Desde componentes mecánicos hasta ensamblajes complejos, lleva tus diseños al mundo real.</p>
-                </div>
-            </section>
-
-            <!-- ===== SECCIÓN BANNERS DE INSTAGRAM (MOVIDA AQUÍ) ===== -->
-            <section id="instagram-banners" class="py-16 bg-slate-800/50">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <!-- Banner 1: Educación -->
-                        <a href="#" data-view="view-educacion" class="block group relative overflow-hidden rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300">
-                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/insragram.png" alt="Proyectos de Educación en Instagram" class="w-full h-auto object-cover">
-                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <span class="text-white text-2xl font-bold">Ver Proyectos de Educación</span>
-                            </div>
-                        </a>
-
-                        <!-- Banner 2: Empresas -->
-                        <a href="#" data-view="view-empresas" class="block group relative overflow-hidden rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300">
-                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/instagram2.png" alt="Proyectos de Empresas en Instagram" class="w-full h-auto object-cover">
-                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <span class="text-white text-2xl font-bold">Ver Proyectos de Empresas</span>
-                            </div>
-                        </a>
-                    </div>
                 </div>
             </section>
 
@@ -389,93 +381,164 @@
             </section>
         </div>
 
-        <!-- VISTA INGENIERÍA (NUEVA) -->
+        <!-- ===== NUEVA VISTA: INGENIERÍA ===== -->
         <div id="view-ingenieria" class="hidden pt-20">
             <section class="py-16 sm:py-24">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"> <!-- Contenedor más ancho -->
                     <div class="text-center mb-16">
                         <h1 class="text-4xl sm:text-5xl font-bold text-white">AR para Ingeniería</h1>
-                        <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Generamos tu modelo 3D profesional de ingeniería para desarrollar tus grandes proyectos y proyectos personales.</p>
+                        <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Modelado 3D para <span class="text-cyan-400 font-semibold">ingeniería biomédica, mecánica y civil</span>. Visualice prototipos, modelos anatómicos y prótesis interactivas.</p>
                         <button data-view="view-main" data-scroll="#servicios" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a Servicios</button>
                     </div>
 
-                    <!-- Galería de Modelos 3D -->
+                    <!-- Galería de Modelos 3D para Ingeniería -->
                     <div class="space-y-12">
-                        <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Nuestros Modelos 3D de Ingeniería</h2>
-                        <p class="text-lg text-gray-300 mb-6 text-center">Interactúa con nuestros modelos 3D. Usa el ratón para rotar, acercar y explorar cada detalle.</p>
+                        <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Galería de Modelos 3D</h2>
+                        <p class="text-lg text-gray-300 mb-10 text-center">Explore nuestros modelos 3D. Use el mouse o el dedo para rotar, mover y hacer zoom.</p>
+                        
+                        <!-- Rejilla para los 15 modelos -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            <!-- Modelo 1 -->
-                            <div class="glass-card rounded-xl p-6">
-                                <model-viewer 
-                                    src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/bomba-atomica.glb" 
-                                    alt="Bomba Atómica 3D"
-                                    camera-controls 
-                                    auto-rotate 
-                                    ar 
-                                    ar-modes="webxr scene-viewer quick-look" 
-                                    shadow-intensity="1" 
-                                    style="width: 100%; height: 400px; border-radius: 8px;">
-                                </model-viewer>
-                                <h3 class="text-xl font-semibold text-white mt-4 text-center">Bomba Atómica</h3>
+                            
+                            <!-- Modelo 1: Robonaut-2.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/Robonaut-2.glb" 
+                                              alt="Modelo de robot humanoide" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">Robonaut-2.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo de robot humanoide, ideal para simulaciones espaciales o educativas.</p>
                             </div>
-                            <!-- Modelo 2 -->
-                            <div class="glass-card rounded-xl p-6">
-                                <model-viewer 
-                                    src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/motor-automovil.glb" 
-                                    alt="Motor de Automóvil 3D"
-                                    camera-controls 
-                                    auto-rotate 
-                                    ar 
-                                    ar-modes="webxr scene-viewer quick-look" 
-                                    shadow-intensity="1" 
-                                    style="width: 100%; height: 400px; border-radius: 8px;">
-                                </model-viewer>
-                                <h3 class="text-xl font-semibold text-white mt-4 text-center">Motor de Automóvil</h3>
+
+                            <!-- Modelo 2: Wrench.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/Wrench.glb" 
+                                              alt="Modelo de una herramienta tipo llave inglesa" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">Wrench.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo de una herramienta tipo llave inglesa; útil para demos de mantenimiento o ingeniería.</p>
                             </div>
-                            <!-- Modelo 3 -->
-                            <div class="glass-card rounded-xl p-6">
-                                <model-viewer 
-                                    src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/motor-avion.glb" 
-                                    alt="Motor de Avión 3D"
-                                    camera-controls 
-                                    auto-rotate 
-                                    ar 
-                                    ar-modes="webxr scene-viewer quick-look" 
-                                    shadow-intensity="1" 
-                                    style="width: 100%; height: 400px; border-radius: 8px;">
-                                </model-viewer>
-                                <h3 class="text-xl font-semibold text-white mt-4 text-center">Motor de Avión</h3>
+
+                            <!-- Modelo 3: antena.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/antena.glb" 
+                                              alt="Modelo de una antena" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">antena.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo de una antena, posible componente para maquetas tecnológicas o telecomunicaciones.</p>
                             </div>
-                            <!-- Modelo 4 -->
-                            <div class="glass-card rounded-xl p-6">
-                                <model-viewer 
-                                    src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/turbina-avion.glb" 
-                                    alt="Turbina de Avión 3D"
-                                    camera-controls 
-                                    auto-rotate 
-                                    ar 
-                                    ar-modes="webxr scene-viewer quick-look" 
-                                    shadow-intensity="1" 
-                                    style="width: 100%; height: 400px; border-radius: 8px;">
-                                </model-viewer>
-                                <h3 class="text-xl font-semibold text-white mt-4 text-center">Turbina de Avión</h3>
+
+                            <!-- Modelo 4: astronauta.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/astronauta.glb" 
+                                              alt="Figura 3D de un astronauta" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">astronauta.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Figura 3D de un astronauta, ideal para escenarios espaciales y educativos.</p>
                             </div>
-                            <!-- Modelo 5 -->
-                            <div class="glass-card rounded-xl p-6">
-                                <model-viewer 
-                                    src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/valvula-esfera.glb" 
-                                    alt="Válvula de Esfera 3D"
-                                    camera-controls 
-                                    auto-rotate 
-                                    ar 
-                                    ar-modes="webxr scene-viewer quick-look" 
-                                    shadow-intensity="1" 
-                                    style="width: 100%; height: 400px; border-radius: 8px;">
-                                </model-viewer>
-                                <h3 class="text-xl font-semibold text-white mt-4 text-center">Válvula de Esfera</h3>
+
+                            <!-- Modelo 5: cabeza1.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/cabeza1.glb" 
+                                              alt="Modelo simple de una cabeza humana" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">cabeza1.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo simple de una cabeza humana, utilizable en anatomía o reconocimiento facial.</p>
                             </div>
+
+                            <!-- Modelo 6: corazon.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/corazon.glb" 
+                                              alt="Modelo anatómico de un corazón humano" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">corazon.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo anatómico de un corazón humano.</p>
+                            </div>
+
+                            <!-- Modelo 7: dedo-mano.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/dedo-mano.glb" 
+                                              alt="Representación detallada de un dedo de la mano" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">dedo-mano.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Representación detallada de un dedo de la mano.</p>
+                            </div>
+
+                            <!-- Modelo 8: dedo.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/dedo.glb" 
+                                              alt="Modelo alternativo de dedo" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">dedo.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo alternativo de dedo, útil para estudios anatómicos o animaciones.</p>
+                            </div>
+
+                            <!-- Modelo 9: espectograma.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/espectograma.glb" 
+                                              alt="Modelo de espectrograma" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">espectograma.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo de espectrograma, útil para visualizar datos de sonido o vibraciones.</p>
+                            </div>
+
+                            <!-- Modelo 10: hueso-columna.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/hueso-columna.glb" 
+                                              alt="Parte de la columna vertebral" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">hueso-columna.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Parte de la columna vertebral, esencial para aplicaciones educativas en biología.</p>
+                            </div>
+
+                            <!-- Modelo 11: huesosmano.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/huesosmano.glb" 
+                                              alt="Modelo esquelético de la mano humana" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">huesosmano.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo esquelético de la mano humana.</p>
+                            </div>
+
+                            <!-- Modelo 12: mano-iz-protesis.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/mano-iz-protesis.glb" 
+                                              alt="Modelo de una mano izquierda con prótesis" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">mano-iz-protesis.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo de una mano izquierda con prótesis, ideal para proyectos inclusivos y médicos.</p>
+                            </div>
+
+                            <!-- Modelo 13: protesis-mano-brazo.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/protesis-mano-brazo.glb" 
+                                              alt="Prótesis completa de mano y brazo" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">protesis-mano-brazo.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Prótesis completa de mano y brazo para simulaciones biomecánicas.</p>
+                            </div>
+
+                            <!-- Modelo 14: super-nova-o-proteina.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/super-nova-o-proteina.glb" 
+                                              alt="Modelo abstracto; supernova o proteina" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">super-nova-o-proteina.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo abstracto; podría representar una supernova o estructura proteica.</p>
+                            </div>
+
+                            <!-- Modelo 15: vehiculo1.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/vehiculo1.glb" 
+                                              alt="Modelo 3D de un vehículo" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">vehiculo1.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo 3D de un vehículo, adecuado para simulación de transporte o robótica.</p>
+                            </div>
+
                         </div>
                     </div>
+
+                    <!-- ===== BLOQUE DE INSTAGRAM ELIMINADO ===== -->
+                    
                 </div>
             </section>
         </div>
@@ -486,7 +549,7 @@
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16">
                         <h1 class="text-4xl sm:text-5xl font-bold text-white">Pruebe Nuestro Prototipo</h1>
-                        <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Siga estos pasos para experimentar una muestra de lo que podemos crear.</p>
+                        <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Siga estos pasos para experimentar una muestra de lo que podemos crear (enfocado en modelos de ingeniería biomédica).</p>
                         <button data-view="view-main" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a la página principal</button>
                     </div>
                     <div class="bg-slate-900 rounded-xl shadow-lg p-8 md:p-12">
@@ -518,6 +581,7 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="https://www.instagram.com/f.ecopiensa_evolution/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors">
+                        <!-- Ruta de imagen verificada y correcta -->
                         <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/insragram.png" alt="Instagram" class="h-6 w-6 opacity-75 hover:opacity-100">
                     </a>
                 </div>
@@ -529,6 +593,7 @@
     <div id="demo-viewer" class="image-viewer-modal fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"></div>
     <div id="education-viewer" class="image-viewer-modal fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"></div>
     <div id="empresas-viewer" class="image-viewer-modal fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"></div>
+    <!-- MODAL DE INGENIERÍA ELIMINADO -->
     
     <!-- JavaScript -->
     <script>
@@ -537,8 +602,9 @@
             'view-main': document.getElementById('view-main'),
             'view-educacion': document.getElementById('view-educacion'),
             'view-empresas': document.getElementById('view-empresas'),
-            'view-ingenieria': document.getElementById('view-ingenieria'),
-            'view-demo': document.getElementById('view-demo')
+            'view-demo': document.getElementById('view-demo'),
+            // NUEVA VISTA AÑADIDA
+            'view-ingenieria': document.getElementById('view-ingenieria')
         };
         const allNavLinks = document.querySelectorAll('a[data-view], button[data-view], a[data-scroll]');
         const mainContentSections = document.querySelectorAll('#view-main section');
@@ -605,12 +671,12 @@
 
             if (intersectingSection) {
                  const id = intersectingSection.getAttribute('id');
-                 headerNavLinks.forEach(link => {
+                  headerNavLinks.forEach(link => {
                      link.classList.remove('active');
                      if (link.dataset.scroll === `#${id}`) {
                          link.classList.add('active');
                      }
-                });
+                 });
             } else if (window.scrollY === 0) {
                  headerNavLinks.forEach(link => {
                      link.classList.remove('active');
@@ -696,7 +762,17 @@
         // URLs de imágenes
         const baseUrl = 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/';
         
-        const demoImages = [ 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/cabeza1.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/corazon.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/dedo-mano.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/dedo.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/hueso-columna.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/huesosmano.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/mano-iz-protesis.png', 'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/protesis-mano-brazo.png' ];
+        // Estas son las imágenes de los marcadores de la demo.
+        const demoImages = [ 
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/cabeza1.png', 
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/corazon.png', 
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/dedo-mano.png', 
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/dedo.png', 
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/hueso-columna.png', 
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/huesosmano.png', 
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/mano-iz-protesis.png', 
+            'https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/protesis-mano-brazo.png' 
+        ];
         
         const educationImages = [ 
             baseUrl + 'educacion/SOL-OLMER.png',
@@ -719,6 +795,7 @@
             baseUrl + 'AR-OLMER.png'
         ];
 
+        // Se configuran las 3 galerías restantes
         setupInteractiveGallery('demo-gallery', 'demo-viewer', demoImages);
         setupInteractiveGallery('education-gallery', 'education-viewer', educationImages);
         setupInteractiveGallery('empresas-gallery', 'empresas-viewer', empresasImages);
@@ -726,3 +803,6 @@
     </script>
 </body>
 </html>
+
+
+
