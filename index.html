@@ -172,6 +172,33 @@
                 </div>
             </section>
 
+            <!-- ===== NUEVA SECCIÓN: BANNERS DE INSTAGRAM ===== -->
+            <section id="instagram-banners" class="py-16 bg-slate-800/50">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold text-white">Explora Nuestros Proyectos en Instagram</h2>
+                        <p class="mt-2 text-lg text-gray-400">Descubre cómo estamos transformando la educación y las empresas.</p>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <!-- Banner 1: Educación -->
+                        <a href="#" data-view="view-educacion" class="block group relative overflow-hidden rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300">
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/insragram.png" alt="Proyectos de Educación en Instagram" class="w-full h-auto object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span class="text-white text-2xl font-bold">Ver Proyectos de Educación</span>
+                            </div>
+                        </a>
+
+                        <!-- Banner 2: Empresas -->
+                        <a href="#" data-view="view-empresas" class="block group relative overflow-hidden rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300">
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/instagram2.png" alt="Proyectos de Empresas en Instagram" class="w-full h-auto object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span class="text-white text-2xl font-bold">Ver Proyectos de Empresas</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
             <!-- ===== ARQUITECTURA ===== -->
             <section id="arquitectura" class="py-24">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -296,6 +323,15 @@
                         <p class="text-lg text-gray-300 mb-6 text-center">Explore cómo la Realidad Aumentada puede transformar el aprendizaje. Haga clic en una imagen para verla.</p>
                         <div id="education-gallery" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
                     </div>
+
+                    <!-- ===== BLOQUE DE INSTAGRAM PARA EDUCACIÓN (SIN ENLACE) ===== -->
+                    <div class="mt-16 text-center">
+                        <p class="text-lg text-cyan-400 font-semibold mb-4">Síguenos en Instagram para más contenido educativo</p>
+                        <div class="inline-block transform hover:scale-105 transition-transform duration-300">
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/insragram.png" alt="Síguenos en Instagram - Propuesta AR Educación" class="w-64 md:w-80 rounded-lg shadow-lg object-cover">
+                        </div>
+                        <p class="mt-4 text-sm text-gray-400">Descubre más ejemplos y novedades</p>
+                    </div>
                 </div>
             </section>
         </div>
@@ -326,6 +362,15 @@
                         <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Galería de Ejemplos Comerciales</h2>
                         <p class="text-lg text-gray-300 mb-6 text-center">Vea cómo la AR puede dar vida a productos, empaques y publicidad. Haga clic en una imagen para verla.</p>
                         <div id="empresas-gallery" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+                    </div>
+
+                    <!-- ===== BLOQUE DE INSTAGRAM PARA EMPRESAS (SIN ENLACE) ===== -->
+                    <div class="mt-16 text-center">
+                        <p class="text-lg text-cyan-400 font-semibold mb-4">Impulsa tu marca en Instagram</p>
+                        <div class="inline-block transform hover:scale-105 transition-transform duration-300">
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/instagram2.png" alt="Síguenos en Instagram - Propuesta AR Empresas" class="w-64 md:w-80 rounded-lg shadow-lg object-cover">
+                        </div>
+                        <p class="mt-4 text-sm text-gray-400">Conoce nuestras soluciones para negocios</p>
                     </div>
                 </div>
             </section>
@@ -359,11 +404,14 @@
         </div>
     </main>
 
-    <!-- FOOTER -->
+    <!-- FOOTER ACTUALIZADO -->
     <footer class="bg-slate-900 border-t border-slate-800">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-gray-500">
             <div class="flex flex-col sm:flex-row justify-between items-center">
-                <p class="mb-4 sm:mb-0">&copy; 2024 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v1.05</span></p>
+                <div class="flex items-center mb-4 sm:mb-0">
+                    <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación Ecopiensa Evolution" class="h-8 w-8 rounded-full mr-3">
+                    <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v1.05</span></p>
+                </div>
                 <div class="flex items-center space-x-4">
                     <a href="https://www.instagram.com/f.ecopiensa_evolution/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors">
                         <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/insragram.png" alt="Instagram" class="h-6 w-6 opacity-75 hover:opacity-100">
