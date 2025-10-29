@@ -660,6 +660,33 @@
                 </div>
             </section>
         </div>
+        
+        <!-- VISTA DEMO -->
+        <div id="view-demo" class="hidden pt-20">
+            <section class="py-16 sm:py-24">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16">
+                        <h1 class="text-4xl sm:text-5xl font-bold text-white">Pruebe Nuestro Prototipo</h1>
+                        <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Siga estos pasos para experimentar una muestra de lo que podemos crear (enfocado en modelos de ingeniería biomédica).</p>
+                        <button data-view="view-main" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a la página principal</button>
+                    </div>
+                    <div class="bg-slate-900 rounded-xl shadow-lg p-8 md:p-12">
+                        <div class="grid md:grid-cols-2 gap-12 items-center">
+                            <div class="text-center md:text-left">
+                                <h2 class="text-3xl font-bold text-cyan-400 mb-2">1. Descargue la App</h2>
+                                <p class="text-gray-300 mb-6">Instale la aplicación en su dispositivo Android.<br><span class="text-sm text-gray-500">Recuerde habilitar "Instalar desde fuentes desconocidas".</span></p>
+                                <a href="https://github.com/instructorandradedcc/propuesta-AR/raw/main/Propuesta_Salud_AR_v1.0.0.apk" download class="inline-block bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-3 px-8 rounded-lg">Descargar APK</a>
+                            </div>
+                            <div>
+                                <h2 class="text-3xl font-bold text-cyan-400 mb-2 text-center md:text-left">2. Use los Marcadores</h2>
+                                <p class="text-gray-400 mb-6 text-center md:text-left">Abra la app y apunte su cámara a estas imágenes. Haga clic para verlas en grande.</p>
+                                <div id="demo-gallery" class="grid grid-cols-3 md:grid-cols-4 gap-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
 
     <!-- FOOTER ACTUALIZADO -->
@@ -668,7 +695,8 @@
             <div class="flex flex-col sm:flex-row justify-between items-center">
                 <div class="flex items-center mb-4 sm:mb-0">
                     <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación Ecopiensa Evolution" class="h-8 w-8 rounded-full mr-3">
-                    <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v1.06</span></p> <!-- Versión incrementada -->
+                    <!-- NOTA DE VERSIÓN: Incrementar en 0.01 con cada cambio, corrección o mejora. -->
+                    <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v0.01</span></p>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="https://www.instagram.com/f.ecopiensa_evolution/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors">
