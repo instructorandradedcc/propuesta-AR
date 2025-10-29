@@ -226,6 +226,8 @@
                                 <p class="text-gray-300 text-sm">Visualice y analice modelos 3D complejos en tu entorno. Optimiza el diseño y el prototipado de tus proyectos. Haga clic para ver ejemplos.</p>
                             </div>
                         </a>
+
+                        <!-- ===== TARJETA DE ANATOMÍA ELIMINADA DE ESTA SECCIÓN ===== -->
                         
                     </div>
                 </div>
@@ -392,7 +394,7 @@
         <div id="view-empresas" class="hidden pt-20">
             <section class="py-16 sm:py-24">
                 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                       <div class="text-center mb-16">
+                        <div class="text-center mb-16">
                             <h1 class="text-4xl sm:text-5xl font-bold text-white">AR para Empresas</h1>
                             <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Cree campañas de marketing y materiales que sus clientes no solo verán, sino que experimentarán.</p>
                             <button data-view="view-main" data-scroll="#instagram-banners" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a Servicios</button>
@@ -401,7 +403,7 @@
                     <!-- Video Empresas -->
                     <div class="mb-16">
                         <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Marketing Interactivo</h2>
-                           <div class="aspect-video bg-slate-800 rounded-lg overflow-hidden shadow-lg">
+                            <div class="aspect-video bg-slate-800 rounded-lg overflow-hidden shadow-lg">
                                 <video controls muted loop class="w-full h-full object-cover">
                                     <source src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/Animaci%C3%B3n_de_Hombre_y_Luna_M%C3%A1gica.mp4" type="video/mp4">
                                     Su navegador no soporta el tag de video.
@@ -543,6 +545,33 @@
                         <button data-view="view-main" data-scroll="#instagram-banners" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a Servicios</button>
                     </div>
 
+                    <!-- Sección para Cargar Modelo Individual -->
+                    <div class="mb-24">
+                        <h2 class="text-3xl font-bold text-cyan-400 mb-6 text-center">Cargador de Modelos 3D</h2>
+                        <div class="max-w-3xl mx-auto glass-card rounded-xl p-8">
+                            <p class="text-gray-300 mb-4 text-center">Pegue la URL de un modelo 3D (.glb o .gltf) para cargarlo en el visor.</p>
+                            <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                                <input type="text" id="model-url-input" placeholder="https://.../mi-modelo.glb" class="flex-grow w-full bg-slate-800 border-slate-700 text-white rounded-md p-3 focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                                <button id="load-model-button" class="bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-3 px-6 rounded-lg transition-colors duration-300">Cargar Modelo</button>
+                            </div>
+                            <p id="model-load-error" class="text-red-400 text-sm text-center hidden">Por favor, ingrese una URL válida.</p>
+                            
+                            <!-- Visor Individual -->
+                            <div class="mt-6">
+                                <model-viewer id="anatomy-model-viewer" 
+                                              src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/corazon.glb" 
+                                              alt="Visor de modelo anatómico individual"
+                                              ar camera-controls auto-rotate shadow-intensity="1"
+                                              class="h-[500px]">
+                                    <!-- Mensaje de Carga -->
+                                    <div class="text-center text-gray-400" slot="progress-bar">
+                                        Cargando modelo...
+                                    </div>
+                                </model-viewer>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Galería de Modelos 3D de Anatomía -->
                     <div class="space-y-12">
                         <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Galería de Anatomía</h2>
@@ -604,7 +633,9 @@
                                 <p class="text-gray-300 text-sm flex-grow">Modelo esquelético de la mano humana.</p>
                             </div>
 
-                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                            <!-- ===== INICIO DE LOS 33 NUEVOS MODELOS DE ANATOMÍA ===== -->
+
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/abdomen_anatomy.glb" alt="Anatomía del abdomen" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">abdomen_anatomy.glb</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de la anatomía del abdomen.</p>
@@ -802,7 +833,7 @@
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del hueso vómer.</p>
                             </div>
 
-                                                        
+                            <!-- ===== FIN DE LOS NUEVOS MODELOS ===== -->
 
                         </div>
                     </div>
@@ -845,7 +876,7 @@
                 <div class="flex items-center mb-4 sm:mb-0">
                     <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación Ecopiensa Evolution" class="h-8 w-8 rounded-full mr-3">
                     <!-- NOTA DE VERSIÓN: Incrementar en 0.01 con cada cambio, corrección o mejora. -->
-                    <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v0.03</span></p>
+                    <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v0.04</span></p>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="https://www.instagram.com/f.ecopiensa_evolution/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors">
@@ -939,19 +970,19 @@
 
             if (intersectingSection) {
                  const id = intersectingSection.getAttribute('id');
-                  headerNavLinks.forEach(link => {
-                       link.classList.remove('active');
-                       if (link.dataset.scroll === `#${id}`) {
-                           link.classList.add('active');
-                       }
-                  });
+                 headerNavLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.dataset.scroll === `#${id}`) {
+                            link.classList.add('active');
+                        }
+                 });
             } else if (window.scrollY === 0) {
                  headerNavLinks.forEach(link => {
-                       link.classList.remove('active');
-                       if (link.dataset.scroll === '#inicio') {
-                           link.classList.add('active');
-                       }
-                  });
+                        link.classList.remove('active');
+                        if (link.dataset.scroll === '#inicio') {
+                            link.classList.add('active');
+                        }
+                 });
             }
 
         }, { rootMargin: '-40% 0px -60% 0px' });
