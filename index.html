@@ -94,6 +94,12 @@
             border-radius: 0.5rem; /* 8px */
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        
+        /* Estilo para el visor individual de anatomía */
+        #anatomy-model-viewer {
+            height: 500px; /* Más alto para la vista individual */
+            background-color: #0a192f; /* Fondo más oscuro para destacar */
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -108,11 +114,11 @@
                 </div>
                 <nav class="hidden md:flex items-baseline space-x-8">
                     <a data-view="view-main" data-scroll="#inicio" class="nav-link text-sm font-medium">Inicio</a>
-                    <!-- CAMBIO: data-scroll="#servicios" a data-scroll="#instagram-banners" -->
                     <a data-view="view-main" data-scroll="#instagram-banners" class="nav-link text-sm font-medium">Servicios</a>
                     <a data-view="view-demo" class="nav-link text-sm font-medium">Demo</a>
-                    <!-- NUEVO ENLACE DE NAVEGACIÓN -->
                     <a data-view="view-ingenieria" class="nav-link text-sm font-medium">Ingeniería</a>
+                    <!-- NUEVO ENLACE DE NAVEGACIÓN: ANATOMÍA -->
+                    <a data-view="view-anatomia" class="nav-link text-sm font-medium">Anatomía</a>
                     <a data-view="view-main" data-scroll="#arquitectura" class="nav-link text-sm font-medium">Arquitectura</a>
                     <a data-view="view-main" data-scroll="#contacto" class="nav-link text-sm font-medium">Contacto</a>
                 </nav>
@@ -128,11 +134,11 @@
         <div class="md:hidden hidden" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a data-view="view-main" data-scroll="#inicio" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Inicio</a>
-                <!-- CAMBIO: data-scroll="#servicios" a data-scroll="#instagram-banners" -->
                 <a data-view="view-main" data-scroll="#instagram-banners" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Servicios</a>
                 <a data-view="view-demo" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Demo</a>
-                <!-- NUEVO ENLACE DE NAVEGACIÓN MÓVIL -->
                 <a data-view="view-ingenieria" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Ingeniería</a>
+                <!-- NUEVO ENLACE DE NAVEGACIÓN MÓVIL: ANATOMÍA -->
+                <a data-view="view-anatomia" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Anatomía</a>
                 <a data-view="view-main" data-scroll="#arquitectura" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Arquitectura</a>
                 <a data-view="view-main" data-scroll="#contacto" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Contacto</a>
             </div>
@@ -159,11 +165,9 @@
                             Diseñamos experiencias de Realidad Aumentada a medida que revolucionan la educación, la ingeniería, la publicidad y la industria.
                         </p>
                         <div class="space-x-4">
-                            <!-- CAMBIO: data-scroll, clases y tamaño -->
                             <a data-scroll="#instagram-banners" href="#" class="inline-block bg-transparent border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-gray-900 font-bold py-4 px-10 rounded-lg text-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
                                 Nuestros Servicios
                             </a>
-                            <!-- CAMBIO: clases y tamaño -->
                             <a data-view="view-demo" href="#" class="inline-block bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-4 px-10 rounded-lg text-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-cyan-500/50">
                                 Probar Demo
                             </a>
@@ -180,11 +184,11 @@
                         <p class="mt-2 text-lg text-gray-400">Descubre cómo estamos transformando cada sector.</p>
                     </div>
                     <!-- ACTUALIZADO A 3 COLUMNAS CON TARJETAS COMPLETAS Y ALINEADAS -->
-                    <div class="grid md:grid-cols-3 gap-8 items-stretch"> <!-- CAMBIO: items-start a items-stretch -->
+                    <div class="grid md:grid-cols-3 gap-8 items-stretch">
                         <!-- Banner 1: Educación -->
-                        <a href="#" data-view="view-educacion" class="block group rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden glass-card flex flex-col"> <!-- CAMBIO: añadido flex flex-col -->
-                            <div class="relative overflow-hidden aspect-[4/5]"> <!-- CAMBIO: añadido aspect-[4/5] -->
-                                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para-educacion.png" alt="AR para Educación" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"> <!-- CAMBIO: h-auto a h-full -->
+                        <a href="#" data-view="view-educacion" class="block group rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden glass-card flex flex-col">
+                            <div class="relative overflow-hidden aspect-[4/5]">
+                                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para-educacion.png" alt="AR para Educación" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
                                 <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <span class="text-white text-xl font-bold text-center p-4">Ver Soluciones de Educación</span>
                                 </div>
@@ -196,9 +200,9 @@
                         </a>
 
                         <!-- Banner 2: Empresas -->
-                        <a href="#" data-view="view-empresas" class="block group rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden glass-card flex flex-col"> <!-- CAMBIO: añadido flex flex-col -->
-                            <div class="relative overflow-hidden aspect-[4/5]"> <!-- CAMBIO: añadido aspect-[4/5] -->
-                                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para%20empresas.png" alt="AR para Empresas" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"> <!-- CAMBIO: h-auto a h-full -->
+                        <a href="#" data-view="view-empresas" class="block group rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden glass-card flex flex-col">
+                            <div class="relative overflow-hidden aspect-[4/5]">
+                                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para%20empresas.png" alt="AR para Empresas" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
                                 <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <span class="text-white text-xl font-bold text-center p-4">Ver Soluciones de Empresas</span>
                                 </div>
@@ -210,9 +214,9 @@
                         </a>
                         
                         <!-- NUEVO BANNER 3: Ingeniería -->
-                        <a href="#" data-view="view-ingenieria" class="block group rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden glass-card flex flex-col"> <!-- CAMBIO: añadido flex flex-col -->
-                            <div class="relative overflow-hidden aspect-[4/5]"> <!-- CAMBIO: añadido aspect-[4/5] -->
-                                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para-inegnieria.png" alt="AR para Ingeniería" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"> <!-- CAMBIO: h-auto a h-full -->
+                        <a href="#" data-view="view-ingenieria" class="block group rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden glass-card flex flex-col">
+                            <div class="relative overflow-hidden aspect-[4/5]">
+                                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para-inegnieria.png" alt="AR para Ingeniería" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
                                 <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <span class="text-white text-xl font-bold text-center p-4">Ver Soluciones de Ingeniería</span>
                                 </div>
@@ -222,6 +226,9 @@
                                 <p class="text-gray-300 text-sm">Visualice y analice modelos 3D complejos en tu entorno. Optimiza el diseño y el prototipado de tus proyectos. Haga clic para ver ejemplos.</p>
                             </div>
                         </a>
+
+                        <!-- ===== TARJETA DE ANATOMÍA ELIMINADA DE ESTA SECCIÓN ===== -->
+                        
                     </div>
                 </div>
             </section>
@@ -317,7 +324,6 @@
                     <div class="text-center mb-16">
                         <h1 class="text-4xl sm:text-5xl font-bold text-white">AR para Educación</h1>
                         <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Creamos soluciones para <span class="text-cyan-400 font-semibold">colegios y universidades</span>, convirtiendo materiales de estudio en experiencias vivas, interactivas e inolvidables.</p>
-                        <!-- CAMBIO: data-scroll="#servicios" a data-scroll="#instagram-banners" -->
                         <button data-view="view-main" data-scroll="#instagram-banners" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a Servicios</button>
                     </div>
 
@@ -352,6 +358,26 @@
                         <div id="education-gallery" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
                     </div>
 
+                    <!-- ===== NUEVA SECCIÓN: TARJETA DE ANATOMÍA (MOVIDA AQUÍ) ===== -->
+                    <div class="mt-16">
+                        <h2 class="text-3xl font-bold text-cyan-400 mb-6 text-center">Recurso Adicional: Anatomía 3D</h2>
+                        <div class="max-w-md mx-auto">
+                            <!-- Esta es la tarjeta que movimos -->
+                            <a href="#" data-view="view-anatomia" class="block group rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden glass-card flex flex-col">
+                                <div class="relative overflow-hidden aspect-[4/5]">
+                                    <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/adn-cel-olmer.png" alt="AR para Anatomía" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <span class="text-white text-xl font-bold text-center p-4">Explorar Anatomía 3D</span>
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <h3 class="text-2xl font-bold text-white mb-4">Galería de Anatomía</h3>
+                                    <p class="text-gray-300 text-sm">Explore modelos anatómicos 3D interactivos. Cargue sus propios modelos o explore nuestra galería. Ideal para estudiantes y profesionales de la salud.</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
                     <!-- ===== BLOQUE DE INSTAGRAM PARA EDUCACIÓN (SIN ENLACE) ===== -->
                     <div class="mt-16 text-center">
                         <p class="text-lg text-cyan-400 font-semibold mb-4">Síguenos en Instagram para más contenido educativo</p>
@@ -368,21 +394,20 @@
         <div id="view-empresas" class="hidden pt-20">
             <section class="py-16 sm:py-24">
                 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                     <div class="text-center mb-16">
-                        <h1 class="text-4xl sm:text-5xl font-bold text-white">AR para Empresas</h1>
-                        <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Cree campañas de marketing y materiales que sus clientes no solo verán, sino que experimentarán.</p>
-                        <!-- CAMBIO: data-scroll="#servicios" a data-scroll="#instagram-banners" -->
-                        <button data-view="view-main" data-scroll="#instagram-banners" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a Servicios</button>
-                    </div>
+                       <div class="text-center mb-16">
+                            <h1 class="text-4xl sm:text-5xl font-bold text-white">AR para Empresas</h1>
+                            <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Cree campañas de marketing y materiales que sus clientes no solo verán, sino que experimentarán.</p>
+                            <button data-view="view-main" data-scroll="#instagram-banners" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a Servicios</button>
+                        </div>
 
                     <!-- Video Empresas -->
                     <div class="mb-16">
                         <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Marketing Interactivo</h2>
-                         <div class="aspect-video bg-slate-800 rounded-lg overflow-hidden shadow-lg">
-                            <video controls muted loop class="w-full h-full object-cover">
-                                <source src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/Animaci%C3%B3n_de_Hombre_y_Luna_M%C3%A1gica.mp4" type="video/mp4">
-                                Su navegador no soporta el tag de video.
-                            </video>
+                           <div class="aspect-video bg-slate-800 rounded-lg overflow-hidden shadow-lg">
+                                <video controls muted loop class="w-full h-full object-cover">
+                                    <source src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/Animaci%C3%B3n_de_Hombre_y_Luna_M%C3%A1gica.mp4" type="video/mp4">
+                                    Su navegador no soporta el tag de video.
+                                </video>
                         </div>
                     </div>
 
@@ -405,14 +430,13 @@
             </section>
         </div>
 
-        <!-- ===== NUEVA VISTA: INGENIERÍA ===== -->
+        <!-- ===== VISTA: INGENIERÍA (ACTUALIZADA) ===== -->
         <div id="view-ingenieria" class="hidden pt-20">
             <section class="py-16 sm:py-24">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"> <!-- Contenedor más ancho -->
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16">
                         <h1 class="text-4xl sm:text-5xl font-bold text-white">AR para Ingeniería</h1>
                         <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Modelado 3D para <span class="text-cyan-400 font-semibold">ingeniería biomédica, mecánica y civil</span>. Visualice prototipos, modelos anatómicos y prótesis interactivas.</p>
-                        <!-- CAMBIO: data-scroll="#servicios" a data-scroll="#instagram-banners" -->
                         <button data-view="view-main" data-scroll="#instagram-banners" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a Servicios</button>
                     </div>
 
@@ -421,7 +445,7 @@
                         <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Galería de Modelos 3D</h2>
                         <p class="text-lg text-gray-300 mb-10 text-center">Explore nuestros modelos 3D. Use el mouse o el dedo para rotar, mover y hacer zoom.</p>
                         
-                        <!-- Rejilla para los 15 modelos -->
+                        <!-- Rejilla para los modelos de INGENIERÍA (Modelos de anatomía movidos) -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             
                             <!-- Modelo 1: Robonaut-2.glb -->
@@ -460,42 +484,6 @@
                                 <p class="text-gray-300 text-sm flex-grow">Figura 3D de un astronauta, ideal para escenarios espaciales y educativos.</p>
                             </div>
 
-                            <!-- Modelo 5: cabeza1.glb -->
-                            <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/cabeza1.glb" 
-                                              alt="Modelo simple de una cabeza humana" 
-                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
-                                <h3 class="text-xl font-bold text-white mt-4 mb-2">cabeza1.glb</h3>
-                                <p class="text-gray-300 text-sm flex-grow">Modelo simple de una cabeza humana, utilizable en anatomía o reconocimiento facial.</p>
-                            </div>
-
-                            <!-- Modelo 6: corazon.glb -->
-                            <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/corazon.glb" 
-                                              alt="Modelo anatómico de un corazón humano" 
-                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
-                                <h3 class="text-xl font-bold text-white mt-4 mb-2">corazon.glb</h3>
-                                <p class="text-gray-300 text-sm flex-grow">Modelo anatómico de un corazón humano.</p>
-                            </div>
-
-                            <!-- Modelo 7: dedo-mano.glb -->
-                            <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/dedo-mano.glb" 
-                                              alt="Representación detallada de un dedo de la mano" 
-                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
-                                <h3 class="text-xl font-bold text-white mt-4 mb-2">dedo-mano.glb</h3>
-                                <p class="text-gray-300 text-sm flex-grow">Representación detallada de un dedo de la mano.</p>
-                            </div>
-
-                            <!-- Modelo 8: dedo.glb -->
-                            <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/dedo.glb" 
-                                              alt="Modelo alternativo de dedo" 
-                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
-                                <h3 class="text-xl font-bold text-white mt-4 mb-2">dedo.glb</h3>
-                                <p class="text-gray-300 text-sm flex-grow">Modelo alternativo de dedo, útil para estudios anatómicos o animaciones.</p>
-                            </div>
-
                             <!-- Modelo 9: espectograma.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/espectograma.glb" 
@@ -503,24 +491,6 @@
                                               ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">espectograma.glb</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo de espectrograma, útil para visualizar datos de sonido o vibraciones.</p>
-                            </div>
-
-                            <!-- Modelo 10: hueso-columna.glb -->
-                            <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/hueso-columna.glb" 
-                                              alt="Parte de la columna vertebral" 
-                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
-                                <h3 class="text-xl font-bold text-white mt-4 mb-2">hueso-columna.glb</h3>
-                                <p class="text-gray-300 text-sm flex-grow">Parte de la columna vertebral, esencial para aplicaciones educativas en biología.</p>
-                            </div>
-
-                            <!-- Modelo 11: huesosmano.glb -->
-                            <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/huesosmano.glb" 
-                                              alt="Modelo esquelético de la mano humana" 
-                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
-                                <h3 class="text-xl font-bold text-white mt-4 mb-2">huesosmano.glb</h3>
-                                <p class="text-gray-300 text-sm flex-grow">Modelo esquelético de la mano humana.</p>
                             </div>
 
                             <!-- Modelo 12: mano-iz-protesis.glb -->
@@ -561,34 +531,130 @@
 
                         </div>
                     </div>
-
-                    <!-- ===== BLOQUE DE INSTAGRAM ELIMINADO ===== -->
-                    
                 </div>
             </section>
         </div>
 
-        <!-- VISTA DEMO -->
-        <div id="view-demo" class="hidden pt-20">
+        <!-- ===== NUEVA VISTA: ANATOMÍA ===== -->
+        <div id="view-anatomia" class="hidden pt-20">
             <section class="py-16 sm:py-24">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16">
-                        <h1 class="text-4xl sm:text-5xl font-bold text-white">Pruebe Nuestro Prototipo</h1>
-                        <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Siga estos pasos para experimentar una muestra de lo que podemos crear (enfocado en modelos de ingeniería biomédica).</p>
-                        <button data-view="view-main" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a la página principal</button>
+                        <h1 class="text-4xl sm:text-5xl font-bold text-white">AR para Anatomía</h1>
+                        <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Explore modelos anatómicos en 3D o cargue los suyos propios desde una URL.</p>
+                        <button data-view="view-main" data-scroll="#instagram-banners" class="mt-8 text-cyan-400 hover:text-cyan-300">&larr; Volver a Servicios</button>
                     </div>
-                    <div class="bg-slate-900 rounded-xl shadow-lg p-8 md:p-12">
-                        <div class="grid md:grid-cols-2 gap-12 items-center">
-                            <div class="text-center md:text-left">
-                                <h2 class="text-3xl font-bold text-cyan-400 mb-2">1. Descargue la App</h2>
-                                <p class="text-gray-300 mb-6">Instale la aplicación en su dispositivo Android.<br><span class="text-sm text-gray-500">Recuerde habilitar "Instalar desde fuentes desconocidas".</span></p>
-                                <a href="https://github.com/instructorandradedcc/propuesta-AR/raw/main/Propuesta_Salud_AR_v1.0.0.apk" download class="inline-block bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-3 px-8 rounded-lg">Descargar APK</a>
+
+                    <!-- Sección para Cargar Modelo Individual -->
+                    <div class="mb-24">
+                        <h2 class="text-3xl font-bold text-cyan-400 mb-6 text-center">Cargador de Modelos 3D</h2>
+                        <div class="max-w-3xl mx-auto glass-card rounded-xl p-8">
+                            <p class="text-gray-300 mb-4 text-center">Pegue la URL de un modelo 3D (.glb o .gltf) para cargarlo en el visor.</p>
+                            <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                                <input type="text" id="model-url-input" placeholder="https://.../mi-modelo.glb" class="flex-grow w-full bg-slate-800 border-slate-700 text-white rounded-md p-3 focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                                <button id="load-model-button" class="bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-3 px-6 rounded-lg transition-colors duration-300">Cargar Modelo</button>
                             </div>
-                            <div>
-                                <h2 class="text-3xl font-bold text-cyan-400 mb-2 text-center md:text-left">2. Use los Marcadores</h2>
-                                <p class="text-gray-400 mb-6 text-center md:text-left">Abra la app y apunte su cámara a estas imágenes. Haga clic para verlas en grande.</p>
-                                <div id="demo-gallery" class="grid grid-cols-3 md:grid-cols-4 gap-4"></div>
+                            <p id="model-load-error" class="text-red-400 text-sm text-center hidden">Por favor, ingrese una URL válida.</p>
+                            
+                            <!-- Visor Individual -->
+                            <div class="mt-6">
+                                <model-viewer id="anatomy-model-viewer" 
+                                              src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/corazon.glb" 
+                                              alt="Visor de modelo anatómico individual"
+                                              ar camera-controls auto-rotate shadow-intensity="1"
+                                              class="h-[500px]">
+                                    <!-- Mensaje de Carga -->
+                                    <div class="text-center text-gray-400" slot="progress-bar">
+                                        Cargando modelo...
+                                    </div>
+                                </model-viewer>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Galería de Modelos 3D de Anatomía -->
+                    <div class="space-y-12">
+                        <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Galería de Anatomía</h2>
+                        <p class="text-lg text-gray-300 mb-10 text-center">Explore nuestros modelos de anatomía predefinidos.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            
+                            <!-- Modelo 5: cabeza1.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/cabeza1.glb" 
+                                              alt="Modelo simple de una cabeza humana" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">cabeza1.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo simple de una cabeza humana, utilizable en anatomía o reconocimiento facial.</p>
+                            </div>
+
+                            <!-- Modelo 6: corazon.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/corazon.glb" 
+                                              alt="Modelo anatómico de un corazón humano" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">corazon.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo anatómico de un corazón humano.</p>
+                            </div>
+
+                            <!-- Modelo 7: dedo-mano.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/dedo-mano.glb" 
+                                              alt="Representación detallada de un dedo de la mano" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">dedo-mano.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Representación detallada de un dedo de la mano.</p>
+                            </div>
+
+                            <!-- Modelo 8: dedo.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/dedo.glb" 
+                                              alt="Modelo alternativo de dedo" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">dedo.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo alternativo de dedo, útil para estudios anatómicos o animaciones.</p>
+                            </div>
+
+                            <!-- Modelo 10: hueso-columna.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/hueso-columna.glb" 
+                                              alt="Parte de la columna vertebral" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">hueso-columna.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Parte de la columna vertebral, esencial para aplicaciones educativas en biología.</p>
+                            </div>
+
+                            <!-- Modelo 11: huesosmano.glb -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/huesosmano.glb" 
+                                              alt="Modelo esquelético de la mano humana" 
+                                              ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">huesosmano.glb</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo esquelético de la mano humana.</p>
+                            </div>
+
+                            <!-- ===== NUEVO MODELO: SKETCHFAB IFRAME ===== -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- El wrapper ocupa el espacio del model-viewer -->
+                                <div class="sketchfab-embed-wrapper w-full h-[300px] rounded-lg overflow-hidden border border-slate-700">
+                                    <iframe title="Anatomia Donna" 
+                                            frameborder="0" 
+                                            allowfullscreen 
+                                            mozallowfullscreen="true" 
+                                            webkitallowfullscreen="true" 
+                                            allow="autoplay; fullscreen; xr-spatial-tracking" 
+                                            xr-spatial-tracking 
+                                            execution-while-out-of-viewport 
+                                            execution-while-not-rendered 
+                                            web-share 
+                                            src="https://sketchfab.com/models/77ea6451db4f48fbb8cb7b493d8b3a19/embed?autospin=1&ui_theme=dark"
+                                            class="w-full h-full">
+                                    </iframe>
+                                </div>
+                                <h3 class="text-xl font-bold text-white mt-4 mb-2">Anatomia Donna (Sketchfab)</h3>
+                                <p class="text-gray-300 text-sm flex-grow">Modelo interactivo de anatomía femenina cargado desde Sketchfab.</p>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -602,7 +668,7 @@
             <div class="flex flex-col sm:flex-row justify-between items-center">
                 <div class="flex items-center mb-4 sm:mb-0">
                     <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación Ecopiensa Evolution" class="h-8 w-8 rounded-full mr-3">
-                    <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v1.05</span></p>
+                    <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v1.06</span></p> <!-- Versión incrementada -->
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="https://www.instagram.com/f.ecopiensa_evolution/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors">
@@ -618,7 +684,6 @@
     <div id="demo-viewer" class="image-viewer-modal fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"></div>
     <div id="education-viewer" class="image-viewer-modal fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"></div>
     <div id="empresas-viewer" class="image-viewer-modal fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"></div>
-    <!-- MODAL DE INGENIERÍA ELIMINADO -->
     
     <!-- JavaScript -->
     <script>
@@ -628,8 +693,9 @@
             'view-educacion': document.getElementById('view-educacion'),
             'view-empresas': document.getElementById('view-empresas'),
             'view-demo': document.getElementById('view-demo'),
-            // NUEVA VISTA AÑADIDA
-            'view-ingenieria': document.getElementById('view-ingenieria')
+            'view-ingenieria': document.getElementById('view-ingenieria'),
+            // NUEVA VISTA AÑADIDA AL OBJETO
+            'view-anatomia': document.getElementById('view-anatomia')
         };
         const allNavLinks = document.querySelectorAll('a[data-view], button[data-view], a[data-scroll]');
         const mainContentSections = document.querySelectorAll('#view-main section');
@@ -671,17 +737,17 @@
 
         function updateActiveNav(activeView, scrollTarget) {
              headerNavLinks.forEach(link => {
-                link.classList.remove('active');
-                const linkView = link.dataset.view;
-                const linkScroll = link.dataset.scroll;
-                if (linkView === activeView && !linkScroll) {
-                    link.classList.add('active');
-                } else if (activeView === 'view-main' && linkScroll === scrollTarget) {
+                 link.classList.remove('active');
+                 const linkView = link.dataset.view;
+                 const linkScroll = link.dataset.scroll;
+                 if (linkView === activeView && !linkScroll) {
                      link.classList.add('active');
-                } else if (activeView === 'view-main' && !scrollTarget && linkScroll === '#inicio') {
-                    link.classList.add('active');
-                }
-            });
+                 } else if (activeView === 'view-main' && linkScroll === scrollTarget) {
+                      link.classList.add('active');
+                 } else if (activeView === 'view-main' && !scrollTarget && linkScroll === '#inicio') {
+                     link.classList.add('active');
+                 }
+             });
         }
         
         const observer = new IntersectionObserver((entries) => {
@@ -697,18 +763,18 @@
             if (intersectingSection) {
                  const id = intersectingSection.getAttribute('id');
                   headerNavLinks.forEach(link => {
-                     link.classList.remove('active');
-                     if (link.dataset.scroll === `#${id}`) {
-                         link.classList.add('active');
-                     }
-                 });
+                       link.classList.remove('active');
+                       if (link.dataset.scroll === `#${id}`) {
+                           link.classList.add('active');
+                       }
+                  });
             } else if (window.scrollY === 0) {
                  headerNavLinks.forEach(link => {
-                     link.classList.remove('active');
-                     if (link.dataset.scroll === '#inicio') {
-                         link.classList.add('active');
-                     }
-                 });
+                       link.classList.remove('active');
+                       if (link.dataset.scroll === '#inicio') {
+                           link.classList.add('active');
+                       }
+                  });
             }
 
         }, { rootMargin: '-40% 0px -60% 0px' });
@@ -824,10 +890,34 @@
         setupInteractiveGallery('demo-gallery', 'demo-viewer', demoImages);
         setupInteractiveGallery('education-gallery', 'education-viewer', educationImages);
         setupInteractiveGallery('empresas-gallery', 'empresas-viewer', empresasImages);
+        
+        // --- NUEVA FUNCIONALIDAD PARA EL CARGADOR DE ANATOMÍA ---
+        const loadModelButton = document.getElementById('load-model-button');
+        const modelUrlInput = document.getElementById('model-url-input');
+        const modelViewer = document.getElementById('anatomy-model-viewer');
+        const modelError = document.getElementById('model-load-error');
+
+        loadModelButton.addEventListener('click', () => {
+            const url = modelUrlInput.value;
+            if (url && (url.endsWith('.glb') || url.endsWith('.gltf'))) {
+                modelViewer.src = url;
+                modelError.classList.add('hidden');
+            } else {
+                modelError.classList.remove('hidden');
+            }
+        });
+        
+        // Ocultar error cuando el usuario empieza a escribir de nuevo
+        modelUrlInput.addEventListener('input', () => {
+             if (!modelError.classList.contains('hidden')) {
+                 modelError.classList.add('hidden');
+             }
+        });
     });
     </script>
 </body>
 </html>
+
 
 
 
