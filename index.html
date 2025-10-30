@@ -399,8 +399,8 @@
                     <div class="mt-16 text-center">
                         <p class="text-lg text-cyan-400 font-semibold mb-4">Síguenos en Instagram para más contenido educativo</p>
                         <div class="inline-block transform hover:scale-105 transition-transform duration-300">
-                            <!-- Añadido loading="lazy" -->
-                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/insragram.png" alt="Síguenos en Instagram - Propuesta AR Educación" class="w-64 md:w-80 rounded-lg shadow-lg object-cover" loading="lazy">
+                            <!-- CORREGIDO: 'insragram.png' a 'instagram.png' -->
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/instagram.png" alt="Síguenos en Instagram - Propuesta AR Educación" class="w-64 md:w-80 rounded-lg shadow-lg object-cover" loading="lazy">
                         </div>
                         <p class="mt-4 text-sm text-gray-400">Descubre más ejemplos y novedades</p>
                     </div>
@@ -1023,23 +1023,41 @@
         </div>
     </main>
 
-    <!-- FOOTER ACTUALIZADO -->
+    <!-- ===== FOOTER ACTUALIZADO ===== -->
     <footer class="bg-slate-900 border-t border-slate-800">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-gray-500">
-            <div class="flex flex-col sm:flex-row justify-between items-center">
-                <div class="flex items-center mb-4 sm:mb-0">
-                    <!-- Añadido loading="lazy" -->
-                    <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación Ecopiensa Evolution" class="h-8 w-8 rounded-full mr-3" loading="lazy">
-                    <!-- NOTA DE VERSIÓN: Actualizada a 0.08 por corrección de HTML en Anatomía -->
-                    <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v0.08</span></p>
+            <!-- Contenedor principal del footer: flex en pantallas medianas y más grandes -->
+            <div class="flex flex-col md:flex-row justify-between items-start gap-6">
+                
+                <!-- Lado Izquierdo: Copyright y Nota de Código Abierto -->
+                <div class="text-left"> 
+                    <div class="flex items-center mb-2">
+                        <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación Ecopiensa Evolution" class="h-8 w-8 rounded-full mr-3" loading="lazy">
+                        <!-- Versión actualizada a 0.09 -->
+                        <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v0.09</span></p>
+                    </div>
+                    <!-- Párrafo de agradecimiento de código abierto -->
+                    <p class="text-xs text-gray-600 mt-1 max-w-md">
+                        Varios modelos 3D son de código abierto. Agradecemos a los creadores por permitir su uso.
+                    </p>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <a href="https://www.instagram.com/f.ecopiensa_evolution/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors">
-                        <!-- Ruta de imagen verificada y correcta -->
-                        <!-- Añadido loading="lazy" -->
-                        <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/insragram.png" alt="Instagram" class="h-6 w-6 opacity-75 hover:opacity-100" loading="lazy">
-                    </a>
+
+                <!-- Lado Derecho: Información de la Fundación y Redes Sociales -->
+                <div class="text-left md:text-right text-sm flex-shrink-0">
+                    <p class="font-semibold text-gray-400">Fundación Ecopiensa Evolution</p>
+                    <!-- Email con enlace mailto: -->
+                    <p class="text-xs text-gray-500 hover:text-cyan-400 transition-colors"><a href="mailto:fundacionecopiensaevolution@gmail.com">fundacionecopiensa@gmail.com</a></p>
+                    <!-- Teléfono con enlace WhatsApp -->
+                    <p class="text-xs text-gray-500 hover:text-cyan-400 transition-colors"><a href="https://wa.me/573222070501" target="_blank" rel="noopener noreferrer">+57 322 207 0501</a></p>
+                    <!-- Icono de Instagram (con enlace corregido) -->
+                    <div class="flex items-center md:justify-end space-x-4 mt-2">
+                        <a href="https://www.instagram.com/f.ecopiensa_evolution/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors">
+                            <!-- CORREGIDO: 'insragram.png' a 'instagram.png' -->
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/instagram.png" alt="Instagram" class="h-6 w-6 opacity-75 hover:opacity-100" loading="lazy">
+                        </a>
+                    </div>
                 </div>
+
             </div>
         </div>
     </footer>
@@ -1276,6 +1294,7 @@
     </script>
 </body>
 </html>
+
 
 
 
