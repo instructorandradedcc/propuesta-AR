@@ -922,12 +922,16 @@
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 8 (Anatomía).</p>
                             </div>
 
-D" src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/model_huma_anatomic_desmuntable_mdeie.glb" alt="Modelo anatómico humano desmontable" ar camera-controls auto-rotate shadow-intensity="1">
+                            <!-- ===== INICIO DE LA CORRECCIÓN ===== -->
+                            <!-- Este bloque estaba roto. Lo he envuelto en su 'div' y he corregido la etiqueta 'model-viewer'. -->
+                            <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/model_huma_anatomic_desmuntable_mdeie.glb" alt="Modelo anatómico humano desmontable" ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">model_huma_anatomic...</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo anatómico humano desmontable.</p>
                             </div>
+                            <!-- ===== FIN DE LA CORRECCIÓN ===== -->
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
@@ -1026,8 +1030,8 @@ D" src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main
                 <div class="flex items-center mb-4 sm:mb-0">
                     <!-- Añadido loading="lazy" -->
                     <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación Ecopiensa Evolution" class="h-8 w-8 rounded-full mr-3" loading="lazy">
-                    <!-- NOTA DE VERSIÓN: Actualizada a 0.07 por la implementación del Service Worker -->
-                    <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v0.07</span></p>
+                    <!-- NOTA DE VERSIÓN: Actualizada a 0.08 por corrección de HTML en Anatomía -->
+                    <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v0.08</span></p>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="https://www.instagram.com/f.ecopiensa_evolution/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors">
@@ -1272,7 +1276,6 @@ D" src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main
     </script>
 </body>
 </html>
-
 
 
 
