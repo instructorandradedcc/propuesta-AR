@@ -110,6 +110,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <div class="flex items-center">
+                    <!-- Logo no lleva loading="lazy" porque está "Above the Fold" (visible al cargar) -->
                     <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo" class="h-12 w-12 rounded-full border-2 border-cyan-400">
                     <span class="text-white font-bold text-2xl ml-4">Propuesta AR</span>
                 </div>
@@ -152,6 +153,7 @@
             <!-- ===== SECCIÓN HÉROE CON VIDEO DE FONDO COMPLETO ===== -->
             <section id="inicio" class="relative min-h-screen text-center overflow-hidden">
                 <!-- Video de fondo fijo debajo del header -->
+                <!-- NOTA: Este video es grande y autoinicia (autoplay). Asegúrate de que esté lo más comprimido posible. -->
                 <video autoplay muted loop playsinline class="fullscreen-video-bg">
                     <source src="https://cdn.jsdelivr.net/gh/instructorandradedcc/propuesta-AR@main/asetss/imagenes/pagina-propuestas-ar/Animaci%C3%B3n_de_Realidad_Aumentada_Futurista.mp4" type="video/mp4">
                 </video>
@@ -189,7 +191,8 @@
                         <!-- Banner 1: Educación -->
                         <a href="#" data-view="view-educacion" class="block group rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden glass-card flex flex-col">
                             <div class="relative overflow-hidden aspect-[4/5]">
-                                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para-educacion.png" alt="AR para Educación" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                <!-- Añadido loading="lazy" -->
+                                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para-educacion.png" alt="AR para Educación" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy">
                                 <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <span class="text-white text-xl font-bold text-center p-4">Ver Soluciones de Educación</span>
                                 </div>
@@ -203,7 +206,8 @@
                         <!-- Banner 2: Empresas -->
                         <a href="#" data-view="view-empresas" class="block group rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden glass-card flex flex-col">
                             <div class="relative overflow-hidden aspect-[4/5]">
-                                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para%20empresas.png" alt="AR para Empresas" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                <!-- Añadido loading="lazy" -->
+                                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para%20empresas.png" alt="AR para Empresas" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy">
                                 <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <span class="text-white text-xl font-bold text-center p-4">Ver Soluciones de Empresas</span>
                                 </div>
@@ -217,7 +221,8 @@
                         <!-- NUEVO BANNER 3: Ingeniería -->
                         <a href="#" data-view="view-ingenieria" class="block group rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden glass-card flex flex-col">
                             <div class="relative overflow-hidden aspect-[4/5]">
-                                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para-inegnieria.png" alt="AR para Ingeniería" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                <!-- Añadido loading="lazy" -->
+                                <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/ar-para-inegnieria.png" alt="AR para Ingeniería" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy">
                                 <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <span class="text-white text-xl font-bold text-center p-4">Ver Soluciones de Ingeniería</span>
                                 </div>
@@ -301,7 +306,8 @@
                         <!-- Columna 2: QR Code -->
                         <div class="glass-card rounded-xl p-8 flex flex-col items-center justify-center h-full">
                             <h3 class="text-2xl font-bold text-white mb-6">Escanea el QR</h3>
-                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/f.ecopiensa_evolution_qr.png" alt="QR Código de la Fundación Ecopiensa Evolution" class="w-48 h-48 rounded-lg shadow-lg object-cover">
+                            <!-- Añadido loading="lazy" -->
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/f.ecopiensa_evolution_qr.png" alt="QR Código de la Fundación Ecopiensa Evolution" class="w-48 h-48 rounded-lg shadow-lg object-cover" loading="lazy">
                             <p class="mt-4 text-sm text-gray-400">Conoce más sobre la fundación</p>
                         </div>
                         <!-- Columna 3: Instagram -->
@@ -345,7 +351,8 @@
                     <div class="mb-16">
                         <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Video de Muestra: Sistema Solar AR</h2>
                         <div class="aspect-video bg-slate-800 rounded-lg overflow-hidden shadow-lg">
-                            <video controls muted loop class="w-full h-full object-cover">
+                            <!-- Añadido preload="none" para que no cargue hasta que el usuario le de play -->
+                            <video controls muted loop class="w-full h-full object-cover" preload="none">
                                 <source src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/educacion/solar-AR.mp4" type="video/mp4">
                                 Su navegador no soporta el tag de video.
                             </video>
@@ -366,8 +373,8 @@
                             <!-- Esta es la tarjeta que movimos -->
                             <a href="#" data-view="view-anatomia" class="block group rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden glass-card flex flex-col">
                                 <div class="relative overflow-hidden aspect-[4/5]">
-                                    <!-- ===== IMAGEN ACTUALIZADA ===== -->
-                                    <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/educacion/anatomia.png" alt="AR para Anatomía" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                    <!-- ===== IMAGEN ACTUALIZADA + loading="lazy" ===== -->
+                                    <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/educacion/anatomia.png" alt="AR para Anatomía" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy">
                                     <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                         <span class="text-white text-xl font-bold text-center p-4">Explorar Anatomía 3D</span>
                                     </div>
@@ -384,7 +391,8 @@
                     <div class="mt-16 text-center">
                         <p class="text-lg text-cyan-400 font-semibold mb-4">Síguenos en Instagram para más contenido educativo</p>
                         <div class="inline-block transform hover:scale-105 transition-transform duration-300">
-                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/insragram.png" alt="Síguenos en Instagram - Propuesta AR Educación" class="w-64 md:w-80 rounded-lg shadow-lg object-cover">
+                            <!-- Añadido loading="lazy" -->
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/insragram.png" alt="Síguenos en Instagram - Propuesta AR Educación" class="w-64 md:w-80 rounded-lg shadow-lg object-cover" loading="lazy">
                         </div>
                         <p class="mt-4 text-sm text-gray-400">Descubre más ejemplos y novedades</p>
                     </div>
@@ -406,7 +414,8 @@
                     <div class="mb-16">
                         <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Marketing Interactivo</h2>
                             <div class="aspect-video bg-slate-800 rounded-lg overflow-hidden shadow-lg">
-                                <video controls muted loop class="w-full h-full object-cover">
+                                <!-- Añadido preload="none" -->
+                                <video controls muted loop class="w-full h-full object-cover" preload="none">
                                     <source src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/Animaci%C3%B3n_de_Hombre_y_Luna_M%C3%A1gica.mp4" type="video/mp4">
                                     Su navegador no soporta el tag de video.
                                 </video>
@@ -424,7 +433,8 @@
                     <div class="mt-16 text-center">
                         <p class="text-lg text-cyan-400 font-semibold mb-4">Impulsa tu marca en Instagram</p>
                         <div class="inline-block transform hover:scale-105 transition-transform duration-300">
-                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/instagram2.png" alt="Síguenos en Instagram - Propuesta AR Empresas" class="w-64 md:w-80 rounded-lg shadow-lg object-cover">
+                            <!-- Añadido loading="lazy" -->
+                            <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/instagram2.png" alt="Síguenos en Instagram - Propuesta AR Empresas" class="w-64 md:w-80 rounded-lg shadow-lg object-cover" loading="lazy">
                         </div>
                         <p class="mt-4 text-sm text-gray-400">Conoce nuestras soluciones para negocios</p>
                     </div>
@@ -452,81 +462,90 @@
                             
                             <!-- Modelo 1: Robonaut-2.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/Robonaut-2.glb" 
                                             alt="Modelo de robot humanoide" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">Robonaut-2</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo de robot humanoide, ideal para simulaciones espaciales o educativas.</p>
                             </div>
 
                             <!-- Modelo 2: Wrench.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/Wrench.glb" 
                                             alt="Modelo de una herramienta tipo llave inglesa" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">Wrench</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo de una herramienta tipo llave inglesa; útil para demos de mantenimiento o ingeniería.</p>
                             </div>
 
                             <!-- Modelo 3: antena.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/antena.glb" 
                                             alt="Modelo de una antena" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">antena</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo de una antena, posible componente para maquetas tecnológicas o telecomunicaciones.</p>
                             </div>
 
                             <!-- Modelo 4: astronauta.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/astronauta.glb" 
                                             alt="Figura 3D de un astronauta" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">astronauta</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Figura 3D de un astronauta, ideal para escenarios espaciales y educativos.</p>
                             </div>
 
                             <!-- Modelo 9: espectograma.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/espectograma.glb" 
                                             alt="Modelo de espectrograma" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">espectograma</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo de espectrograma, útil para visualizar datos de sonido o vibraciones.</p>
                             </div>
 
                             <!-- Modelo 12: mano-iz-protesis.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/mano-iz-protesis.glb" 
                                             alt="Modelo de una mano izquierda con prótesis" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">mano-iz-protesis</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo de una mano izquierda con prótesis, ideal para proyectos inclusivos y médicos.</p>
                             </div>
 
                             <!-- Modelo 13: protesis-mano-brazo.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/protesis-mano-brazo.glb" 
                                             alt="Prótesis completa de mano y brazo" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">protesis-mano-brazo</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Prótesis completa de mano y brazo para simulaciones biomecánicas.</p>
                             </div>
 
                             <!-- Modelo 14: super-nova-o-proteina.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/super-nova-o-proteina.glb" 
                                             alt="Modelo abstracto; supernova o proteina" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">super-nova-o-proteina</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo abstracto; podría representar una supernova o estructura proteica.</p>
                             </div>
 
                             <!-- Modelo 15: vehiculo1.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/vehiculo1.glb" 
                                             alt="Modelo 3D de un vehículo" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">vehiculo1</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de un vehículo, adecuado para simulación de transporte o robótica.</p>
                             </div>
@@ -551,7 +570,8 @@
                     <div class="mb-16">
                         <h2 class="text-3xl font-bold text-cyan-400 mb-4 text-center">Video de Muestra: Anatomía AR</h2>
                         <div class="aspect-video bg-slate-800 rounded-lg overflow-hidden shadow-lg max-w-4xl mx-auto">
-                            <video controls muted loop class="w-full h-full object-cover">
+                            <!-- Añadido preload="none" -->
+                            <video controls muted loop class="w-full h-full object-cover" preload="none">
                                 <source src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/educacion/anatomia-olmer.mp4" type="video/mp4">
                                 Su navegador no soporta el tag de video.
                             </video>
@@ -570,54 +590,60 @@
                             
                             <!-- Modelo 5: cabeza1.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/cabeza1.glb" 
                                             alt="Modelo simple de una cabeza humana" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">cabeza1</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo simple de una cabeza humana, utilizable en anatomía o reconocimiento facial.</p>
                             </div>
 
                             <!-- Modelo 6: corazon.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/corazon.glb" 
                                             alt="Modelo anatómico de un corazón humano" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">corazon</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo anatómico de un corazón humano.</p>
                             </div>
 
                             <!-- Modelo 7: dedo-mano.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/dedo-mano.glb" 
                                             alt="Representación detallada de un dedo de la mano" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">dedo-mano</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Representación detallada de un dedo de la mano.</p>
                             </div>
 
                             <!-- Modelo 8: dedo.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/dedo.glb" 
                                             alt="Modelo alternativo de dedo" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">dedo</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo alternativo de dedo, útil para estudios anatómicos o animaciones.</p>
                             </div>
 
                             <!-- Modelo 10: hueso-columna.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/hueso-columna.glb" 
                                             alt="Parte de la columna vertebral" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">hueso-columna</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Parte de la columna vertebral, esencial para aplicaciones educativas en biología.</p>
                             </div>
 
                             <!-- Modelo 11: huesosmano.glb -->
                             <div class="glass-card rounded-xl p-4 flex flex-col">
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/huesosmano.glb" 
                                             alt="Modelo esquelético de la mano humana" 
-                                            ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                            ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">huesosmano</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo esquelético de la mano humana.</p>
                             </div>
@@ -625,199 +651,232 @@
                             <!-- ===== INICIO DE LOS 33 NUEVOS MODELOS DE ANATOMÍA ===== -->
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/abdomen_anatomy.glb" alt="Anatomía del abdomen" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/abdomen_anatomy.glb" alt="Anatomía del abdomen" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">abdomen_anatomy</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de la anatomía del abdomen.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/anatomy_of_the_inner_ear.glb" alt="Anatomía del oído interno" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/anatomy_of_the_inner_ear.glb" alt="Anatomía del oído interno" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">anatomy_of_the_inner_ear</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de la anatomía del oído interno.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/arterias_cerebrales.glb" alt="Arterias cerebrales" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/arterias_cerebrales.glb" alt="Arterias cerebrales" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">arterias_cerebrales</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de las arterias cerebrales.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/atlas_and_axis.glb" alt="Vértebras Atlas y Axis" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/atlas_and_axis.glb" alt="Vértebras Atlas y Axis" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">atlas_and_axis</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de las vértebras Atlas y Axis.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/corazon_y_cayado_aortico.glb" alt="Corazón y cayado aórtico" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/corazon_y_cayado_aortico.glb" alt="Corazón y cayado aórtico" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">corazon_y_cayado_aortico</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del corazón y cayado aórtico.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/cps_-_model_2_sutures_and_craniometric_points..glb" alt="Suturas y puntos craneométricos" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/cps_-_model_2_sutures_and_craniometric_points..glb" alt="Suturas y puntos craneométricos" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">cps...craniometric_points</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Suturas y puntos craneométricos.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/cps_-_model_3_surgical_craniometric_points.glb" alt="Puntos craneométricos quirúrgicos" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/cps_-_model_3_surgical_craniometric_points.glb" alt="Puntos craneométricos quirúrgicos" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">cps...surgical_craniometric</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Puntos craneométricos quirúrgicos.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/ear_anatomy.glb" alt="Anatomía del oído" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/ear_anatomy.glb" alt="Anatomía del oído" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">ear_anatomy</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de la anatomía del oído.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/encefalo-humano.glb" alt="Encéfalo humano" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/encefalo-humano.glb" alt="Encéfalo humano" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">encefalo-humano</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de encéfalo humano.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/epithelium_of_the_bladder_reduced_file_size.glb" alt="Epitelio de la vejiga" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/epithelium_of_the_bladder_reduced_file_size.glb" alt="Epitelio de la vejiga" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">epithelium_of_the_bladder...</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del epitelio de la vejiga.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/estructura_osea_y_muscular_de_pie.glb" alt="Estructura ósea y muscular del pie" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/estructura_osea_y_muscular_de_pie.glb" alt="Estructura ósea y muscular del pie" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">estructura_osea_y_muscular...</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Estructura ósea y muscular del pie.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/ethmoid_bone__hueso_etmoides.glb" alt="Hueso etmoides" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/ethmoid_bone__hueso_etmoides.glb" alt="Hueso etmoides" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">ethmoid_bone__hueso_etmoides</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del hueso etmoides.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/female_reproductive_and_urinary_systems.glb" alt="Sistemas reproductivo y urinario femeninos" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/female_reproductive_and_urinary_systems.glb" alt="Sistemas reproductivo y urinario femeninos" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">female_reproductive...systems</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Sistemas reproductivo y urinario femeninos.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/female_reproductive_organs-x_section.glb" alt="Corte de órganos reproductivos femeninos" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/female_reproductive_organs-x_section.glb" alt="Corte de órganos reproductivos femeninos" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">female_reproductive_organs...</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Corte de órganos reproductivos femeninos.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/hueso_palatino.glb" alt="Hueso palatino" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/hueso_palatino.glb" alt="Hueso palatino" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">hueso_palatino</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del hueso palatino.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/huesos_de_la_mano.glb" alt="Huesos de la mano" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/huesos_de_la_mano.glb" alt="Huesos de la mano" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">huesos_de_la_mano</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de los huesos de la mano.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/huesos_del_pie.glb" alt="Huesos del pie" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/huesos_del_pie.glb" alt="Huesos del pie" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">huesos_del_pie</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de los huesos del pie.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/huesos_nasales.glb" alt="Huesos nasales" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/huesos_nasales.glb" alt="Huesos nasales" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">huesos_nasales</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de los huesos nasales.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/human_kidney.glb" alt="Riñón humano" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/human_kidney.glb" alt="Riñón humano" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">human_kidney</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de un riñón humano.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/lateral_ventricles_and_third_ventricle.glb" alt="Ventrículos laterales y tercer ventrículo" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/lateral_ventricles_and_third_ventricle.glb" alt="Ventrículos laterales y tercer ventrículo" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">lateral_ventricles...</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Ventrículos laterales y tercer ventrículo.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/lower_turbinate__cornete_inferior.glb" alt="Cornete inferior" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/lower_turbinate__cornete_inferior.glb" alt="Cornete inferior" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">lower_turbinate__cornete_inferior</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del cornete inferior.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/lung_right.glb" alt="Pulmón derecho" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/lung_right.glb" alt="Pulmón derecho" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">lung_right</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del pulmón derecho.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/lymphatic_system_overview_model_2.glb" alt="Sistema linfático" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/lymphatic_system_overview_model_2.glb" alt="Sistema linfático" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">lymphatic_system_overview...</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Vista general del sistema linfático.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/maxillary_complete__maxilar_doble.glb" alt="Maxilar completo" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/maxillary_complete__maxilar_doble.glb" alt="Maxilar completo" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">maxillary_complete__maxilar_doble</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D de maxilar completo.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/model_1_occipital_bone.glb" alt="Hueso occipital" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/model_1_occipital_bone.glb" alt="Hueso occipital" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">model_1_occipital_bone</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del hueso occipital.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/model_8.glb" alt="Modelo 8" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/model_8.glb" alt="Modelo 8" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">model_8</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 8 (Anatomía).</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/model_huma_anatomic_desmuntable_mdeie.glb" alt="Modelo anatómico humano desmontable" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/model_huma_anatomic_desmuntable_mdeie.glb" alt="Modelo anatómico humano desmontable" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">model_huma_anatomic...</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo anatómico humano desmontable.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/next_try-_brachial_plexus.glb" alt="Plexo braquial" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/next_try-_brachial_plexus.glb" alt="Plexo braquial" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">next_try-_brachial_plexus</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del plexo braquial.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/small_and_large_intestine.glb" alt="Intestino delgado y grueso" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/small_and_large_intestine.glb" alt="Intestino delgado y grueso" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">small_and_large_intestine</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del intestino delgado y grueso.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/top_of_skull.glb" alt="Parte superior del cráneo" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/top_of_skull.glb" alt="Parte superior del cráneo" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">top_of_skull</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Parte superior del cráneo.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/urinary_system.glb" alt="Sistema urinario" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/urinary_system.glb" alt="Sistema urinario" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">urinary_system</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del sistema urinario.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/ventricular_system.glb" alt="Sistema ventricular" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/ventricular_system.glb" alt="Sistema ventricular" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">ventricular_system</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del sistema ventricular.</p>
                             </div>
 
                             <div class="glass-card rounded-xl p-4 flex flex-col">
-                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/vomer_bone__hueso_vomer.glb" alt="Hueso vómer" ar camera-controls auto-rotate shadow-intensity="1"></model-viewer>
+                                <!-- OPTIMIZACIÓN: Añadido reveal="interaction" -->
+                                <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/anatomy/vomer_bone__hueso_vomer.glb" alt="Hueso vómer" ar camera-controls auto-rotate shadow-intensity="1" reveal="interaction"></model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">vomer_bone__hueso_vomer</h3>
                                 <p class="text-gray-300 text-sm flex-grow">Modelo 3D del hueso vómer.</p>
                             </div>
@@ -863,14 +922,16 @@
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-gray-500">
             <div class="flex flex-col sm:flex-row justify-between items-center">
                 <div class="flex items-center mb-4 sm:mb-0">
-                    <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación Ecopiensa Evolution" class="h-8 w-8 rounded-full mr-3">
+                    <!-- Añadido loading="lazy" -->
+                    <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación Ecopiensa Evolution" class="h-8 w-8 rounded-full mr-3" loading="lazy">
                     <!-- NOTA DE VERSIÓN: Incrementar en 0.01 con cada cambio, corrección o mejora. -->
                     <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v0.03</span></p>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="https://www.instagram.com/f.ecopiensa_evolution/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors">
                         <!-- Ruta de imagen verificada y correcta -->
-                        <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/insragram.png" alt="Instagram" class="h-6 w-6 opacity-75 hover:opacity-100">
+                        <!-- Añadido loading="lazy" -->
+                        <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/imagenes/pagina-propuestas-ar/insragram.png" alt="Instagram" class="h-6 w-6 opacity-75 hover:opacity-100" loading="lazy">
                     </a>
                 </div>
             </div>
@@ -1013,6 +1074,8 @@
                     img.alt = `Imagen de galería ${index + 1}`;
                     img.className = 'w-full h-full object-cover';
                     img.dataset.index = index;
+                    // OPTIMIZACIÓN: Añadido loading = 'lazy' a las imágenes de la galería
+                    img.loading = 'lazy';
                     img.onerror = () => {
                         img.src = 'https://placehold.co/400x400/334155/94a3b8?text=Error';
                         console.warn(`Error al cargar imagen: ${url}`);
@@ -1088,7 +1151,7 @@
         setupInteractiveGallery('education-gallery', 'education-viewer', educationImages);
         setupInteractiveGallery('empresas-gallery', 'empresas-viewer', empresasImages);
         
-        
+      
     });
     </script>
 </body>
