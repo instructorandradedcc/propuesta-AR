@@ -11,10 +11,15 @@
     <!-- Favicon -->
     <link rel="icon" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/favicon.ico" type="image/x-icon">
     
-    <!-- Google Fonts: Poppins -->
+    <!-- Google Fonts: Poppins (Optimizado para pre-carga) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+
+    <!-- Preload de assets críticos para carga inicial más rápida -->
+    <link rel="preload" href="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" as="image">
+    <link rel="preload" href="https://cdn.jsdelivr.net/gh/instructorandradedcc/propuesta-AR@main/asetss/imagenes/pagina-propuestas-ar/Animaci%C3%B3n_de_Realidad_Aumentada_Futurista.mp4" as="video" type="video/mp4">
 
     <!-- Google Model Viewer -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
@@ -467,8 +472,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/Robonaut-2.glb" 
-                                            alt="Modelo de robot humanoide" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Modelo de robot humanoide" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">Robonaut-2</h3>
@@ -479,8 +484,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/Wrench.glb" 
-                                            alt="Modelo de una herramienta tipo llave inglesa" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Modelo de una herramienta tipo llave inglesa" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">Wrench</h3>
@@ -491,8 +496,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/antena.glb" 
-                                            alt="Modelo de una antena" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Modelo de una antena" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">antena</h3>
@@ -503,8 +508,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/astronauta.glb" 
-                                            alt="Figura 3D de un astronauta" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Figura 3D de un astronauta" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">astronauta</h3>
@@ -515,8 +520,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/espectograma.glb" 
-                                            alt="Modelo de espectrograma" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Modelo de espectrograma" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">espectograma</h3>
@@ -527,8 +532,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/mano-iz-protesis.glb" 
-                                            alt="Modelo de una mano izquierda con prótesis" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Modelo de una mano izquierda con prótesis" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">mano-iz-protesis</h3>
@@ -539,8 +544,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/protesis-mano-brazo.glb" 
-                                            alt="Prótesis completa de mano y brazo" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Prótesis completa de mano y brazo" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">protesis-mano-brazo</h3>
@@ -551,8 +556,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/super-nova-o-proteina.glb" 
-                                            alt="Modelo abstracto; supernova o proteina" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Modelo abstracto; supernova o proteina" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">super-nova-o-proteina</h3>
@@ -563,8 +568,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/vehiculo1.glb" 
-                                            alt="Modelo 3D de un vehículo" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Modelo 3D de un vehículo" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">vehiculo1</h3>
@@ -613,8 +618,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/cabeza1.glb" 
-                                            alt="Modelo simple de una cabeza humana" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Modelo simple de una cabeza humana" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">cabeza1</h3>
@@ -625,8 +630,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/corazon.glb" 
-                                            alt="Modelo anatómico de un corazón humano" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Modelo anatómico de un corazón humano" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">corazon</h3>
@@ -637,8 +642,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/dedo-mano.glb" 
-                                            alt="Representación detallada de un dedo de la mano" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Representación detallada de un dedo de la mano" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">dedo-mano</h3>
@@ -649,8 +654,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/dedo.glb" 
-                                            alt="Modelo alternativo de dedo" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Modelo alternativo de dedo" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">dedo</h3>
@@ -661,8 +666,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/hueso-columna.glb" 
-                                            alt="Parte de la columna vertebral" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Parte de la columna vertebral" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">hueso-columna</h3>
@@ -673,8 +678,8 @@
                             <div class="glass-card rounded-xl p-4 flex flex-col">
                                 <!-- Se eliminó reveal="interaction" y se añadió la barra de progreso -->
                                 <model-viewer loading="lazy" poster="https://placehold.co/600x300/1e293b/ccd6f6?text=Cargando..." src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/asetss/modelss/huesosmano.glb" 
-                                            alt="Modelo esquelético de la mano humana" 
-                                            ar camera-controls auto-rotate shadow-intensity="1">
+                                        alt="Modelo esquelético de la mano humana" 
+                                        ar camera-controls auto-rotate shadow-intensity="1">
                                     <!-- Barra de progreso eliminada -->
                                 </model-viewer>
                                 <h3 class="text-xl font-bold text-white mt-4 mb-2">huesosmano</h3>
@@ -1021,8 +1026,8 @@ D" src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main
                 <div class="flex items-center mb-4 sm:mb-0">
                     <!-- Añadido loading="lazy" -->
                     <img src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main/logofundacion.jpg" alt="Logo Fundación Ecopiensa Evolution" class="h-8 w-8 rounded-full mr-3" loading="lazy">
-                    <!-- NOTA DE VERSIÓN: Incrementar en 0.01 con cada cambio, corrección o mejora. -->
-                    <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v0.06</span></p>
+                    <!-- NOTA DE VERSIÓN: Actualizada a 0.07 por la implementación del Service Worker -->
+                    <p>&copy; 2025 Propuesta AR. Todos los derechos reservados. <span class="ml-4 text-xs opacity-75">v0.07</span></p>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="https://www.instagram.com/f.ecopiensa_evolution/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors">
@@ -1118,17 +1123,17 @@ D" src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main
             if (intersectingSection) {
                  const id = intersectingSection.getAttribute('id');
                  headerNavLinks.forEach(link => {
-                        link.classList.remove('active');
-                        if (link.dataset.scroll === `#${id}`) {
-                            link.classList.add('active');
-                        }
+                         link.classList.remove('active');
+                         if (link.dataset.scroll === `#${id}`) {
+                             link.classList.add('active');
+                         }
                  });
             } else if (window.scrollY === 0) {
                  headerNavLinks.forEach(link => {
-                        link.classList.remove('active');
-                        if (link.dataset.scroll === '#inicio') {
-                            link.classList.add('active');
-                        }
+                         link.classList.remove('active');
+                         if (link.dataset.scroll === '#inicio') {
+                             link.classList.add('active');
+                         }
                  });
             }
 
@@ -1250,8 +1255,25 @@ D" src="https://raw.githubusercontent.com/instructorandradedcc/propuesta-AR/main
         
     });
     </script>
+
+    <!-- Script para registrar el Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+              console.log('ServiceWorker registrado con éxito: ', registration.scope);
+            })
+            .catch(error => {
+              console.log('Fallo en el registro de ServiceWorker: ', error);
+            });
+        });
+      }
+    </script>
 </body>
 </html>
+
+
 
 
 
